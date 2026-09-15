@@ -1,0 +1,6 @@
+{
+  "name": "منصة لغتي التعليمية - المنهاج السعودي",
+  "description": "منصة تعليمية تفاعلية شاملة لمقرر لغتي الجميلة حسب المنهاج السعودي من مرحلة التأسيس حتى الصف السادس الابتدائي مع المختبر الصوتي وبنك التمارين والمساعد الذكي.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
