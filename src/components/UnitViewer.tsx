@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { GradeCurriculum, Lesson, Unit } from '../types/curriculum';
 import { audioManager } from '../utils/audio';
+import { InteractiveTextReader } from './InteractiveTextReader';
 
 interface UnitViewerProps {
   curriculum: GradeCurriculum;
@@ -196,45 +197,15 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                     {currentLesson.title}
                   </h3>
                 </div>
-
-                {/* Action Buttons: Audio Playback, Quiz, Worksheet */}
-                <div className="flex items-center gap-2">
-                  <button
-                    id="lesson-audio-speaker-btn"
-                    onClick={() => handleReadText(currentLesson.text || currentLesson.audioText || '')}
-                    className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm ${
-                      isPlayingAudio
-                        ? 'bg-amber-500 text-slate-950 animate-pulse'
-                        : 'bg-emerald-700 text-white hover:bg-emerald-800'
-                    }`}
-                  >
-                    {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
-                    <span>{isPlayingAudio ? 'إيقاف الصوت' : 'استمع للنص كاملاً'}</span>
-                  </button>
-                </div>
               </div>
 
-              {/* Lesson Body: Text or Poem Verses */}
+              {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
               <div className="my-8">
-                {currentLesson.type === 'poem' && currentLesson.verses ? (
-                  <div className="space-y-4 max-w-xl mx-auto text-center py-4">
-                    {currentLesson.verses.map((verse, vIdx) => (
-                      <div
-                        key={vIdx}
-                        className="p-4 bg-gradient-to-r from-emerald-50/50 via-slate-50 to-emerald-50/50 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center text-lg sm:text-xl font-amiri font-bold text-slate-900"
-                      >
-                        <div className="text-right sm:text-center text-emerald-950">{verse.first}</div>
-                        <div className="text-left sm:text-center text-emerald-900">{verse.second}</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-6 sm:p-8 bg-slate-50/60 rounded-3xl border border-slate-200/80">
-                    <p className="text-xl sm:text-2xl font-amiri font-bold leading-loose text-slate-900 text-justify">
-                      {currentLesson.text}
-                    </p>
-                  </div>
-                )}
+                <InteractiveTextReader
+                  text={currentLesson.text}
+                  verses={currentLesson.verses}
+                  title={currentLesson.title}
+                />
               </div>
 
               {/* Vocabulary Chips (المفردات ومعانيها) */}

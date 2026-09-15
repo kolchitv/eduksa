@@ -176,6 +176,148 @@ class AudioManager {
     });
   }
 
+  // Text-To-Speech with word-by-word highlight callback and synchronized pacing
+  public speakArabicWithWordHighlight(
+    text: string,
+    words: string[],
+    rate: number = 0.8,
+    onWordChange: (wordIndex: number, word: string) => void,
+    onEnd: () => void
+  ): { cancel: () => void; pause: () => void; resume: () => void } {
+    let cancelled = false;
+    let timerId: any = null;
+    let boundaryFired = false;
+
+    if (this.isMuted || typeof window === 'undefined' || !window.speechSynthesis) {
+      setTimeout(() => onEnd(), 300);
+      return { cancel: () => {}, pause: () => {}, resume: () => {} };
+    }
+
+    window.speechSynthesis.cancel();
+
+    const cleanText = text.trim();
+    if (!cleanText || words.length === 0) {
+      onEnd();
+      return { cancel: () => {}, pause: () => {}, resume: () => {} };
+    }
+
+    // Build word character offset map for matching boundary events
+    const wordOffsets: { index: number; start: number; end: number; word: string }[] = [];
+    let searchStart = 0;
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      const cleanW = w.replace(/[.,،؛!؟:)(]/g, '').trim();
+      const pos = cleanText.indexOf(cleanW || w, searchStart);
+      const start = pos !== -1 ? pos : searchStart;
+      const end = start + w.length;
+      wordOffsets.push({ index: i, start, end, word: w });
+      searchStart = end;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'ar-SA';
+    utterance.rate = rate;
+    utterance.pitch = 1.05;
+
+    const voices = window.speechSynthesis.getVoices();
+    const arVoice = voices.find(
+      (v) => v.lang.startsWith('ar') || v.name.includes('Arabic') || v.name.includes('Maged') || v.name.includes('Tarik')
+    );
+    if (arVoice) {
+      utterance.voice = arVoice;
+    }
+
+    let currentHighlightedIdx = 0;
+    onWordChange(0, words[0]);
+
+    // Track word transitions via boundary events
+    utterance.onboundary = (event) => {
+      if (cancelled) return;
+      boundaryFired = true;
+      if (event.name === 'word' || typeof event.charIndex === 'number') {
+        const charIdx = event.charIndex;
+        const matched = wordOffsets.find((wo) => charIdx >= wo.start && charIdx <= wo.end) ||
+                        wordOffsets.reduce((prev, curr) => 
+                          Math.abs(curr.start - charIdx) < Math.abs(prev.start - charIdx) ? curr : prev
+                        );
+        if (matched && matched.index !== currentHighlightedIdx) {
+          currentHighlightedIdx = matched.index;
+          onWordChange(matched.index, words[matched.index]);
+        }
+      }
+    };
+
+    // Fallback timer in case speech boundary doesn't fire
+    const wordDurations = words.map((w) => {
+      const length = w.length;
+      const baseMs = 380;
+      const charMs = 50;
+      let duration = (baseMs + length * charMs) / rate;
+      if (/[.!?،؛:?]/.test(w)) {
+        duration += 280 / rate;
+      }
+      return duration;
+    });
+
+    let wordIdx = 0;
+    const scheduleNextWord = () => {
+      if (cancelled || wordIdx >= words.length - 1) return;
+      const delay = wordDurations[wordIdx];
+      timerId = setTimeout(() => {
+        if (cancelled) return;
+        wordIdx++;
+        if (!boundaryFired || wordIdx > currentHighlightedIdx) {
+          currentHighlightedIdx = wordIdx;
+          onWordChange(wordIdx, words[wordIdx]);
+        }
+        scheduleNextWord();
+      }, delay);
+    };
+
+    scheduleNextWord();
+
+    utterance.onend = () => {
+      if (timerId) clearTimeout(timerId);
+      if (!cancelled) {
+        onWordChange(words.length - 1, words[words.length - 1]);
+        setTimeout(() => {
+          onEnd();
+        }, 300);
+      }
+    };
+
+    utterance.onerror = () => {
+      if (timerId) clearTimeout(timerId);
+      if (!cancelled) {
+        onEnd();
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
+
+    return {
+      cancel: () => {
+        cancelled = true;
+        if (timerId) clearTimeout(timerId);
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+      },
+      pause: () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+          window.speechSynthesis.pause();
+        }
+        if (timerId) clearTimeout(timerId);
+      },
+      resume: () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+          window.speechSynthesis.resume();
+        }
+        scheduleNextWord();
+      }
+    };
+  }
+
   public stopSpeaking() {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
