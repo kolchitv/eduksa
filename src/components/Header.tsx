@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   BookOpen, 
   Sparkles, 
@@ -12,9 +12,9 @@ import {
   Menu, 
   X,
   Star,
-  CheckCircle2,
-  MessageCircle,
-  Phone
+  CheckCircle2, 
+  ChevronDown,
+  MessageCircle
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
@@ -43,10 +43,23 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [gradeDropdownOpen, setGradeDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentGradeData = GRADES_DATA[currentGrade] || GRADES_DATA.foundation;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setGradeDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleToggleMute = () => {
     const muted = audioManager.toggleMute();
@@ -62,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       {/* Top Ministry & Saudi Identity Strip */}
       <div className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white text-xs px-4 py-1.5 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 font-medium">
@@ -70,81 +83,94 @@ export const Header: React.FC<HeaderProps> = ({
           <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
         </div>
         <div className="flex items-center gap-3 text-emerald-100 text-[11px] sm:text-xs">
-          <a
-            id="top-whatsapp-contact-link"
-            href="https://wa.me/33773659697?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D8%B1%D9%88%D8%B3%20%D9%88%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA%20%D9%85%D9%86%D9%87%D8%A7%D8%AC%20%D9%84%D8%BA%D8%AA%D9%8A"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-400/40 text-emerald-100 hover:text-white px-3 py-0.5 rounded-full transition-colors shadow-sm"
-            title="واتساب الدروس والمعلومات"
-          >
-            <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="font-medium">واتساب الدروس والمعلومات:</span>
-            <span dir="ltr" className="font-bold text-white tracking-wider">+33 7 73 65 96 97</span>
-          </a>
-          <span className="hidden lg:inline">•</span>
-          <span className="hidden lg:inline">المملكة العربية السعودية 🇸🇦</span>
+          <span className="hidden sm:inline">المملكة العربية السعودية 🇸🇦</span>
         </div>
       </div>
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18 gap-3">
+        <div className="flex items-center justify-between h-16 gap-3">
           {/* Brand & Logo */}
           <div 
             id="brand-logo-btn"
             onClick={() => onChangeTab('units')}
-            className="flex items-center gap-3 cursor-pointer group select-none"
+            className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-md shadow-emerald-200 group-hover:scale-105 transition-transform duration-200">
-              <BookOpen className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <span className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight font-alexandria">
                   لُغَتِي
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
                   السعودية
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">
-                تأسيس ومنهاج الصفوف (١ - ٦)
-              </p>
             </div>
           </div>
 
-          {/* Center Grade Switcher Selector */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-            {Object.values(GRADES_DATA).map((grade) => (
-              <button
-                key={grade.id}
-                id={`grade-nav-btn-${grade.id}`}
-                onClick={() => onSelectGrade(grade.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1.5 ${
-                  currentGrade === grade.id
-                    ? 'bg-white text-emerald-800 shadow-sm border border-slate-200/80 scale-100'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                }`}
-              >
-                {grade.id === 'foundation' ? (
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                ) : (
-                  <GraduationCap className="w-3.5 h-3.5 text-emerald-600" />
-                )}
-                <span>{grade.id === 'foundation' ? 'التأسيس' : grade.name.replace('الصف ', '')}</span>
-              </button>
-            ))}
+          {/* Center Grade Selector (Dropdown to keep header uncluttered) */}
+          <div className="relative hidden md:block" ref={dropdownRef}>
+            <button
+              id="header-grade-dropdown-btn"
+              onClick={() => setGradeDropdownOpen(!gradeDropdownOpen)}
+              className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 border border-slate-200 hover:border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs"
+            >
+              <div className="w-5 h-5 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                {currentGrade.startsWith('kg') ? '🌱' : currentGrade === 'foundation' ? '✨' : '📖'}
+              </div>
+              <span>{currentGradeData.name}</span>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${gradeDropdownOpen ? 'rotate-180 text-emerald-700' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {gradeDropdownOpen && (
+              <div className="absolute top-full right-0 mt-1.5 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider">
+                  اختر الصف الدراسي:
+                </div>
+                <div className="grid grid-cols-1 gap-1 max-h-80 overflow-y-auto">
+                  {Object.values(GRADES_DATA).map((grade) => {
+                    const isSelected = currentGrade === grade.id;
+                    return (
+                      <button
+                        key={grade.id}
+                        id={`dropdown-grade-${grade.id}`}
+                        onClick={() => {
+                          onSelectGrade(grade.id);
+                          setGradeDropdownOpen(false);
+                        }}
+                        className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold text-right transition-colors ${
+                          isSelected
+                            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                            : 'hover:bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">
+                            {grade.id.startsWith('kg') ? '🌱' : grade.id === 'foundation' ? '✨' : '📖'}
+                          </span>
+                          <span>{grade.name}</span>
+                        </div>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Action Icons & Student Stats */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Search Trigger */}
             <button
               id="search-toggle-btn"
               onClick={() => setSearchOpen(!searchOpen)}
               className="p-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-colors"
-              title="بحث في القواعد والدروس"
+              title="بحث في الدروس والقواعد"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -164,38 +190,15 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {/* Student Stars & Badge */}
-            <div 
+            <button 
               id="student-stars-badge"
               onClick={() => onChangeTab('achievements')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:bg-amber-100 transition-colors select-none"
-              title="لوحة الإنجازات والشهادات"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-300 rounded-xl cursor-pointer transition-all shadow-2xs active:scale-95 select-none"
+              title="لوحة الإنجازات والشهادات - انقر للاطلاع"
             >
               <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
-              <span className="text-sm font-bold text-amber-800">{stars}</span>
-              <span className="text-xs text-amber-700 hidden sm:inline">نجمة</span>
-            </div>
-
-            {/* WhatsApp Lessons & Inquiries Action */}
-            <a
-              id="header-whatsapp-btn"
-              href="https://wa.me/33773659697?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D8%B1%D9%88%D8%B3%20%D9%88%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA%20%D9%85%D9%86%D9%87%D8%A7%D8%AC%20%D9%84%D8%BA%D8%AA%D9%8A"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-xs"
-              title="تواصل واتساب للدروس والمعلومات (+33773659697)"
-            >
-              <MessageCircle className="w-4 h-4 text-emerald-600" />
-              <span>واتساب الدروس</span>
-            </a>
-
-            {/* Claim Certificate Button */}
-            <button
-              id="header-certificate-btn"
-              onClick={onOpenCertificate}
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl text-xs font-bold shadow-sm shadow-emerald-200 hover:opacity-95 active:scale-95 transition-all"
-            >
-              <Award className="w-4 h-4 text-amber-300" />
-              <span>شهادة تفوق</span>
+              <span className="text-sm font-extrabold text-amber-900">{stars}</span>
+              <span className="text-xs font-bold text-amber-800 hidden sm:inline">نجمة</span>
             </button>
 
             {/* Mobile Menu Toggle */}
@@ -210,88 +213,88 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Navigation Tabs Bar */}
-        <div className="hidden md:flex items-center justify-between border-t border-slate-100 py-2">
+        <div className="hidden md:flex items-center justify-between border-t border-slate-100 py-1.5 overflow-x-auto">
           <nav className="flex items-center gap-1">
             <button
               id="nav-tab-units"
               onClick={() => onChangeTab('units')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'units'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
-              <span>الوحدات والدروس ({currentGradeData.name})</span>
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>الوحدات والدروس</span>
             </button>
 
             <button
               id="nav-tab-kg"
               onClick={() => onChangeTab('kg')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'kg'
-                  ? 'bg-sky-700 text-white shadow-sm'
+                  ? 'bg-sky-700 text-white shadow-2xs'
                   : 'text-slate-600 hover:text-sky-800 hover:bg-sky-50'
               }`}
             >
               <span>🌱</span>
-              <span>روضة لغتي (KG1 و KG2)</span>
+              <span>روضة لغتي (KG)</span>
             </button>
 
             <button
               id="nav-tab-foundation"
               onClick={() => onChangeTab('foundation')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'foundation'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>معمل الحركات والتأسيس</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>معمل التأسيس</span>
             </button>
 
             <button
               id="nav-tab-quiz"
               onClick={() => onChangeTab('quiz')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'quiz'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>بنك التمارين والاختبارات</span>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>الاختبارات</span>
             </button>
 
             <button
               id="nav-tab-ai"
               onClick={() => onChangeTab('ai')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'ai'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <BrainCircuit className="w-4 h-4 text-emerald-400" />
-              <span>المُعرب ومعلم لغتي الذكي</span>
+              <BrainCircuit className="w-3.5 h-3.5 text-emerald-400" />
+              <span>المُعرب الذكي</span>
             </button>
 
             <button
               id="nav-tab-worksheets"
               onClick={() => onChangeTab('worksheets')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'worksheets'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <Printer className="w-4 h-4" />
-              <span>أوراق العمل والطباعة</span>
+              <Printer className="w-3.5 h-3.5" />
+              <span>أوراق العمل</span>
             </button>
           </nav>
 
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 whitespace-nowrap">
             <span>الطالب/ـة:</span>
             <span className="text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
               {studentName}
@@ -363,19 +366,6 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="border-t border-slate-100 pt-3 space-y-1">
             <button
               onClick={() => {
-                onChangeTab('kg');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
-                activeTab === 'kg' ? 'bg-sky-50 text-sky-800' : 'text-slate-700'
-              }`}
-            >
-              <span>🌱</span>
-              <span>روضة لغتي (KG1 و KG2)</span>
-            </button>
-
-            <button
-              onClick={() => {
                 onChangeTab('units');
                 setMobileMenuOpen(false);
               }}
@@ -384,7 +374,20 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <BookOpen className="w-4 h-4 text-emerald-600" />
-              <span>الوحدات والدروس ({currentGradeData.name})</span>
+              <span>الوحدات والدروس</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('kg');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'kg' ? 'bg-sky-50 text-sky-800' : 'text-slate-700'
+              }`}
+            >
+              <span>🌱</span>
+              <span>روضة لغتي (KG)</span>
             </button>
 
             <button
@@ -397,7 +400,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>معمل الحركات والتأسيس</span>
+              <span>معمل التأسيس</span>
             </button>
 
             <button
@@ -410,7 +413,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>بنك التمارين والاختبارات</span>
+              <span>الاختبارات</span>
             </button>
 
             <button
@@ -423,7 +426,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <BrainCircuit className="w-4 h-4 text-emerald-600" />
-              <span>المُعرب ومعلم لغتي الذكي</span>
+              <span>المُعرب الذكي</span>
             </button>
 
             <button
@@ -436,31 +439,21 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Printer className="w-4 h-4 text-emerald-600" />
-              <span>أوراق العمل والطباعة</span>
+              <span>أوراق العمل</span>
             </button>
-
-            <a
-              href="https://wa.me/33773659697?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D8%B1%D9%88%D8%B3%20%D9%88%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA%20%D9%85%D9%86%D9%87%D8%A7%D8%AC%20%D9%84%D8%BA%D8%AA%D9%8A"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold bg-emerald-50 text-emerald-900 border border-emerald-300"
-            >
-              <div className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-emerald-700" />
-                <span>واتساب الدروس والمعلومات</span>
-              </div>
-              <span dir="ltr" className="text-xs font-mono font-bold text-emerald-800">+33773659697</span>
-            </a>
 
             <button
               onClick={() => {
-                onOpenCertificate();
+                onChangeTab('achievements');
                 setMobileMenuOpen(false);
               }}
-              className="w-full flex items-center justify-center gap-2 p-3 mt-2 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl text-sm font-bold shadow-sm"
+              className="w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold bg-amber-50 text-amber-900 border border-amber-300"
             >
-              <Award className="w-5 h-5 text-amber-300" />
-              <span>إصدار شهادة تفوق في لغتي</span>
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
+                <span>رصيد النجوم والشهادات</span>
+              </div>
+              <span className="font-extrabold">{stars} ★</span>
             </button>
           </div>
         </div>
