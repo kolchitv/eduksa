@@ -14,17 +14,22 @@ import {
   Star,
   CheckCircle2, 
   ChevronDown,
-  MessageCircle
+  MessageCircle,
+  Palette,
+  Edit3,
+  Send,
+  ExternalLink
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
+import { WhatsAppContact } from './WhatsAppContact';
 
 interface HeaderProps {
   currentGrade: GradeId;
   onSelectGrade: (grade: GradeId) => void;
-  activeTab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements';
-  onChangeTab: (tab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements') => void;
+  activeTab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary';
+  onChangeTab: (tab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary') => void;
   stars: number;
   studentName: string;
   onOpenCertificate: () => void;
@@ -82,7 +87,21 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
         </div>
-        <div className="flex items-center gap-3 text-emerald-100 text-[11px] sm:text-xs">
+        <div className="flex items-center gap-2.5 text-emerald-100 text-[11px] sm:text-xs">
+          {/* Telegram link in top strip */}
+          <a
+            id="top-strip-telegram-link"
+            href="https://t.me/arabialearning"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/30 hover:bg-sky-500 text-white font-bold border border-sky-300/30 transition-all text-[11px]"
+            title="انضم إلى قناة العربية بسهولة على تيليجرام"
+          >
+            <Send className="w-3 h-3 text-sky-200" />
+            <span>انضم إلى العربية بسهولة</span>
+            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+          </a>
+          <span className="hidden sm:inline opacity-50">|</span>
           <span className="hidden sm:inline">المملكة العربية السعودية 🇸🇦</span>
         </div>
       </div>
@@ -164,7 +183,10 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Right Action Icons & Student Stats */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Small Non-Floating WhatsApp Button inside navbar */}
+            <WhatsAppContact phoneNumber="33773659697" displayNumber="+33 7 73 65 96 97" variant="compact" />
+
             {/* Search Trigger */}
             <button
               id="search-toggle-btn"
@@ -193,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button 
               id="student-stars-badge"
               onClick={() => onChangeTab('achievements')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-300 rounded-xl cursor-pointer transition-all shadow-2xs active:scale-95 select-none"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-300 rounded-xl cursor-pointer transition-all shadow-2xs active:scale-95 select-none"
               title="لوحة الإنجازات والشهادات - انقر للاطلاع"
             >
               <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
@@ -252,6 +274,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>معمل التأسيس</span>
+            </button>
+
+            <button
+              id="nav-tab-dictionary"
+              onClick={() => onChangeTab('dictionary')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'dictionary'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
+              }`}
+            >
+              <Palette className="w-3.5 h-3.5 text-amber-300" />
+              <span>القاموس المصوّر والإملاء</span>
             </button>
 
             <button
@@ -405,6 +440,19 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => {
+                onChangeTab('dictionary');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'dictionary' ? 'bg-emerald-50 text-emerald-800' : 'text-slate-700'
+              }`}
+            >
+              <Palette className="w-4 h-4 text-emerald-600" />
+              <span>القاموس المصوّر والإملاء</span>
+            </button>
+
+            <button
+              onClick={() => {
                 onChangeTab('quiz');
                 setMobileMenuOpen(false);
               }}
@@ -455,6 +503,29 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <span className="font-extrabold">{stars} ★</span>
             </button>
+
+            {/* Mobile Channel & WhatsApp buttons */}
+            <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+              <a
+                href="https://t.me/arabialearning"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <Send className="w-3.5 h-3.5 text-sky-600" />
+                <span>العربية بسهولة</span>
+              </a>
+
+              <a
+                href="https://wa.me/33773659697"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <span>واتساب الدروس</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
