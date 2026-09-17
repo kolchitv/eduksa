@@ -87,18 +87,31 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
         </div>
-        <div className="flex items-center gap-2.5 text-emerald-100 text-[11px] sm:text-xs">
+        <div className="flex items-center gap-2 text-emerald-100 text-[11px] sm:text-xs">
+          {/* TikTok Live link in top strip */}
+          <a
+            id="top-strip-tiktok-live-link"
+            href="https://www.tiktok.com/@arabiaeasy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/30 hover:bg-rose-600 text-white font-bold border border-rose-300/40 transition-all text-[11px]"
+            title="بث مباشر تيك توك: @arabiaeasy"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
+            <span>بث مباشر تيك توك: arabiaeasy</span>
+          </a>
+
           {/* Telegram link in top strip */}
           <a
             id="top-strip-telegram-link"
             href="https://t.me/arabialearning"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/30 hover:bg-sky-500 text-white font-bold border border-sky-300/30 transition-all text-[11px]"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/30 hover:bg-sky-500 text-white font-bold border border-sky-300/30 transition-all text-[11px]"
             title="انضم إلى قناة العربية بسهولة على تيليجرام"
           >
             <Send className="w-3 h-3 text-sky-200" />
-            <span>انضم إلى العربية بسهولة</span>
+            <span>العربية بسهولة</span>
             <ExternalLink className="w-2.5 h-2.5 opacity-70" />
           </a>
           <span className="hidden sm:inline opacity-50">|</span>
@@ -504,27 +517,42 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-extrabold">{stars} ★</span>
             </button>
 
-            {/* Mobile Channel & WhatsApp buttons */}
-            <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+            {/* Mobile Channel, TikTok Live & WhatsApp buttons */}
+            <div className="pt-2 border-t border-slate-100 space-y-2">
               <a
-                href="https://t.me/arabialearning"
+                href="https://www.tiktok.com/@arabiaeasy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-bold flex items-center justify-center gap-1.5"
+                className="w-full p-2.5 rounded-xl bg-gradient-to-r from-slate-900 to-rose-950 text-white border border-rose-500/40 text-xs font-bold flex items-center justify-between"
               >
-                <Send className="w-3.5 h-3.5 text-sky-600" />
-                <span>العربية بسهولة</span>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span>بث مباشر تيك توك: arabiaeasy</span>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 opacity-70" />
               </a>
 
-              <a
-                href="https://wa.me/33773659697"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                <span>واتساب الدروس</span>
-              </a>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href="https://t.me/arabialearning"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-bold flex items-center justify-center gap-1.5"
+                >
+                  <Send className="w-3.5 h-3.5 text-sky-600" />
+                  <span>العربية بسهولة</span>
+                </a>
+
+                <a
+                  href="https://wa.me/33773659697"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>واتساب الدروس</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

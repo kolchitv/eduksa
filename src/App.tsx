@@ -208,33 +208,69 @@ export default function App() {
       <footer className="no-print bg-slate-900 text-slate-300 border-t border-slate-800 pt-12 pb-8 px-4 sm:px-6 lg:px-8 mt-auto">
         <div className="max-w-7xl mx-auto">
           {/* Social Channels & Contact Banner in Footer */}
-          <div className="mb-10 p-6 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-sky-950 border border-emerald-500/20 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
-            <div className="flex items-center gap-4 text-right">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-sky-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-900/30">
-                <Send className="w-7 h-7" />
+          <div className="mb-10 p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 border border-emerald-500/25 flex flex-col xl:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+            {/* Ambient background glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
+
+            <div className="flex items-center gap-4 text-right relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xl shadow-emerald-950/40">
+                <Sparkles className="w-7 h-7 text-amber-300" />
               </div>
               <div>
-                <h3 className="text-white font-bold text-base sm:text-lg font-alexandria flex items-center gap-2">
-                  <span>انضم لمجتمعنا التعليمي وتواصل مع المشرفين</span>
-                  <span className="text-xs bg-amber-400 text-slate-950 font-extrabold px-2.5 py-0.5 rounded-full">تحديثات يومية</span>
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                  تابع قناة «العربية بسهولة» على تيليجرام وتواصل معنا عبر الواتساب للاستفسارات والدروس:
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <h3 className="text-white font-extrabold text-base sm:text-lg font-alexandria">
+                    تابع قنواتنا التعليمية والبث المباشر
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[11px] bg-rose-500 text-white font-bold px-2.5 py-0.5 rounded-full shadow-xs animate-pulse">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    بث مباشر تيك توك
+                  </span>
+                  <span className="text-[11px] bg-amber-400 text-slate-950 font-extrabold px-2.5 py-0.5 rounded-full">
+                    تحديثات يومية
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300">
+                  تابع البث المباشر لشرح الدروس على <strong className="text-rose-300">تيك توك (arabiaeasy)</strong>، وقناة <strong className="text-sky-300">تيليجرام (العربية بسهولة)</strong>، وتواصل معنا عبر <strong className="text-emerald-300">الواتساب</strong>:
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto relative z-10">
+              {/* TikTok Live Channel Button */}
+              <a
+                id="footer-tiktok-live-btn"
+                href="https://www.tiktok.com/@arabiaeasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 hover:from-rose-900 hover:to-slate-800 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg border border-rose-500/40 flex items-center justify-center gap-2.5 transition-all group"
+                title="قناتنا على تيك توك للبث المباشر: arabiaeasy"
+              >
+                {/* TikTok Icon */}
+                <div className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0">
+                  <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.88 2.89 2.89 0 0 1-2.88-2.88 2.89 2.89 0 0 1 2.88-2.88c.4 0 .78.08 1.12.22V9.45a6.35 6.35 0 0 0-1.12-.1 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.75a8.28 8.28 0 0 0 4.76 1.48V6.69z"/>
+                  </svg>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1.5">
+                    <span>بث مباشر تيك توك</span>
+                    <span className="text-[10px] text-rose-300 font-mono font-normal">@arabiaeasy</span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+
               {/* Telegram Channel Join Button */}
               <a
                 id="footer-telegram-join-btn"
                 href="https://t.me/arabialearning"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-sky-900/30 flex items-center justify-center gap-2.5 transition-all border border-sky-400/30 group"
+                className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-sky-950/40 flex items-center justify-center gap-2 transition-all border border-sky-400/30 group"
               >
                 <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                <span>انضم إلى العربية بسهولة</span>
+                <span>العربية بسهولة</span>
                 <ExternalLink className="w-3.5 h-3.5 opacity-75" />
               </a>
 
@@ -244,7 +280,7 @@ export default function App() {
                 href="https://wa.me/33773659697?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D8%B1%D9%88%D8%B3%20%D9%88%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA%20%D9%85%D9%86%D9%87%D8%A7%D8%AC%20%D9%84%D8%BA%D8%AA%D9%8A"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-none px-5 py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-all border border-emerald-400/30"
+                className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all border border-emerald-400/30"
               >
                 <MessageCircle className="w-4 h-4 text-white" />
                 <span>واتساب: <span dir="ltr" className="font-mono text-amber-300 font-bold">+33 7 73 65 96 97</span></span>
@@ -266,7 +302,19 @@ export default function App() {
               <p className="text-xs text-slate-400 leading-relaxed max-w-md">
                 منصة رقمية تفاعلية شاملة لتعليم مقرر لغتي الجميلة حسب المنهاج السعودي المعتمد من مرحلة التأسيس القرائي حتى الصف السادس الابتدائي، مدعومة بالمختبر الصوتي، المعرب الفوري، وبنك التمارين التفاعلية.
               </p>
-              <div className="pt-2">
+              
+              {/* Direct channels links list */}
+              <div className="pt-2 space-y-2">
+                <a
+                  href="https://www.tiktok.com/@arabiaeasy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-2 transition-colors"
+                >
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span>بث مباشر تيك توك: <strong className="font-mono text-white underline underline-offset-4">@arabiaeasy</strong></span>
+                </a>
+
                 <p className="text-xs font-semibold text-emerald-400 flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5" />
                   <span>واتساب الاستفسارات والدروس: <span dir="ltr" className="font-mono font-bold text-white">+33773659697</span></span>

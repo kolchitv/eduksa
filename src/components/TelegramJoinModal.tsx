@@ -142,6 +142,24 @@ export const TelegramJoinModal: React.FC<TelegramJoinModalProps> = ({
             >
               تصفح الموقع أولاً (سأشترك لاحقاً)
             </button>
+
+            {/* TikTok Live Link option */}
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span className="flex items-center gap-1.5 text-[11px]">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                قناتنا للبث المباشر:
+              </span>
+              <a
+                href="https://www.tiktok.com/@arabiaeasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleClose}
+                className="font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 hover:underline text-[11px]"
+              >
+                <span>تيك توك @arabiaeasy</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
