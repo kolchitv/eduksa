@@ -10,6 +10,7 @@ import { QuizHub } from './components/QuizHub';
 import { AiTutor } from './components/AiTutor';
 import { WorksheetGenerator } from './components/WorksheetGenerator';
 import { VisualDictionary } from './components/VisualDictionary';
+import { TextbooksLibrary } from './components/TextbooksLibrary';
 import { CertificateModal } from './components/CertificateModal';
 import { StudentAchievements } from './components/StudentAchievements';
 import { WhatsAppContact } from './components/WhatsAppContact';
@@ -32,7 +33,7 @@ import {
 
 export default function App() {
   const [currentGrade, setCurrentGrade] = useState<GradeId>('kg1');
-  const [activeTab, setActiveTab] = useState<'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary'>('kg');
+  const [activeTab, setActiveTab] = useState<'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary'>('kg');
   const [studentName, setStudentName] = useState<string>('فهد المنصور');
   const [stars, setStars] = useState<number>(35);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>(['quiz_found_1']);
@@ -145,6 +146,16 @@ export default function App() {
             curriculum={currentCurriculum}
             onOpenQuizForLesson={() => setActiveTab('quiz')}
             onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
+          />
+        )}
+
+        {activeTab === 'books' && (
+          <TextbooksLibrary
+            onSelectGradeAndUnit={(grade, _unitNumber) => {
+              setCurrentGrade(grade);
+              setActiveTab('units');
+            }}
+            onNavigateToUnits={() => setActiveTab('units')}
           />
         )}
 

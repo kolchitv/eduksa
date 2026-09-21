@@ -65,7 +65,7 @@ export interface Unit {
   iconName: string;
   color: string;
   lessons: Lesson[];
-  phenomena: GrammarPhenomenon[];
+  phenomena?: GrammarPhenomenon[];
 }
 
 export interface GradeCurriculum {

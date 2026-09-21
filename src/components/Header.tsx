@@ -15,6 +15,7 @@ import {
   CheckCircle2, 
   ChevronDown,
   MessageCircle,
+  BookMarked,
   Palette,
   Edit3,
   Send,
@@ -28,8 +29,8 @@ import { WhatsAppContact } from './WhatsAppContact';
 interface HeaderProps {
   currentGrade: GradeId;
   onSelectGrade: (grade: GradeId) => void;
-  activeTab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary';
-  onChangeTab: (tab: 'units' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary') => void;
+  activeTab: 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary';
+  onChangeTab: (tab: 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary') => void;
   stars: number;
   studentName: string;
   onOpenCertificate: () => void;
@@ -264,6 +265,19 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-books"
+              onClick={() => onChangeTab('books')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'books'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
+              }`}
+            >
+              <BookMarked className="w-3.5 h-3.5 text-emerald-400" />
+              <span>كُتُب لُغَتِي المدرسية</span>
+            </button>
+
+            <button
               id="nav-tab-kg"
               onClick={() => onChangeTab('kg')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -423,6 +437,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-4 h-4 text-emerald-600" />
               <span>الوحدات والدروس</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('books');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'books' ? 'bg-emerald-50 text-emerald-800' : 'text-slate-700'
+              }`}
+            >
+              <BookMarked className="w-4 h-4 text-emerald-600" />
+              <span>كُتُب لُغَتِي المدرسية</span>
             </button>
 
             <button
