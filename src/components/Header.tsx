@@ -38,6 +38,7 @@ interface HeaderProps {
   studentName: string;
   onOpenCertificate: () => void;
   onSearchQuery?: (q: string) => void;
+  onOpenInstallModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,7 +49,8 @@ export const Header: React.FC<HeaderProps> = ({
   stars,
   studentName,
   onOpenCertificate,
-  onSearchQuery
+  onSearchQuery,
+  onOpenInstallModal
 }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,6 +94,20 @@ export const Header: React.FC<HeaderProps> = ({
           <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
         </div>
         <div className="flex items-center gap-2 text-emerald-100 text-[11px] sm:text-xs">
+          {/* Direct Google Drive Grade 1 Support Link in Top Strip */}
+          <a
+            id="top-strip-grade1-support-drive-link"
+            href="https://drive.google.com/drive/folders/1Ux9UU0BD8aFFzaNzw66i4_tzAm2zm6jY"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black border border-amber-200 transition-all text-[11px] shadow-xs"
+            title="فتح مجلد خطط دعم الصف الأول على Google Drive"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-slate-950" />
+            <span>📁 خطط دعم الصف الأول (Google Drive)</span>
+            <ExternalLink className="w-2.5 h-2.5" />
+          </a>
+
           {/* TikTok Live link in top strip */}
           <a
             id="top-strip-tiktok-live-link"
@@ -108,14 +124,14 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Telegram link in top strip */}
           <a
             id="top-strip-telegram-link"
-            href="https://t.me/arabialearning"
+            href="https://t.me/arabiaeasy"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/30 hover:bg-sky-500 text-white font-bold border border-sky-300/30 transition-all text-[11px]"
-            title="انضم إلى قناة العربية بسهولة على تيليجرام"
+            title="انضم إلى قناة تلغرام @arabiaeasy"
           >
             <Send className="w-3 h-3 text-sky-200" />
-            <span>العربية بسهولة</span>
+            <span>تلغرام: @arabiaeasy</span>
             <ExternalLink className="w-2.5 h-2.5 opacity-70" />
           </a>
           <span className="hidden sm:inline opacity-50">|</span>
@@ -227,6 +243,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
+
+            {/* Install App & Telegram Popup Trigger Button */}
+            {onOpenInstallModal && (
+              <button
+                id="header-install-app-btn"
+                onClick={onOpenInstallModal}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-pink-500 hover:opacity-95 text-white rounded-xl text-xs font-black shadow-xs transition-all active:scale-95 animate-pulse"
+                title="تثبيت التطبيق على جهازك أو الانضمام لقناة تلغرام"
+              >
+                <span>📲</span>
+                <span>تثبيت التطبيق</span>
+              </button>
+            )}
 
             {/* Student Stars & Badge */}
             <button 
@@ -348,14 +377,15 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-tab-support-plans"
               onClick={() => onChangeTab('support_plans')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'support_plans'
-                  ? 'bg-rose-700 text-white shadow-2xs'
-                  : 'text-rose-700 hover:text-rose-900 bg-rose-50/70 hover:bg-rose-100/80 border border-rose-200/60'
+                  ? 'bg-rose-600 text-white shadow-md ring-2 ring-rose-300'
+                  : 'text-rose-800 hover:text-white hover:bg-rose-600 bg-rose-100/90 border border-rose-300/80 shadow-2xs'
               }`}
             >
-              <FolderOpen className="w-3.5 h-3.5 text-rose-500" />
-              <span>خطط الدعم (الصف الأول)</span>
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <FolderOpen className="w-3.5 h-3.5" />
+              <span>خطط الدعم (الصف الأول) 📁</span>
             </button>
 
             <button
@@ -573,6 +603,24 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-extrabold">{stars} ★</span>
             </button>
 
+            {/* Mobile Install App Button */}
+            {onOpenInstallModal && (
+              <button
+                id="mobile-install-app-btn"
+                onClick={() => {
+                  onOpenInstallModal();
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full p-3 rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-pink-500 text-white font-black text-xs flex items-center justify-between shadow-md active:scale-95 transition-transform"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">📲</span>
+                  <span>تثبيت التطبيق على الهاتف / الحاسوب</span>
+                </div>
+                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">مجاني</span>
+              </button>
+            )}
+
             {/* Mobile Channel, TikTok Live & WhatsApp buttons */}
             <div className="pt-2 border-t border-slate-100 space-y-2">
               <a
@@ -590,13 +638,13 @@ export const Header: React.FC<HeaderProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href="https://t.me/arabialearning"
+                  href="https://t.me/arabiaeasy"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-bold flex items-center justify-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5 text-sky-600" />
-                  <span>العربية بسهولة</span>
+                  <span>تلغرام @arabiaeasy</span>
                 </a>
 
                 <a

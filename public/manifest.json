@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "منصة لغتي التعليمية",
+  "short_name": "لغتي الجميلة",
+  "description": "منصة تفاعلية شاملة لتعليم مقرر لغتي الجميلة وتأسيس القراءة والإملاء وفق المنهاج السعودي.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#065f46",
+  "icons": [
+    {
+      "src": "/moe-logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

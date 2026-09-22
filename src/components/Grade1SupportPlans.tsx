@@ -28,6 +28,7 @@ import {
   SupportFileItem
 } from '../data/grade1SupportPlansData';
 import { audioManager } from '../utils/audio';
+import { MinistryOfEducationLogo } from './MinistryOfEducationLogo';
 
 interface Grade1SupportPlansProps {
   onBackToUnits?: () => void;
@@ -578,18 +579,21 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
       {selectedFileForPreview && selectedFileForPreview.sampleExercise && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
-            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <span className="text-[11px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full">
-                  نموذج ورقة تدريبية
-                </span>
-                <h3 className="text-lg font-black text-slate-900 font-alexandria mt-1">
-                  {selectedFileForPreview.title}
-                </h3>
+            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <MinistryOfEducationLogo size="sm" />
+                <div>
+                  <span className="text-[11px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full">
+                    نموذج وثيقة تدريبية
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 font-alexandria mt-1">
+                    {selectedFileForPreview.title}
+                  </h3>
+                </div>
               </div>
               <button
                 onClick={() => setSelectedFileForPreview(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold shrink-0"
               >
                 ✕
               </button>

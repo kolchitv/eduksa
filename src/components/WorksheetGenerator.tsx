@@ -13,6 +13,7 @@ import {
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { GRADE1_SUPPORT_DRIVE_URL } from '../data/grade1SupportPlansData';
+import { MinistryOfEducationLogo } from './MinistryOfEducationLogo';
 
 interface WorksheetGeneratorProps {
   currentGrade: GradeId;
@@ -110,23 +111,22 @@ export const WorksheetGenerator: React.FC<WorksheetGeneratorProps> = ({
       {/* Printable Sheet Canvas */}
       <div className="printable-area bg-white p-8 sm:p-12 rounded-3xl border-2 border-slate-300 shadow-lg text-slate-900 font-sans">
         {/* Ministry Standard Header */}
-        <div className="border-b-2 border-slate-800 pb-4 mb-6 flex items-start justify-between">
-          <div className="text-xs space-y-1">
-            <p className="font-bold">المملكة العربية السعودية</p>
-            <p>وزارة التعليم</p>
-            <p>مقرر: لغتي الجميلة - {currentGradeData.name}</p>
+        <div className="border-b-2 border-slate-800 pb-4 mb-6 flex items-center justify-between gap-4">
+          <div className="flex flex-col items-start text-right">
+            <MinistryOfEducationLogo size="sm" />
+            <p className="text-[11px] text-slate-600 font-bold mt-1">مقرر: لغتي الجميلة - {currentGradeData.name}</p>
           </div>
 
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full border-2 border-emerald-800 text-emerald-800 flex items-center justify-center font-bold text-xs mx-auto mb-1">
-              وزارة التعليم
-            </div>
-            <h3 className="text-base font-extrabold font-alexandria">
+          <div className="text-center flex-1">
+            <h3 className="text-lg sm:text-xl font-extrabold font-alexandria text-slate-950">
               ورقة عمل وتدريب مهارات
             </h3>
+            <p className="text-xs text-slate-600 font-medium">
+              المنهاج السعودي المعتمد • {currentGradeData.name}
+            </p>
           </div>
 
-          <div className="text-xs space-y-1 text-left">
+          <div className="text-xs space-y-1 text-left shrink-0 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
             <p><span className="font-bold">اسم الطالب/ـة:</span> {studentName || '................................'}</p>
             <p><span className="font-bold">الصف:</span> {currentGradeData.name}</p>
             <p><span className="font-bold">الدرجة:</span> ........ / ١٠</p>

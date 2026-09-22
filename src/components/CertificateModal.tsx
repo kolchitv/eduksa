@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
+import { MinistryOfEducationLogo } from './MinistryOfEducationLogo';
 
 interface CertificateModalProps {
   isOpen: boolean;
@@ -68,7 +69,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
               className="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs rounded-xl hover:opacity-90 transition-all flex items-center gap-1.5"
             >
               <Printer className="w-4 h-4" />
-              <span>طباعة الشهادة</span>
+              <span>طباعة الشهادة الرسمية</span>
             </button>
 
             <button
@@ -89,17 +90,20 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
             <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-amber-600"></div>
             <div className="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-amber-600"></div>
 
-            {/* Top National Identity Header */}
-            <div className="flex items-center justify-between border-b-2 border-emerald-800/30 pb-6 mb-8 text-center sm:text-right">
-              <div className="space-y-0.5 text-xs text-slate-700">
-                <p className="font-bold text-slate-900">المملكة العربية السعودية</p>
-                <p>وزارة التعليم</p>
-                <p>منصة لغتي التعليمية المعتمدة</p>
+            {/* Top Official Ministry Header with Official Logo */}
+            <div className="flex items-center justify-between border-b-2 border-emerald-800/30 pb-6 mb-8 gap-4">
+              {/* Ministry Official Logo on right */}
+              <div className="flex flex-col items-start text-right">
+                <MinistryOfEducationLogo size="md" />
+                <div className="mt-1 text-[11px] text-slate-600 font-semibold">
+                  <span>منهاج مقرر لغتي الجميلة المعتمد</span>
+                </div>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-800 to-teal-700 text-amber-300 flex items-center justify-center mx-auto mb-2 shadow-md">
-                  <Award className="w-9 h-9" />
+              {/* Certificate Title in Center */}
+              <div className="text-center flex-1">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-800 to-teal-700 text-amber-300 flex items-center justify-center mx-auto mb-2 shadow-md">
+                  <Award className="w-8 h-8" />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-emerald-950 font-alexandria tracking-tight">
                   شَهَادَةُ شُكْرٍ وَتَقْدِيرٍ
@@ -109,9 +113,12 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
                 </p>
               </div>
 
-              <div className="space-y-0.5 text-xs text-slate-700 text-left">
-                <p className="font-bold">التاريخ: {todayDate}</p>
-                <p>الصف: {currentGradeData.name}</p>
+              {/* Kingdom Identity & Details on Left */}
+              <div className="space-y-1 text-xs text-slate-700 text-left shrink-0">
+                <p className="font-extrabold text-slate-900 text-sm">المملكة العربية السعودية</p>
+                <p className="text-slate-600">وزارة التعليم</p>
+                <p className="font-bold text-slate-800">التاريخ: {todayDate}</p>
+                <p className="text-slate-700">الصف: {currentGradeData.name}</p>
                 <p className="text-emerald-700 font-bold">النقاط: {stars} نجمة ★</p>
               </div>
             </div>

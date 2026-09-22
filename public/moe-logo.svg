@@ -1,0 +1,93 @@
+<svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Emblem Dots (Book / Palm Form) -->
+  <g id="moe-emblem">
+    <!-- Center Point -->
+    <circle cx="160" cy="100" r="4" fill="#007D79" />
+
+    <!-- Left Wing Inner Dots -->
+    <circle cx="148" cy="88" r="4.5" fill="#008080" />
+    <circle cx="137" cy="76" r="5" fill="#008381" />
+    <circle cx="128" cy="65" r="5.5" fill="#008785" />
+    <circle cx="120" cy="54" r="6" fill="#008C89" />
+    <circle cx="114" cy="42" r="6.5" fill="#00908C" />
+
+    <!-- Left Wing Middle Dots -->
+    <circle cx="150" cy="72" r="4" fill="#008885" />
+    <circle cx="139" cy="59" r="4.8" fill="#008F8B" />
+    <circle cx="130" cy="46" r="5.5" fill="#009591" />
+    <circle cx="122" cy="33" r="6.2" fill="#009C97" />
+    <circle cx="116" cy="20" r="6.8" fill="#00A39E" />
+
+    <!-- Left Wing Outer High Dots -->
+    <circle cx="102" cy="32" r="7.5" fill="#007C78" />
+    <circle cx="96" cy="48" r="7.5" fill="#008480" />
+    <circle cx="90" cy="64" r="7.5" fill="#008C88" />
+
+    <circle cx="86" cy="22" r="8.2" fill="#008480" />
+    <circle cx="80" cy="38" r="8.2" fill="#008C88" />
+    <circle cx="74" cy="55" r="8.2" fill="#009590" />
+
+    <circle cx="70" cy="12" r="9" fill="#008C87" />
+    <circle cx="64" cy="30" r="9" fill="#009590" />
+    <circle cx="58" cy="47" r="9" fill="#009E98" />
+
+    <!-- Right Wing Inner Dots -->
+    <circle cx="172" cy="88" r="4.5" fill="#008080" />
+    <circle cx="183" cy="76" r="5" fill="#008381" />
+    <circle cx="192" cy="65" r="5.5" fill="#008785" />
+    <circle cx="200" cy="54" r="6" fill="#008C89" />
+    <circle cx="206" cy="42" r="6.5" fill="#00908C" />
+
+    <!-- Right Wing Middle Dots -->
+    <circle cx="170" cy="72" r="4" fill="#008885" />
+    <circle cx="181" cy="59" r="4.8" fill="#008F8B" />
+    <circle cx="190" cy="46" r="5.5" fill="#009591" />
+    <circle cx="198" cy="33" r="6.2" fill="#009C97" />
+    <circle cx="204" cy="20" r="6.8" fill="#00A39E" />
+
+    <!-- Right Wing Outer High Dots -->
+    <circle cx="218" cy="32" r="7.5" fill="#007C78" />
+    <circle cx="224" cy="48" r="7.5" fill="#008480" />
+    <circle cx="230" cy="64" r="7.5" fill="#008C88" />
+
+    <circle cx="234" cy="22" r="8.2" fill="#008480" />
+    <circle cx="240" cy="38" r="8.2" fill="#008C88" />
+    <circle cx="246" cy="55" r="8.2" fill="#009590" />
+
+    <circle cx="250" cy="12" r="9" fill="#008C87" />
+    <circle cx="256" cy="30" r="9" fill="#009590" />
+    <circle cx="262" cy="47" r="9" fill="#009E98" />
+  </g>
+
+  <!-- Official Arabic Typography: وزارة التعليم -->
+  <g id="moe-arabic-text">
+    <text
+      x="160"
+      y="158"
+      text-anchor="middle"
+      font-family="'Alexandria', 'Tajawal', 'Segoe UI', 'Arial', sans-serif"
+      font-weight="900"
+      font-size="34"
+      letter-spacing="1px"
+      fill="#006C67"
+    >
+      وزارة الـتـعـلـيـم
+    </text>
+  </g>
+
+  <!-- English Subtitle: Ministry of Education -->
+  <g id="moe-english-text">
+    <text
+      x="160"
+      y="190"
+      text-anchor="middle"
+      font-family="'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif"
+      font-weight="500"
+      font-size="16.5"
+      letter-spacing="0.8px"
+      fill="#636E72"
+    >
+      Ministry of Education
+    </text>
+  </g>
+</svg>
