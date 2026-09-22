@@ -19,18 +19,21 @@ import {
   Palette,
   Edit3,
   Send,
-  ExternalLink
+  ExternalLink,
+  FolderOpen
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 
+export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans';
+
 interface HeaderProps {
   currentGrade: GradeId;
   onSelectGrade: (grade: GradeId) => void;
-  activeTab: 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary';
-  onChangeTab: (tab: 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary') => void;
+  activeTab: TabType;
+  onChangeTab: (tab: TabType) => void;
   stars: number;
   studentName: string;
   onOpenCertificate: () => void;
@@ -343,6 +346,19 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-support-plans"
+              onClick={() => onChangeTab('support_plans')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'support_plans'
+                  ? 'bg-rose-700 text-white shadow-2xs'
+                  : 'text-rose-700 hover:text-rose-900 bg-rose-50/70 hover:bg-rose-100/80 border border-rose-200/60'
+              }`}
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-rose-500" />
+              <span>خطط الدعم (الصف الأول)</span>
+            </button>
+
+            <button
               id="nav-tab-worksheets"
               onClick={() => onChangeTab('worksheets')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -515,6 +531,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-4 h-4 text-emerald-600" />
               <span>المُعرب الذكي</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('support_plans');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'support_plans' ? 'bg-rose-50 text-rose-900 border border-rose-200' : 'text-slate-700'
+              }`}
+            >
+              <FolderOpen className="w-4 h-4 text-rose-600" />
+              <span>خطط الدعم والملفات (الصف الأول)</span>
             </button>
 
             <button

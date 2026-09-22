@@ -92,9 +92,13 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
                       <BookOpen className="w-3.5 h-3.5" />
                     )}
                   </div>
-                  {isSelected && (
+                  {grade.id === 'grade1' ? (
+                    <span className="text-[9px] font-extrabold bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded-md border border-rose-200">
+                      دعم 📁
+                    </span>
+                  ) : isSelected ? (
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Grade Info */}

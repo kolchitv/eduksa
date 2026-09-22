@@ -6,10 +6,13 @@ import {
   Sparkles, 
   CheckCircle2, 
   BookOpen, 
-  PenTool
+  PenTool,
+  FolderOpen,
+  ExternalLink
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
+import { GRADE1_SUPPORT_DRIVE_URL } from '../data/grade1SupportPlansData';
 
 interface WorksheetGeneratorProps {
   currentGrade: GradeId;
@@ -28,9 +31,46 @@ export const WorksheetGenerator: React.FC<WorksheetGeneratorProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Special Google Drive Grade 1 Support Plans Banner */}
+      <div className="no-print bg-gradient-to-r from-rose-900 via-slate-900 to-emerald-950 text-white rounded-3xl p-5 border border-rose-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0">
+            <FolderOpen className="w-6 h-6 text-amber-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-extrabold">
+                ملفات الدعم الرسمية
+              </span>
+              <span className="text-xs text-rose-300 font-bold">
+                الصف الأول الابتدائي
+              </span>
+            </div>
+            <h3 className="text-sm sm:text-base font-extrabold font-alexandria text-white">
+              مجلد خطط الدعم والمذكرات العلاجية الشاملة على Google Drive
+            </h3>
+            <p className="text-xs text-slate-300">
+              يتضمن كراسات علاج الضعف، مذكرات الحروف، تدريبات السكون، وبطاقات التهجي الجاهزة للطباعة.
+            </p>
+          </div>
+        </div>
+
+        <a
+          id="worksheet-open-drive-btn"
+          href={GRADE1_SUPPORT_DRIVE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-md"
+        >
+          <FolderOpen className="w-4 h-4" />
+          <span>فتح مجلد Google Drive</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+      </div>
+
       {/* Action Header */}
-      <div className="no-print bg-white rounded-3xl p-6 border border-slate-200 shadow-sm mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="no-print bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-1">
             <Printer className="w-3.5 h-3.5" />

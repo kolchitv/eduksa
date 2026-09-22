@@ -15,6 +15,8 @@ import { CertificateModal } from './components/CertificateModal';
 import { StudentAchievements } from './components/StudentAchievements';
 import { WhatsAppContact } from './components/WhatsAppContact';
 import { TelegramJoinModal } from './components/TelegramJoinModal';
+import { Grade1SupportPlans } from './components/Grade1SupportPlans';
+import { TabType } from './components/Header';
 import { 
   BookOpen, 
   Sparkles, 
@@ -28,12 +30,13 @@ import {
   MessageCircle,
   Phone,
   Send,
-  ExternalLink
+  ExternalLink,
+  FolderOpen
 } from 'lucide-react';
 
 export default function App() {
   const [currentGrade, setCurrentGrade] = useState<GradeId>('kg1');
-  const [activeTab, setActiveTab] = useState<'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary'>('kg');
+  const [activeTab, setActiveTab] = useState<TabType>('kg');
   const [studentName, setStudentName] = useState<string>('فهد المنصور');
   const [stars, setStars] = useState<number>(35);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>(['quiz_found_1']);
@@ -84,8 +87,10 @@ export default function App() {
 
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
-    // Automatically route to units tab or foundation if relevant
-    if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
+    // Automatically route to units tab, support plans, or foundation if relevant
+    if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
+      setActiveTab('support_plans');
+    } else if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
       setActiveTab('dictionary');
     } else if (query.includes('حرف') || query.includes('شمسية') || query.includes('قمرية') || query.includes('تأسيس')) {
       setActiveTab('foundation');
@@ -146,6 +151,7 @@ export default function App() {
             curriculum={currentCurriculum}
             onOpenQuizForLesson={() => setActiveTab('quiz')}
             onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
+            onOpenSupportPlans={() => setActiveTab('support_plans')}
           />
         )}
 
@@ -178,6 +184,16 @@ export default function App() {
         )}
 
         {activeTab === 'ai' && <AiTutor currentGrade={currentGrade} />}
+
+        {activeTab === 'support_plans' && (
+          <Grade1SupportPlans
+            onBackToUnits={() => {
+              setCurrentGrade('grade1');
+              setActiveTab('units');
+            }}
+            onOpenWorksheet={() => setActiveTab('worksheets')}
+          />
+        )}
 
         {activeTab === 'worksheets' && (
           <WorksheetGenerator
