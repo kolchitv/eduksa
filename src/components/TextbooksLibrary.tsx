@@ -28,18 +28,23 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
 }) => {
   const [selectedBook, setSelectedBook] = useState<Textbook>(TEXTBOOKS_DATA[0]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'g5' | 'g4'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6'>('all');
   const [selectedUnitIndex, setSelectedUnitIndex] = useState<number>(0);
 
   const filteredBooks = TEXTBOOKS_DATA.filter(book => {
     const matchesFilter = 
       activeTab === 'all' ? true :
+      activeTab === 'g1' ? book.id.includes('g1') :
+      activeTab === 'g2' ? book.id.includes('g2') :
+      activeTab === 'g3' ? book.id.includes('g3') :
+      activeTab === 'g4' ? book.id.includes('g4') :
       activeTab === 'g5' ? book.id.includes('g5') :
-      book.id.includes('g4');
+      book.id.includes('g6');
 
     const matchesSearch = 
       searchQuery === '' ||
       book.title.includes(searchQuery) ||
+      book.grade.includes(searchQuery) ||
       book.description.includes(searchQuery) ||
       book.units.some(u => u.title.includes(searchQuery) || u.topics.some(t => t.includes(searchQuery)));
 
@@ -51,7 +56,14 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
   };
 
   const handleJumpToUnit = (book: Textbook, unitNumber: number) => {
-    const grade: GradeId = book.id.includes('g5') ? 'grade5' : 'grade4';
+    let grade: GradeId = 'grade1';
+    if (book.id.includes('g1')) grade = 'grade1';
+    else if (book.id.includes('g2')) grade = 'grade2';
+    else if (book.id.includes('g3')) grade = 'grade3';
+    else if (book.id.includes('g4')) grade = 'grade4';
+    else if (book.id.includes('g5')) grade = 'grade5';
+    else if (book.id.includes('g6')) grade = 'grade6';
+
     if (onSelectGradeAndUnit) {
       onSelectGradeAndUnit(grade, unitNumber);
     } else if (onNavigateToUnits) {
@@ -66,49 +78,93 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-bold">
             <BookMarked className="w-4 h-4 text-emerald-300" />
-            <span>المكتبة الرقمية لكتب لغتي الجميلة المعتمدة ١٤٤٦-١٤٤٨هـ</span>
+            <span>المكتبة الرقمية لكتب لغتي المدرسية الرسمية المعتمدة ١٤٤٦-١٤٤٧هـ</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight font-alexandria text-white">
             قسم كُتُبِ لُغَتِي الْمَدْرَسِيَّةِ التَّفَاعُلِيَّةِ
           </h1>
           <p className="text-slate-200 text-sm sm:text-base leading-relaxed">
-            تصفح الكتب المدرسية الرسمية المقررة من وزارة التعليم بالمملكة العربية السعودية، وتعرّف على الوحدات والدروس التفصيلية وأرقام الصفحات لكل وحدة، مع إمكانية الانتقال المباشر للدروس التفاعلية والاستماع الصوتي.
+            تصفح كتب لغتي المقررة من وزارة التعليم بالمملكة العربية السعودية لصفوف المرحلة الابتدائية (الصفوف الأول، الثاني، الثالث، الرابع، الخامس، والسادس)، وتعرّف على الفهارس الرسمية والوحدات والدروس التفصيلية وأرقام الصفحات لكل وحدة، مع إمكانية الانتقال المباشر للدروس التفاعلية والاستماع الصوتي.
           </p>
           
-          {/* Quick Filter Buttons */}
-          <div className="flex flex-wrap items-center gap-2 pt-2">
+          {/* Quick Filter Buttons for All Grades */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-2">
             <button
               id="tb-filter-all"
               onClick={() => setActiveTab('all')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'all'
-                  ? 'bg-emerald-500 text-white shadow-md'
+                  ? 'bg-emerald-500 text-white shadow-md ring-2 ring-emerald-300'
                   : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
               }`}
             >
               جميع الكتب ({TEXTBOOKS_DATA.length})
             </button>
             <button
-              id="tb-filter-g5"
-              onClick={() => setActiveTab('g5')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                activeTab === 'g5'
-                  ? 'bg-emerald-500 text-white shadow-md'
+              id="tb-filter-g1"
+              onClick={() => setActiveTab('g1')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'g1'
+                  ? 'bg-purple-600 text-white shadow-md ring-2 ring-purple-300'
                   : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
               }`}
             >
-              الصف الخامس الابتدائي (الفصلان الأول والثاني)
+              الصف الأول الابتدائي
+            </button>
+            <button
+              id="tb-filter-g2"
+              onClick={() => setActiveTab('g2')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'g2'
+                  ? 'bg-rose-600 text-white shadow-md ring-2 ring-rose-300'
+                  : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
+              }`}
+            >
+              الصف الثاني الابتدائي
+            </button>
+            <button
+              id="tb-filter-g3"
+              onClick={() => setActiveTab('g3')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'g3'
+                  ? 'bg-amber-600 text-white shadow-md ring-2 ring-amber-300'
+                  : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
+              }`}
+            >
+              الصف الثالث الابتدائي
             </button>
             <button
               id="tb-filter-g4"
               onClick={() => setActiveTab('g4')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'g4'
-                  ? 'bg-emerald-500 text-white shadow-md'
+                  ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-300'
                   : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
               }`}
             >
-              الصف الرابع الابتدائي (الفصلان الأول والثاني)
+              الصف الرابع الابتدائي
+            </button>
+            <button
+              id="tb-filter-g5"
+              onClick={() => setActiveTab('g5')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'g5'
+                  ? 'bg-teal-600 text-white shadow-md ring-2 ring-teal-300'
+                  : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
+              }`}
+            >
+              الصف الخامس الابتدائي
+            </button>
+            <button
+              id="tb-filter-g6"
+              onClick={() => setActiveTab('g6')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'g6'
+                  ? 'bg-amber-700 text-white shadow-md ring-2 ring-amber-400'
+                  : 'bg-white/10 hover:bg-white/20 text-emerald-100 border border-white/10'
+              }`}
+            >
+              الصف السادس الابتدائي
             </button>
           </div>
         </div>
