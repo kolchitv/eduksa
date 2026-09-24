@@ -16,6 +16,7 @@ import { StudentAchievements } from './components/StudentAchievements';
 import { WhatsAppContact } from './components/WhatsAppContact';
 import { AppInstallAndTelegramModal } from './components/AppInstallAndTelegramModal';
 import { Grade1SupportPlans } from './components/Grade1SupportPlans';
+import { InteractiveWhiteboard } from './components/whiteboard/InteractiveWhiteboard';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -90,7 +91,9 @@ export default function App() {
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
     // Automatically route to units tab, support plans, or foundation if relevant
-    if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
+    if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
+      setActiveTab('whiteboard');
+    } else if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
       setActiveTab('support_plans');
     } else if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
       setActiveTab('dictionary');
@@ -188,6 +191,8 @@ export default function App() {
         )}
 
         {activeTab === 'ai' && <AiTutor currentGrade={currentGrade} />}
+
+        {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
 
         {activeTab === 'support_plans' && (
           <Grade1SupportPlans

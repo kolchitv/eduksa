@@ -27,7 +27,7 @@ import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 
-export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans';
+export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -375,6 +375,20 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-whiteboard"
+              onClick={() => onChangeTab('whiteboard')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'whiteboard'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md ring-2 ring-emerald-300'
+                  : 'text-teal-800 hover:text-white hover:bg-teal-600 bg-teal-50 border border-teal-200 shadow-2xs'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5 text-amber-300" />
+              <span>السبورة التفاعلية ✏️</span>
+              <span className="text-[9px] bg-amber-400 text-amber-950 px-1 rounded font-bold">جديد</span>
+            </button>
+
+            <button
               id="nav-tab-support-plans"
               onClick={() => onChangeTab('support_plans')}
               className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -561,6 +575,22 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-4 h-4 text-emerald-600" />
               <span>المُعرب الذكي</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('whiteboard');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'whiteboard' ? 'bg-teal-600 text-white shadow-md' : 'text-teal-900 bg-teal-50/80 border border-teal-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-amber-500" />
+                <span>السبورة التفاعلية الذكية للمعلمين</span>
+              </div>
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-1.5 py-0.5 rounded-full">جديد ✨</span>
             </button>
 
             <button

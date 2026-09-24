@@ -116,6 +116,15 @@ class AudioManager {
     } catch (e) {}
   }
 
+  // Unified audio dispatcher
+  public play(type: 'click' | 'correct' | 'wrong' | 'fanfare' | 'star' | 'celebration' | 'success') {
+    if (type === 'click') this.playClick();
+    else if (type === 'correct' || type === 'success') this.playCorrect();
+    else if (type === 'wrong') this.playWrong();
+    else if (type === 'fanfare' || type === 'celebration' || type === 'star') this.playFanfare();
+    else this.playClick();
+  }
+
   // Play victory fanfare
   public playFanfare() {
     if (this.isMuted) return;
