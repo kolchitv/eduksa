@@ -93,6 +93,9 @@ export default function App() {
     // Automatically route to units tab, support plans, or foundation if relevant
     if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
       setActiveTab('whiteboard');
+    } else if (query.includes('أسرة') || query.includes('أفراد') || query.includes('أبي') || query.includes('أمي') || query.includes('الميم')) {
+      setCurrentGrade('grade1');
+      setActiveTab('units');
     } else if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
       setActiveTab('support_plans');
     } else if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {

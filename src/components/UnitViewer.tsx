@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpen, 
   Volume2, 
@@ -15,11 +15,14 @@ import {
   Share2,
   Download,
   FolderOpen,
-  ExternalLink
+  ExternalLink,
+  Heart
 } from 'lucide-react';
 import { GradeCurriculum, Lesson, Unit } from '../types/curriculum';
 import { audioManager } from '../utils/audio';
 import { InteractiveTextReader } from './InteractiveTextReader';
+import { FamilyHotspotReader } from './FamilyHotspotReader';
+import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
 import { GRADE1_SUPPORT_DRIVE_URL } from '../data/grade1SupportPlansData';
 
 interface UnitViewerProps {
@@ -39,9 +42,31 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   const [selectedLessonIdx, setSelectedLessonIdx] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedWordPopup, setSelectedWordPopup] = useState<{ word: string; meaning: string; example: string } | null>(null);
+  const [activityMode, setActivityMode] = useState<'text' | 'phonetics' | 'hotspot'>('text');
 
   const currentUnit = curriculum.units[selectedUnitIdx] || curriculum.units[0];
   const currentLesson = currentUnit?.lessons[selectedLessonIdx] || currentUnit?.lessons[0];
+
+  // Auto-switch mode based on selected lesson
+  useEffect(() => {
+    if (currentLesson?.id === 'g1_u1_family_hotspot') {
+      setActivityMode('hotspot');
+    } else {
+      setActivityMode('text');
+    }
+  }, [currentLesson?.id]);
+
+  // Extract letter from lesson title
+  const currentLetterChar = useMemo(() => {
+    if (!currentLesson) return 'م';
+    if (currentLesson.title.includes('المِيم') || currentLesson.title.includes('حَرْفُ (م)') || currentLesson.title.includes('حرف (م)')) return 'م';
+    if (currentLesson.title.includes('البَاء') || currentLesson.title.includes('حَرْفُ (ب)') || currentLesson.title.includes('حرف (ب)')) return 'ب';
+    if (currentLesson.title.includes('اللاَّم') || currentLesson.title.includes('حَرْفُ (ل)') || currentLesson.title.includes('حرف (ل)')) return 'ل';
+    if (currentLesson.title.includes('الدَّال') || currentLesson.title.includes('حَرْفُ (د)') || currentLesson.title.includes('حرف (د)')) return 'د';
+    if (currentLesson.title.includes('النُّون') || currentLesson.title.includes('حَرْفُ (ن)') || currentLesson.title.includes('حرف (ن)')) return 'ن';
+    if (currentLesson.title.includes('الرَّاء') || currentLesson.title.includes('حَرْفُ (ر)') || currentLesson.title.includes('حرف (ر)')) return 'ر';
+    return 'م';
+  }, [currentLesson]);
 
   const handleReadText = async (textToRead: string) => {
     if (isPlayingAudio) {
@@ -256,51 +281,163 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                 </div>
               </div>
 
-              {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
-              <div className="my-8">
-                <InteractiveTextReader
-                  text={currentLesson.text}
-                  verses={currentLesson.verses}
-                  title={currentLesson.title}
-                />
-              </div>
+              {/* Grade 1 Unit 1 Activity Selector Ribbon */}
+              {curriculum.id === 'grade1' && selectedUnitIdx === 0 && (
+                <div className="my-4 flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar">
+                  <button
+                    onClick={() => {
+                      setActivityMode('text');
+                      audioManager.play('click');
+                    }}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activityMode === 'text'
+                        ? 'bg-emerald-700 text-white shadow-xs'
+                        : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>نَصُّ القِرَاءَةِ التَّفَاعُلِيُّ</span>
+                  </button>
 
-              {/* Vocabulary Chips (المفردات ومعانيها) */}
-              {currentLesson.vocabulary && currentLesson.vocabulary.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-slate-100">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                    <Lightbulb className="w-4 h-4 text-amber-500" />
-                    <span>أنمي لغتي (معاني الكلمات والتراكيب)</span>
-                  </h4>
+                  <button
+                    onClick={() => {
+                      setActivityMode('phonetics');
+                      audioManager.play('click');
+                    }}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activityMode === 'phonetics'
+                        ? 'bg-emerald-700 text-white shadow-xs'
+                        : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>مُخْتَبَرُ قِرَاءَةِ الحُرُوفِ بِالحَرَكَاتِ (القَصِيرَةُ وَالطَّوِيلَةُ) 🔤</span>
+                  </button>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {currentLesson.vocabulary.map((vocab, vIdx) => (
-                      <div
-                        key={vIdx}
-                        className="p-3.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex flex-col justify-between"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-amiri text-lg font-extrabold text-emerald-950">
-                            {vocab.word}
-                          </span>
-                          <button
-                            onClick={() => audioManager.speakArabic(vocab.word)}
-                            className="text-emerald-700 hover:text-emerald-900 p-1"
-                            title="نطق الكلمة"
-                          >
-                            <Volume2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <p className="text-xs font-medium text-slate-700">{vocab.meaning}</p>
-                        {vocab.example && (
-                          <p className="text-[11px] text-slate-500 mt-1 italic">
-                            مثال: {vocab.example}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <button
+                    onClick={() => {
+                      setActivityMode('hotspot');
+                      audioManager.play('click');
+                    }}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activityMode === 'hotspot'
+                        ? 'bg-rose-600 text-white shadow-xs'
+                        : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
+                    <span>أَسْتَمِعُ وَأَنْطِقُ: أفراد الأسرة (HOTSPOT) 👨‍👩‍👧‍👦</span>
+                  </button>
                 </div>
+              )}
+
+              {/* View Router for Active Activity */}
+              {activityMode === 'hotspot' ? (
+                <div className="my-4 animate-in fade-in duration-200">
+                  <FamilyHotspotReader />
+                </div>
+              ) : activityMode === 'phonetics' ? (
+                <div className="my-4 animate-in fade-in duration-200">
+                  <LetterPhoneticsActivity initialLetter={currentLetterChar} />
+                </div>
+              ) : (
+                <>
+                  {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
+                  <div className="my-8">
+                    <InteractiveTextReader
+                      text={currentLesson.text}
+                      verses={currentLesson.verses}
+                      title={currentLesson.title}
+                    />
+                  </div>
+
+                  {/* Vocabulary Chips (المفردات ومعانيها) */}
+                  {currentLesson.vocabulary && currentLesson.vocabulary.length > 0 && (
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <Lightbulb className="w-4 h-4 text-amber-500" />
+                        <span>أنمي لغتي (معاني الكلمات والتراكيب)</span>
+                      </h4>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {currentLesson.vocabulary.map((vocab, vIdx) => (
+                          <div
+                            key={vIdx}
+                            className="p-3.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex flex-col justify-between"
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="font-amiri text-lg font-extrabold text-emerald-950">
+                                {vocab.word}
+                              </span>
+                              <button
+                                onClick={() => audioManager.speakArabic(vocab.word)}
+                                className="text-emerald-700 hover:text-emerald-900 p-1"
+                                title="نطق الكلمة"
+                              >
+                                <Volume2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <p className="text-xs font-medium text-slate-700">{vocab.meaning}</p>
+                            {vocab.example && (
+                              <p className="text-[11px] text-slate-500 mt-1 italic">
+                                مثال: {vocab.example}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Grade 1 Unit 1 Quick Access Cards */}
+                  {curriculum.id === 'grade1' && selectedUnitIdx === 0 && (
+                    <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div 
+                        onClick={() => {
+                          setActivityMode('phonetics');
+                          audioManager.play('click');
+                        }}
+                        className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100/80 hover:to-teal-100/80 border border-emerald-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-amiri font-black text-2xl shadow-xs">
+                            {currentLetterChar}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h5 className="font-black text-xs text-emerald-950">قِرَاءَةُ الحُرُوفِ بِالحَرَكَاتِ وَالْمَدِّ</h5>
+                              <span className="text-[9px] bg-emerald-200 text-emerald-900 font-bold px-1.5 rounded">المكون ٤ و ٥</span>
+                            </div>
+                            <p className="text-[11px] text-emerald-800 mt-0.5">حرف {currentLetterChar} مع الحركات القصيرة والمدود الطويلة وتجريد الحرف</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                      </div>
+
+                      <div 
+                        onClick={() => {
+                          setActivityMode('hotspot');
+                          audioManager.play('click');
+                        }}
+                        className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100/80 hover:to-pink-100/80 border border-rose-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-rose-600 text-white flex items-center justify-center text-2xl shadow-xs">
+                            👨‍👩‍👧‍👦
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h5 className="font-black text-xs text-rose-950">أَسْتَمِعُ وَأَنْطِقُ: أفراد الأسرة (HOTSPOT)</h5>
+                              <span className="text-[9px] bg-rose-200 text-rose-900 font-bold px-1.5 rounded">ص ١٩</span>
+                            </div>
+                            <p className="text-[11px] text-rose-800 mt-0.5">نظام الدوائر التفاعلية المحيطة بالكلمة مع نطق أبي، أمي، أخي...</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-rose-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Comprehension Quiz Prompt */}
