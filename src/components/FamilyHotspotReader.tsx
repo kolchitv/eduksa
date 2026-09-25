@@ -178,7 +178,7 @@ export const FamilyHotspotReader: React.FC = () => {
   // Pronounce word with tashkeel
   const handlePronounce = (wordItem: FamilyMemberWord) => {
     setActiveWordId(wordItem.id);
-    audioManager.speakArabic(`${wordItem.word}... ${wordItem.relation}`);
+    audioManager.speakArabic(wordItem.word);
   };
 
   // Auto Tour Playback

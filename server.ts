@@ -30,6 +30,67 @@ async function startServer() {
     res.json({ status: "ok", service: "lughati-saudi-platform" });
   });
 
+  // Arabic Text-To-Speech (TTS) Proxy with in-memory caching
+  const ttsCache = new Map<string, Buffer>();
+  const MAX_TTS_CACHE_ITEMS = 600;
+
+  app.get("/api/tts", async (req, res) => {
+    try {
+      const rawText = typeof req.query.text === 'string' ? req.query.text.trim() : '';
+      if (!rawText) {
+        return res.status(400).json({ error: "Missing text query parameter" });
+      }
+
+      // Limit length per request chunk
+      const cleanText = rawText.slice(0, 350);
+      const cacheKey = `ar_${cleanText}`;
+
+      // Return cached audio if present
+      if (ttsCache.has(cacheKey)) {
+        const cached = ttsCache.get(cacheKey)!;
+        res.setHeader("Content-Type", "audio/mpeg");
+        res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+        res.setHeader("Content-Length", cached.length.toString());
+        return res.send(cached);
+      }
+
+      const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ar&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+      const response = await fetch(googleTtsUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+          "Referer": "https://translate.google.com/",
+          "Accept": "audio/mpeg,audio/*;q=0.9,*/*;q=0.8",
+        },
+      });
+
+      if (!response.ok) {
+        return res.status(response.status).json({ error: "TTS provider unavailable" });
+      }
+
+      const arrayBuf = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuf);
+
+      if (buffer.length === 0) {
+        return res.status(502).json({ error: "Empty audio buffer received" });
+      }
+
+      // Evict oldest item if cache limit reached
+      if (ttsCache.size >= MAX_TTS_CACHE_ITEMS) {
+        const oldestKey = ttsCache.keys().next().value;
+        if (oldestKey) ttsCache.delete(oldestKey);
+      }
+      ttsCache.set(cacheKey, buffer);
+
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+      res.setHeader("Content-Length", buffer.length.toString());
+      return res.send(buffer);
+    } catch (err: any) {
+      console.error("TTS Proxy error:", err);
+      return res.status(500).json({ error: "Internal TTS server error", details: err?.message });
+    }
+  });
+
   // AI Tutor & Grammar Assistant
   app.post("/api/ai/tutor-chat", async (req, res) => {
     try {

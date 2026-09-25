@@ -20,12 +20,14 @@ import {
   Edit3,
   Send,
   ExternalLink,
-  FolderOpen
+  FolderOpen,
+  Sliders
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
+import { AudioSettingsModal } from './AudioSettingsModal';
 
 export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard';
 
@@ -53,6 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenInstallModal
 }) => {
   const [isMuted, setIsMuted] = useState(false);
+  const [audioModalOpen, setAudioModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [gradeDropdownOpen, setGradeDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -230,19 +233,29 @@ export const Header: React.FC<HeaderProps> = ({
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Audio Voice Toggle */}
-            <button
-              id="audio-mute-toggle-btn"
-              onClick={handleToggleMute}
-              className={`p-2 rounded-xl transition-colors border ${
-                isMuted
-                  ? 'bg-rose-50 text-rose-600 border-rose-200'
-                  : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-              }`}
-              title={isMuted ? 'تفعيل الصوت' : 'كتم الصوت'}
-            >
-              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-            </button>
+            {/* Audio Voice Controls & Settings */}
+            <div className="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200">
+              <button
+                id="audio-mute-toggle-btn"
+                onClick={handleToggleMute}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  isMuted
+                    ? 'bg-rose-50 text-rose-600'
+                    : 'bg-white text-emerald-700 shadow-xs hover:bg-emerald-50'
+                }`}
+                title={isMuted ? 'تفعيل الصوت' : 'كتم الصوت'}
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
+              <button
+                id="audio-settings-modal-btn"
+                onClick={() => setAudioModalOpen(true)}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-white transition-colors"
+                title="إعدادات واختبار النطق العربي (حل مشاكل الصوت)"
+              >
+                <Sliders className="w-4 h-4" />
+              </button>
+            </div>
 
             {/* Install App & Telegram Popup Trigger Button */}
             {onOpenInstallModal && (
@@ -344,8 +357,11 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <Palette className="w-3.5 h-3.5 text-amber-300" />
-              <span>القاموس المصوّر والإملاء</span>
+              <Volume2 className="w-3.5 h-3.5 text-amber-300" />
+              <span>القاموس الصوتي والمرئي</span>
+              <span className="bg-amber-400 text-amber-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">
+                0.5x 🐢
+              </span>
             </button>
 
             <button
@@ -543,12 +559,17 @@ export const Header: React.FC<HeaderProps> = ({
                 onChangeTab('dictionary');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold ${
                 activeTab === 'dictionary' ? 'bg-emerald-50 text-emerald-800' : 'text-slate-700'
               }`}
             >
-              <Palette className="w-4 h-4 text-emerald-600" />
-              <span>القاموس المصوّر والإملاء</span>
+              <div className="flex items-center gap-2">
+                <Volume2 className="w-4 h-4 text-emerald-600" />
+                <span>القاموس الصوتي والمرئي</span>
+              </div>
+              <span className="bg-amber-400 text-amber-950 text-[10px] px-2 py-0.5 rounded-full font-black">
+                0.5x للمخارج 🐢
+              </span>
             </button>
 
             <button
@@ -691,6 +712,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       )}
+
+      {/* Audio Settings & Diagnostics Modal */}
+      <AudioSettingsModal 
+        isOpen={audioModalOpen} 
+        onClose={() => setAudioModalOpen(false)} 
+      />
     </header>
   );
 };

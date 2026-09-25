@@ -31,6 +31,7 @@ import {
 } from '../data/dictionaryData';
 import { audioManager } from '../utils/audio';
 import { GradeId } from '../types/curriculum';
+import { AudioDictionary } from './AudioDictionary';
 
 interface VisualDictionaryProps {
   currentGrade?: GradeId;
@@ -43,8 +44,9 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
   onAddStars,
   studentName = 'الطالب المتميز'
 }) => {
-  // Mode selection: 'browse' (Visual Dictionary) vs 'dictation' (Spelling Lab)
-  const [activeMode, setActiveMode] = useState<'browse' | 'dictation'>('browse');
+  // Mode selection: 'browse' (Visual Dictionary) vs 'audio' (Audio Dictionary & Articulation) vs 'dictation' (Spelling Lab)
+  const [activeMode, setActiveMode] = useState<'browse' | 'audio' | 'dictation'>('browse');
+  const [selectedAudioWordId, setSelectedAudioWordId] = useState<string | undefined>(undefined);
 
   // Filters
   const [selectedGrade, setSelectedGrade] = useState<string>(() => {
@@ -269,23 +271,40 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex bg-emerald-950/70 p-1.5 rounded-2xl border border-emerald-500/30 shrink-0 self-start md:self-center">
+          <div className="flex flex-wrap bg-emerald-950/70 p-1.5 rounded-2xl border border-emerald-500/30 shrink-0 self-start md:self-center gap-1">
             <button
               id="btn-dict-browse-mode"
               onClick={() => setActiveMode('browse')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeMode === 'browse'
                   ? 'bg-emerald-500 text-white shadow-md'
                   : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50'
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>القاموس المصوّر الناطق</span>
+              <span>القاموس المصوّر</span>
             </button>
+
+            <button
+              id="btn-dict-audio-mode"
+              onClick={() => setActiveMode('audio')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                activeMode === 'audio'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md font-extrabold'
+                  : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50'
+              }`}
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>القاموس الصوتي والمخارج</span>
+              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.5 rounded-full font-black">
+                0.5x 🐢
+              </span>
+            </button>
+
             <button
               id="btn-dict-spelling-mode"
               onClick={() => setActiveMode('dictation')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeMode === 'dictation'
                   ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
                   : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50'
@@ -558,7 +577,7 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs gap-1 flex-wrap">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -569,17 +588,32 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
                           <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
                           <span>الجملة</span>
                         </button>
-                        <button
-                          onClick={() => {
-                            setActiveMode('dictation');
-                            const idx = dictationWords.findIndex(w => w.id === entry.id);
-                            if (idx !== -1) setDictationIndex(idx);
-                          }}
-                          className="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                          <span>تدرّب إملائياً</span>
-                        </button>
+                        
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedAudioWordId(entry.id);
+                              setActiveMode('audio');
+                            }}
+                            className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg border border-amber-200 transition-colors"
+                            title="تدرب على مخارج الحروف بالسرعة البطيئة 0.5x"
+                          >
+                            <Volume2 className="w-3 h-3 text-amber-600" />
+                            <span>المخارج (0.5x)</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveMode('dictation');
+                              const idx = dictationWords.findIndex(w => w.id === entry.id);
+                              if (idx !== -1) setDictationIndex(idx);
+                            }}
+                            className="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>إملاء</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -591,7 +625,20 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* MODE 2: SMART SPELLING & DICTATION LAB                                     */}
+      {/* MODE 2: AUDIO DICTIONARY & ARTICULATION TRAINING                           */}
+      {/* ========================================================================= */}
+      {activeMode === 'audio' && (
+        <AudioDictionary
+          initialWordId={selectedAudioWordId}
+          currentGrade={currentGrade}
+          onAddStars={onAddStars}
+          studentName={studentName}
+          onNavigateToVisual={() => setActiveMode('browse')}
+        />
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODE 3: SMART SPELLING & DICTATION LAB                                     */}
       {/* ========================================================================= */}
       {activeMode === 'dictation' && currentDictationWord && (
         <div className="space-y-6">
@@ -1018,7 +1065,19 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
               </div>
 
               {/* Actions */}
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="pt-2 flex items-center justify-end gap-2 flex-wrap">
+                <button
+                  onClick={() => {
+                    const word = activeEntryModal;
+                    setActiveEntryModal(null);
+                    setSelectedAudioWordId(word.id);
+                    setActiveMode('audio');
+                  }}
+                  className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Volume2 className="w-4 h-4 text-slate-950" />
+                  <span>القاموس الصوتي (0.5x للمخارج)</span>
+                </button>
                 <button
                   onClick={() => {
                     const word = activeEntryModal;
@@ -1027,7 +1086,7 @@ export const VisualDictionary: React.FC<VisualDictionaryProps> = ({
                     const idx = dictationWords.findIndex(w => w.id === word.id);
                     if (idx !== -1) setDictationIndex(idx);
                   }}
-                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5"
                 >
                   <Edit3 className="w-4 h-4" />
                   <span>انتقل للاختبار الإملائي</span>
