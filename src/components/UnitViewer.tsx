@@ -16,13 +16,20 @@ import {
   Download,
   FolderOpen,
   ExternalLink,
-  Heart
+  Heart,
+  Star,
+  Target,
+  Layers,
+  Trophy
 } from 'lucide-react';
 import { GradeCurriculum, Lesson, Unit } from '../types/curriculum';
 import { audioManager } from '../utils/audio';
 import { InteractiveTextReader } from './InteractiveTextReader';
 import { FamilyHotspotReader } from './FamilyHotspotReader';
 import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
+import { Grade1Unit1LetterMActivity } from './Grade1Unit1LetterMActivity';
+import { Grade1Unit1Activity2 } from './Grade1Unit1Activity2';
+import { Grade1Unit1ActivitiesHub, Unit1ActivityId } from './Grade1Unit1ActivitiesHub';
 import { GRADE1_SUPPORT_DRIVE_URL } from '../data/grade1SupportPlansData';
 
 interface UnitViewerProps {
@@ -42,16 +49,33 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   const [selectedLessonIdx, setSelectedLessonIdx] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedWordPopup, setSelectedWordPopup] = useState<{ word: string; meaning: string; example: string } | null>(null);
-  const [activityMode, setActivityMode] = useState<'text' | 'phonetics' | 'hotspot'>('text');
+  
+  // Section router for Unit 1: 'lessons' (regular reading) vs 'activities' (Interactive Activities Section)
+  const [unitSection, setUnitSection] = useState<'lessons' | 'activities'>('lessons');
+  const [selectedActivityId, setSelectedActivityId] = useState<Unit1ActivityId>('hub');
+  
+  // Legacy activityMode for backward-compatibility with quick ribbons
+  const [activityMode, setActivityMode] = useState<'text' | 'phonetics' | 'hotspot' | 'p42_matching' | 'activity_2'>('text');
 
   const currentUnit = curriculum.units[selectedUnitIdx] || curriculum.units[0];
   const currentLesson = currentUnit?.lessons[selectedLessonIdx] || currentUnit?.lessons[0];
 
-  // Auto-switch mode based on selected lesson
+  // Auto-switch mode or section based on selected lesson
   useEffect(() => {
     if (currentLesson?.id === 'g1_u1_family_hotspot') {
+      setUnitSection('activities');
+      setSelectedActivityId('hotspot');
       setActivityMode('hotspot');
+    } else if (currentLesson?.id === 'g1_u1_lm_activity_p42') {
+      setUnitSection('activities');
+      setSelectedActivityId('activity1');
+      setActivityMode('p42_matching');
+    } else if (currentLesson?.id === 'g1_u1_activity_2') {
+      setUnitSection('activities');
+      setSelectedActivityId('activity2');
+      setActivityMode('activity_2');
     } else {
+      setUnitSection('lessons');
       setActivityMode('text');
     }
   }, [currentLesson?.id]);
@@ -79,6 +103,8 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
     setIsPlayingAudio(false);
   };
 
+  const isGrade1Unit1 = curriculum.id === 'grade1' && selectedUnitIdx === 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Unit Selection Header */}
@@ -105,6 +131,7 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
               onClick={() => {
                 setSelectedUnitIdx(idx);
                 setSelectedLessonIdx(0);
+                setUnitSection('lessons');
                 audioManager.stopSpeaking();
                 setIsPlayingAudio(false);
               }}
@@ -172,10 +199,174 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
         </div>
       )}
 
-      {/* Main Grid: Sidebar of Lessons + Lesson Main Content */}
+      {/* Grade 1 Unit 1 Master Mode Selector (الدروس vs قسم الأنشطة) */}
+      {isGrade1Unit1 && (
+        <div className="mb-8 p-3 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => {
+                setUnitSection('lessons');
+                audioManager.play('click');
+              }}
+              className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+                unitSection === 'lessons'
+                  ? 'bg-emerald-700 text-white shadow-md'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>دُرُوسُ وَنُصُوصُ الوَحْدَةِ ({currentUnit?.lessons.length})</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setUnitSection('activities');
+                setSelectedActivityId('hub');
+                audioManager.play('click');
+              }}
+              className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+                unitSection === 'activities'
+                  ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-300'
+                  : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300'
+              }`}
+            >
+              <Layers className="w-4 h-4 text-amber-700" />
+              <span>🎯 قِسْمُ الأَنْشِطَةِ التَّفَاعُلِيَّةِ (الوحدة الأولى - ٤ أنشطة)</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <span className="hidden md:inline">الوحدة الأولى: أُسْرَتِي</span>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] border border-emerald-200">
+              {unitSection === 'activities' ? 'القسم النشط: الأنشطة التفاعلية ⭐' : 'القسم النشط: الدروس والنصوص 📖'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Main Grid: Sidebar of Lessons + Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Sidebar: Lessons & Phenomena in this Unit */}
+        {/* Left Sidebar: Lessons & Activities in this Unit */}
         <div className="lg:col-span-4 space-y-6">
+          {/* Grade 1 Unit 1 Activities Section Card in Sidebar */}
+          {isGrade1Unit1 && (
+            <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-amber-500/10 rounded-3xl p-5 border-2 border-amber-300 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-xs">
+                    🎯
+                  </div>
+                  <div>
+                    <h3 className="font-black text-slate-900 text-sm">قِسْمُ الأَنْشِطَةِ (الوحدة الأولى)</h3>
+                    <p className="text-[10px] text-amber-800 font-bold">جميع الأنشطة مجمعة هنا</p>
+                  </div>
+                </div>
+
+                <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 font-black text-[10px]">
+                  ٤ أنشطة
+                </span>
+              </div>
+
+              {/* Grouped Activities List */}
+              <div className="space-y-1.5 pt-1">
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('hub');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'hub'
+                      ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-xs'
+                      : 'bg-white hover:bg-amber-50 text-slate-800 border-amber-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-3.5 h-3.5 text-amber-700" />
+                    <span>جَمِيعُ الأَنْشِطَةِ (مَرْكَزُ التَّدْرِيبِ)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('activity1');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'activity1'
+                      ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-xs'
+                      : 'bg-white hover:bg-amber-50 text-slate-800 border-amber-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Target className="w-3.5 h-3.5 text-amber-700" />
+                    <span className="line-clamp-1">نَشَاطُ ص ٤٢: أَصِلُ الصُّوَرَ بِحَرْفِ (م)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('activity2');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'activity2'
+                      ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-xs'
+                      : 'bg-white hover:bg-amber-50 text-slate-800 border-amber-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Star className="w-3.5 h-3.5 text-amber-700 fill-current" />
+                    <span className="line-clamp-1">نَشَاطُ ٢: مَوَاقِعُ الحَرْفِ وَالْمُدُودُ ⭐</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('hotspot');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'hotspot'
+                      ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                      : 'bg-white hover:bg-rose-50 text-slate-800 border-rose-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
+                    <span className="line-clamp-1">نَشَاطُ أفراد الأسرة (HOTSPOT ص ١٩)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('phonetics');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'phonetics'
+                      ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
+                      : 'bg-white hover:bg-emerald-50 text-slate-800 border-emerald-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="line-clamp-1">مُخْتَبَرُ قِرَاءَةِ الحُرُوفِ بِالحَرَكَاتِ</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Lessons List Card */}
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
             <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
@@ -185,12 +376,13 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
 
             <div className="space-y-2">
               {currentUnit?.lessons.map((lesson, lIdx) => {
-                const isSelected = selectedLessonIdx === lIdx;
+                const isSelected = selectedLessonIdx === lIdx && unitSection === 'lessons';
                 return (
                   <button
                     key={lesson.id}
                     onClick={() => {
                       setSelectedLessonIdx(lIdx);
+                      setUnitSection('lessons');
                       audioManager.stopSpeaking();
                       setIsPlayingAudio(false);
                     }}
@@ -258,9 +450,17 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
           )}
         </div>
 
-        {/* Right Main Panel: Selected Lesson Full View */}
+        {/* Right Main Panel: Either Activities Hub OR Selected Lesson */}
         <div className="lg:col-span-8 space-y-6">
-          {currentLesson ? (
+          {isGrade1Unit1 && unitSection === 'activities' ? (
+            /* Dedicated Unit 1 Activities Hub */
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+              <Grade1Unit1ActivitiesHub
+                initialActivity={selectedActivityId}
+                onSwitchToLesson={() => setUnitSection('lessons')}
+              />
+            </div>
+          ) : currentLesson ? (
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
               {/* Lesson Top Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
@@ -279,18 +479,33 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                     {currentLesson.title}
                   </h3>
                 </div>
+
+                {isGrade1Unit1 && (
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('hub');
+                      audioManager.play('click');
+                    }}
+                    className="px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition-all flex items-center gap-2 shadow-sm shrink-0"
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>فَتْحُ قِسْمِ الأَنْشِطَةِ 🎯</span>
+                  </button>
+                )}
               </div>
 
               {/* Grade 1 Unit 1 Activity Selector Ribbon */}
-              {curriculum.id === 'grade1' && selectedUnitIdx === 0 && (
+              {isGrade1Unit1 && (
                 <div className="my-4 flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar">
                   <button
                     onClick={() => {
+                      setUnitSection('lessons');
                       setActivityMode('text');
                       audioManager.play('click');
                     }}
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                      activityMode === 'text'
+                      activityMode === 'text' && unitSection === 'lessons'
                         ? 'bg-emerald-700 text-white shadow-xs'
                         : 'text-slate-700 hover:bg-slate-200'
                     }`}
@@ -301,143 +516,191 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
 
                   <button
                     onClick={() => {
-                      setActivityMode('phonetics');
+                      setUnitSection('activities');
+                      setSelectedActivityId('hub');
                       audioManager.play('click');
                     }}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                      activityMode === 'phonetics'
-                        ? 'bg-emerald-700 text-white shadow-xs'
-                        : 'text-slate-700 hover:bg-slate-200'
-                    }`}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-amber-100 text-amber-950 hover:bg-amber-200 transition-all whitespace-nowrap border border-amber-300"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    <span>مُخْتَبَرُ قِرَاءَةِ الحُرُوفِ بِالحَرَكَاتِ (القَصِيرَةُ وَالطَّوِيلَةُ) 🔤</span>
+                    <Layers className="w-3.5 h-3.5 text-amber-700" />
+                    <span>قِسْمُ الأَنْشِطَةِ (الوحدة الأولى)</span>
                   </button>
 
                   <button
                     onClick={() => {
-                      setActivityMode('hotspot');
+                      setUnitSection('activities');
+                      setSelectedActivityId('activity1');
                       audioManager.play('click');
                     }}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                      activityMode === 'hotspot'
-                        ? 'bg-rose-600 text-white shadow-xs'
-                        : 'text-slate-700 hover:bg-slate-200'
-                    }`}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200 transition-all whitespace-nowrap"
+                  >
+                    <Target className="w-3.5 h-3.5 text-amber-600" />
+                    <span>نَشَاطُ ص ٤٢ (م) 🎯</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('activity2');
+                      audioManager.play('click');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200 transition-all whitespace-nowrap"
+                  >
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-current" />
+                    <span>نَشَاطُ ٢: مَوَاقِعُ الحَرْفِ وَالْمُدُودُ ⭐</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('hotspot');
+                      audioManager.play('click');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200 transition-all whitespace-nowrap"
                   >
                     <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
-                    <span>أَسْتَمِعُ وَأَنْطِقُ: أفراد الأسرة (HOTSPOT) 👨‍👩‍👧‍👦</span>
+                    <span>أفراد الأسرة (ص ١٩) 👨‍👩‍👧‍👦</span>
                   </button>
                 </div>
               )}
 
-              {/* View Router for Active Activity */}
-              {activityMode === 'hotspot' ? (
-                <div className="my-4 animate-in fade-in duration-200">
-                  <FamilyHotspotReader />
-                </div>
-              ) : activityMode === 'phonetics' ? (
-                <div className="my-4 animate-in fade-in duration-200">
-                  <LetterPhoneticsActivity initialLetter={currentLetterChar} />
-                </div>
-              ) : (
-                <>
-                  {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
-                  <div className="my-8">
-                    <InteractiveTextReader
-                      text={currentLesson.text}
-                      verses={currentLesson.verses}
-                      title={currentLesson.title}
-                    />
+              {/* Quick shortcut banner for Letter M Lesson */}
+              {(currentLesson?.id === 'g1_u1_lm' || currentLesson?.id === 'g1_u1_lm_activity_p42' || currentLesson?.id === 'g1_u1_activity_2') && (
+                <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">⭐</span>
+                    <div>
+                      <h4 className="text-xs font-black text-amber-950">
+                        أَنْشِطَةُ كِتَابِ لُغَتِي المَعْتَمَدَةُ (حَرْفُ المِيمِ م)
+                      </h4>
+                      <p className="text-[11px] text-amber-800">
+                        النشاط ١ (ص ٤٢): توصيل الحرف بالصور • النشاط ٢: رسم الدائرة ومواقع الحرف والمدود وكتابة الحرف.
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Vocabulary Chips (المفردات ومعانيها) */}
-                  {currentLesson.vocabulary && currentLesson.vocabulary.length > 0 && (
-                    <div className="mt-8 pt-6 border-t border-slate-100">
-                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <Lightbulb className="w-4 h-4 text-amber-500" />
-                        <span>أنمي لغتي (معاني الكلمات والتراكيب)</span>
-                      </h4>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('activity1');
+                        audioManager.play('click');
+                      }}
+                      className="px-3 py-2 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-xs transition-all flex items-center gap-1"
+                    >
+                      <span>نَشَاطُ ١ (ص ٤٢)</span>
+                    </button>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {currentLesson.vocabulary.map((vocab, vIdx) => (
-                          <div
-                            key={vIdx}
-                            className="p-3.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex flex-col justify-between"
+                    <button
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('activity2');
+                        audioManager.play('click');
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition-all flex items-center gap-1 shadow-sm"
+                    >
+                      <span>نَشَاطُ ٢ (إنجازاتي) ⭐</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
+              <div className="my-8">
+                <InteractiveTextReader
+                  text={currentLesson.text}
+                  verses={currentLesson.verses}
+                  title={currentLesson.title}
+                />
+              </div>
+
+              {/* Vocabulary Chips (المفردات ومعانيها) */}
+              {currentLesson.vocabulary && currentLesson.vocabulary.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-slate-100">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <Lightbulb className="w-4 h-4 text-amber-500" />
+                    <span>أنمي لغتي (معاني الكلمات والتراكيب)</span>
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {currentLesson.vocabulary.map((vocab, vIdx) => (
+                      <div
+                        key={vIdx}
+                        className="p-3.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex flex-col justify-between"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-amiri text-lg font-extrabold text-emerald-950">
+                            {vocab.word}
+                          </span>
+                          <button
+                            onClick={() => audioManager.speakArabic(vocab.word)}
+                            className="text-emerald-700 hover:text-emerald-900 p-1"
+                            title="نطق الكلمة"
                           >
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-amiri text-lg font-extrabold text-emerald-950">
-                                {vocab.word}
-                              </span>
-                              <button
-                                onClick={() => audioManager.speakArabic(vocab.word)}
-                                className="text-emerald-700 hover:text-emerald-900 p-1"
-                                title="نطق الكلمة"
-                              >
-                                <Volume2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <p className="text-xs font-medium text-slate-700">{vocab.meaning}</p>
-                            {vocab.example && (
-                              <p className="text-[11px] text-slate-500 mt-1 italic">
-                                مثال: {vocab.example}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                            <Volume2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <p className="text-xs font-medium text-slate-700">{vocab.meaning}</p>
+                        {vocab.example && (
+                          <p className="text-[11px] text-slate-500 mt-1 italic">
+                            مثال: {vocab.example}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Grade 1 Unit 1 Quick Access Cards */}
+              {isGrade1Unit1 && (
+                <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div 
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('activity2');
+                      audioManager.play('click');
+                    }}
+                    className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100/80 hover:to-orange-100/80 border border-amber-300 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-2xl shadow-xs">
+                        ⭐
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h5 className="font-black text-xs text-amber-950">النَّشَاطُ ٢: مَوَاقِعُ الحَرْفِ وَالْمُدُودُ</h5>
+                          <span className="text-[9px] bg-amber-200 text-amber-900 font-bold px-1.5 rounded">إنجازاتي</span>
+                        </div>
+                        <p className="text-[11px] text-amber-800 mt-0.5">رسم دائرة حول الميم وتحديد موضعه والمدود وسبورة الكتابة</p>
                       </div>
                     </div>
-                  )}
+                    <span className="text-xs text-amber-800 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                  </div>
 
-                  {/* Grade 1 Unit 1 Quick Access Cards */}
-                  {curriculum.id === 'grade1' && selectedUnitIdx === 0 && (
-                    <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div 
-                        onClick={() => {
-                          setActivityMode('phonetics');
-                          audioManager.play('click');
-                        }}
-                        className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100/80 hover:to-teal-100/80 border border-emerald-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-amiri font-black text-2xl shadow-xs">
-                            {currentLetterChar}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <h5 className="font-black text-xs text-emerald-950">قِرَاءَةُ الحُرُوفِ بِالحَرَكَاتِ وَالْمَدِّ</h5>
-                              <span className="text-[9px] bg-emerald-200 text-emerald-900 font-bold px-1.5 rounded">المكون ٤ و ٥</span>
-                            </div>
-                            <p className="text-[11px] text-emerald-800 mt-0.5">حرف {currentLetterChar} مع الحركات القصيرة والمدود الطويلة وتجريد الحرف</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                  <div 
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('activity1');
+                      audioManager.play('click');
+                    }}
+                    className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100/80 hover:to-teal-100/80 border border-emerald-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-amiri font-black text-2xl shadow-xs">
+                        🎯
                       </div>
-
-                      <div 
-                        onClick={() => {
-                          setActivityMode('hotspot');
-                          audioManager.play('click');
-                        }}
-                        className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100/80 hover:to-pink-100/80 border border-rose-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-rose-600 text-white flex items-center justify-center text-2xl shadow-xs">
-                            👨‍👩‍👧‍👦
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <h5 className="font-black text-xs text-rose-950">أَسْتَمِعُ وَأَنْطِقُ: أفراد الأسرة (HOTSPOT)</h5>
-                              <span className="text-[9px] bg-rose-200 text-rose-900 font-bold px-1.5 rounded">ص ١٩</span>
-                            </div>
-                            <p className="text-[11px] text-rose-800 mt-0.5">نظام الدوائر التفاعلية المحيطة بالكلمة مع نطق أبي، أمي، أخي...</p>
-                          </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h5 className="font-black text-xs text-emerald-950">نَشَاطُ ص ٤٢: أَصِلُ الصُّوَرَ</h5>
+                          <span className="text-[9px] bg-emerald-200 text-emerald-900 font-bold px-1.5 rounded">ص ٤٢</span>
                         </div>
-                        <span className="text-xs text-rose-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                        <p className="text-[11px] text-emerald-800 mt-0.5">توصيل الحرف بالصور الستة ونطق الكلمات والمخارج</p>
                       </div>
                     </div>
-                  )}
-                </>
+                    <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                  </div>
+                </div>
               )}
 
               {/* Comprehension Quiz Prompt */}
@@ -463,7 +726,7 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
           ) : (
             <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
               <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm font-bold text-slate-600">اختر درساً لعرض محتواه</p>
+              <p className="text-sm font-bold text-slate-600">اختر درساً أو نشاطاً لعرض محتواه</p>
             </div>
           )}
         </div>

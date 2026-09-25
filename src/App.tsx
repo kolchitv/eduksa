@@ -93,7 +93,7 @@ export default function App() {
     // Automatically route to units tab, support plans, or foundation if relevant
     if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
       setActiveTab('whiteboard');
-    } else if (query.includes('أسرة') || query.includes('أفراد') || query.includes('أبي') || query.includes('أمي') || query.includes('الميم')) {
+    } else if (query.includes('أسرة') || query.includes('أفراد') || query.includes('أبي') || query.includes('أمي') || query.includes('الميم') || query.includes('نشاط') || query.includes('أنشطة') || query.includes('توصيل') || query.includes('مطعم') || query.includes('معجون') || query.includes('سمكة') || query.includes('٤٢') || query.includes('42') || query.includes('مسجد') || query.includes('مدود') || query.includes('مد') || query.includes('كتابة')) {
       setCurrentGrade('grade1');
       setActiveTab('units');
     } else if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {

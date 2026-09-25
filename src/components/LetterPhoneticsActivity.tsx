@@ -210,10 +210,12 @@ export const UNIT1_LETTERS_DATA: Record<string, LetterPhoneticData> = {
 
 interface LetterPhoneticsActivityProps {
   initialLetter?: string;
+  onOpenPage42Activity?: () => void;
 }
 
 export const LetterPhoneticsActivity: React.FC<LetterPhoneticsActivityProps> = ({
-  initialLetter = 'م'
+  initialLetter = 'م',
+  onOpenPage42Activity
 }) => {
   const [selectedLetter, setSelectedLetter] = useState<string>(initialLetter);
   const [extractedWordIdx, setExtractedWordIdx] = useState<number | null>(0);
@@ -238,13 +240,21 @@ export const LetterPhoneticsActivity: React.FC<LetterPhoneticsActivityProps> = (
             {currentData.letter}
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
                 المُكَوِّنُ ٤ وَ ٥ وَ ٦ • الوَحْدَةُ الأُولَى
               </span>
               <span className="text-[11px] text-slate-500 font-bold">
                 المَنْهَجُ السَّعُودِيُّ المَفْحُوصُ
               </span>
+              {selectedLetter === 'م' && onOpenPage42Activity && (
+                <button
+                  onClick={onOpenPage42Activity}
+                  className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-400 hover:bg-amber-500 text-slate-950 transition-all flex items-center gap-1 shadow-xs"
+                >
+                  <span>🎯 نَشَاطُ ص ٤٢ (أَصِلُ بِالمِيمِ)</span>
+                </button>
+              )}
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-alexandria tracking-tight mt-0.5">
               مُخْتَبَرُ قِرَاءَةِ الحُرُوفِ: حَرْفُ {currentData.name} ({currentData.letter})
