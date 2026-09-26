@@ -236,13 +236,10 @@ export default function App() {
         stars={stars}
       />
 
-      {/* App Install & Telegram Channel Popup Modal */}
+      {/* Compact App Install Popup Modal */}
       <AppInstallAndTelegramModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
-        telegramChannelUrl="https://t.me/arabiaeasy"
-        telegramChannelHandle="arabiaeasy"
-        autoOpenDelayMs={600}
       />
 
       {/* Persistent Floating Quick Bar for Grade 1 Support Plans & App Install */}
