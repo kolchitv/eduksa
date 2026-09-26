@@ -47,6 +47,7 @@ export default function App() {
   const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedReadingTrack, setSelectedReadingTrack] = useState<'all' | 'struggling' | 'short_text' | 'advanced'>('all');
 
   // Local storage persistence
   useEffect(() => {
@@ -90,10 +91,17 @@ export default function App() {
     });
   };
 
+  const handleOpenReadingPathway = (track: 'all' | 'struggling' | 'short_text' | 'advanced' = 'all') => {
+    setSelectedReadingTrack(track);
+    setActiveTab('reading_path');
+  };
+
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
-    // Automatically route to units tab, support plans, or foundation if relevant
-    if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
+    // Automatically route to units tab, reading pathway, support plans, or foundation if relevant
+    if (query.includes('انطلاق') || query.includes('قراءة') || query.includes('مسار') || query.includes('متعثر') || query.includes('طلاقة') || query.includes('نصوص') || query.includes('نص')) {
+      handleOpenReadingPathway('all');
+    } else if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
       setActiveTab('whiteboard');
     } else if (query.includes('أسرة') || query.includes('أفراد') || query.includes('أبي') || query.includes('أمي') || query.includes('الميم') || query.includes('نشاط') || query.includes('أنشطة') || query.includes('توصيل') || query.includes('مطعم') || query.includes('معجون') || query.includes('سمكة') || query.includes('٤٢') || query.includes('42') || query.includes('مسجد') || query.includes('مدود') || query.includes('مد') || query.includes('كتابة')) {
       setCurrentGrade('grade1');
@@ -137,6 +145,52 @@ export default function App() {
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
       />
 
+      {/* Prominent Sticky Top Quick Banner for Reading Pathway */}
+      {activeTab !== 'reading_path' && (
+        <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-900 border-b-2 border-amber-400 px-4 py-2.5 shadow-md">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5 text-center sm:text-right">
+              <span className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-base shrink-0 animate-bounce">
+                🚀
+              </span>
+              <div>
+                <p className="text-white text-xs sm:text-sm font-extrabold font-alexandria">
+                  قسم جديد: <span className="text-amber-300">«الانطلاق في القراءة»</span> — مسار متدرّج للمتعثرين والمتوسطين والمتميزين
+                </p>
+                <p className="text-emerald-200 text-[11px] hidden md:block">
+                  جمل للمتعثرين • نصوص قصيرة • نصوص متقدمة • مؤقت القراءة وتسجيل صوتي
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                id="top-banner-open-struggling-btn"
+                onClick={() => handleOpenReadingPathway('struggling')}
+                className="px-2.5 py-1 rounded-lg bg-emerald-700/80 hover:bg-emerald-600 text-emerald-100 text-xs font-bold border border-emerald-400/30 transition-all cursor-pointer"
+              >
+                جمل المتعثرين 🟢
+              </button>
+              <button
+                id="top-banner-open-short-btn"
+                onClick={() => handleOpenReadingPathway('short_text')}
+                className="px-2.5 py-1 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 text-amber-200 text-xs font-bold border border-amber-400/30 transition-all cursor-pointer"
+              >
+                نصوص قصيرة 🟡
+              </button>
+              <button
+                id="top-banner-open-reading-path-btn"
+                onClick={() => handleOpenReadingPathway('all')}
+                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>دخول القسم الآن</span>
+                <span>←</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Grade Selector Ribbon */}
       <GradeSelector
         selectedGrade={currentGrade}
@@ -152,6 +206,7 @@ export default function App() {
         }}
         completedQuizzesCount={completedQuizzes.length}
         onOpenSupportPlans={() => setActiveTab('support_plans')}
+        onOpenReadingPathway={handleOpenReadingPathway}
       />
 
       {/* Main View Router */}
@@ -164,6 +219,7 @@ export default function App() {
             onOpenQuizForLesson={() => setActiveTab('quiz')}
             onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
             onOpenSupportPlans={() => setActiveTab('support_plans')}
+            onOpenReadingPathway={handleOpenReadingPathway}
           />
         )}
 
@@ -202,6 +258,7 @@ export default function App() {
             studentName={studentName}
             onAddStars={handleAddStars}
             onBackToHome={() => setActiveTab('units')}
+            initialTrack={selectedReadingTrack}
           />
         )}
 
@@ -421,6 +478,97 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Persistent Fast-Access Button for Reading Pathway (Visible Everywhere) */}
+      {activeTab !== 'reading_path' && (
+        <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-40 animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <button
+            id="persistent-floating-reading-pathway-btn"
+            onClick={() => handleOpenReadingPathway('all')}
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-700 via-teal-700 to-slate-900 hover:from-emerald-600 hover:to-teal-600 text-white shadow-2xl border-2 border-amber-400 ring-4 ring-emerald-500/30 transition-all transform hover:scale-105 active:scale-95 group cursor-pointer"
+            title="انقر هنا للانتقال المباشر إلى قسم الانطلاق في القراءة"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-md group-hover:scale-110 transition-transform">
+              🚀
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm font-black font-alexandria text-amber-300">الانطلاق في القراءة</span>
+                <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded font-black animate-pulse">
+                  انقر هنا 👈
+                </span>
+              </div>
+              <p className="text-[10px] text-emerald-100">
+                جمل للمتعثرين • نصوص قصيرة • نصوص متميزة
+              </p>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Sticky Bottom Quick Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
+        <button
+          id="mobile-bottom-reading-path-btn"
+          onClick={() => handleOpenReadingPathway('all')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-black transition-all ${
+            activeTab === 'reading_path'
+              ? 'text-emerald-800 bg-emerald-100/80 scale-105'
+              : 'text-slate-700 hover:text-emerald-700'
+          }`}
+        >
+          <span className="text-base">🚀</span>
+          <span>الانطلاق</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('units')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === 'units'
+              ? 'text-emerald-800 bg-emerald-100/80 scale-105'
+              : 'text-slate-700 hover:text-emerald-700'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-emerald-600" />
+          <span>الوحدات</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('foundation')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === 'foundation'
+              ? 'text-emerald-800 bg-emerald-100/80 scale-105'
+              : 'text-slate-700 hover:text-emerald-700'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>التأسيس</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('whiteboard')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === 'whiteboard'
+              ? 'text-emerald-800 bg-emerald-100/80 scale-105'
+              : 'text-slate-700 hover:text-emerald-700'
+          }`}
+        >
+          <span>✏️</span>
+          <span>السبورة</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('support_plans')}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === 'support_plans'
+              ? 'text-rose-800 bg-rose-100/80 scale-105'
+              : 'text-slate-700 hover:text-rose-700'
+          }`}
+        >
+          <FolderOpen className="w-4 h-4 text-rose-600" />
+          <span>خطط الدعم</span>
+        </button>
+      </div>
     </div>
   );
 }

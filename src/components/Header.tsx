@@ -166,8 +166,29 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
+          {/* Direct prominent Reading Pathway Launch Button */}
+          <button
+            id="header-direct-reading-pathway-btn"
+            onClick={() => onChangeTab('reading_path')}
+            className="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-md hover:shadow-lg border border-emerald-400/40 active:scale-95 transition-all cursor-pointer group shrink-0"
+            title="الانتقال إلى مسار الانطلاق في القراءة المتدرج (للمتعثرين والمتقدمين)"
+          >
+            <span className="text-base sm:text-lg animate-bounce">🚀</span>
+            <div className="text-right">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm font-black tracking-tight font-alexandria">الانطلاق في القراءة</span>
+                <span className="bg-amber-400 text-amber-950 text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded font-black shadow-xs">
+                  مسار القراءة 📖
+                </span>
+              </div>
+              <p className="text-[10px] text-emerald-100 hidden sm:block leading-none">
+                جمل للمتعثرين • نصوص قصيرة • نصوص متقدمة
+              </p>
+            </div>
+          </button>
+
           {/* Center Grade Selector (Dropdown to keep header uncluttered) */}
-          <div className="relative hidden md:block" ref={dropdownRef}>
+          <div className="relative hidden lg:block" ref={dropdownRef}>
             <button
               id="header-grade-dropdown-btn"
               onClick={() => setGradeDropdownOpen(!gradeDropdownOpen)}

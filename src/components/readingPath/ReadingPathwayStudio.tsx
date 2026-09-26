@@ -26,6 +26,9 @@ import {
 import { 
   ReadingTextItem, 
   ReadingLevel, 
+  ReadingContentType,
+  ComprehensionQuestion,
+  VocabularyItem,
   StudentReadingRecord 
 } from '../../types/readingPath';
 import { 
@@ -41,19 +44,40 @@ interface ReadingPathwayStudioProps {
   studentName: string;
   onAddStars: (count: number) => void;
   onBackToHome?: () => void;
+  initialTrack?: 'all' | 'struggling' | 'short_text' | 'advanced';
 }
 
 export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
   studentName,
   onAddStars,
-  onBackToHome
+  onBackToHome,
+  initialTrack = 'all'
 }) => {
   // Main view modes: 'library' | 'studio' | 'stats'
   const [viewMode, setViewMode] = useState<'library' | 'studio' | 'stats'>('library');
 
+  // Selected Track Filter: 'all' | 'struggling' (L1-2 sentences) | 'short_text' (L3-4 short) | 'advanced' (L5-6 long)
+  const [selectedTrackFilter, setSelectedTrackFilter] = useState<'all' | 'struggling' | 'short_text' | 'advanced'>(initialTrack);
+
+  useEffect(() => {
+    if (initialTrack) {
+      setSelectedTrackFilter(initialTrack);
+      if (initialTrack === 'struggling') setSelectedLevelFilter(0);
+      else if (initialTrack === 'short_text') setSelectedLevelFilter(0);
+      else if (initialTrack === 'advanced') setSelectedLevelFilter(0);
+    }
+  }, [initialTrack]);
+
   // Selected Level filter (0 = all)
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Quick Ingest Box State
+  const [showQuickIngestBox, setShowQuickIngestBox] = useState<boolean>(false);
+  const [quickInputContent, setQuickInputContent] = useState<string>('');
+  const [quickInputTitle, setQuickInputTitle] = useState<string>('');
+  const [quickTargetCategory, setQuickTargetCategory] = useState<'struggling' | 'short_text' | 'advanced'>('struggling');
+  const [quickAddSuccess, setQuickAddSuccess] = useState<string | null>(null);
 
   // Texts list with localStorage persistence
   const [texts, setTexts] = useState<ReadingTextItem[]>(() => {
@@ -169,6 +193,113 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
     }));
   };
 
+  // Quick Text Ingest Handler (Direct One-Click addition from Teacher)
+  const handleQuickAddText = () => {
+    if (!quickInputContent.trim()) {
+      alert('يرجى كتابة أو لصق النص أولاً');
+      return;
+    }
+
+    const trimmed = quickInputContent.trim();
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
+
+    // Determine target level & content type
+    let assignedLevel: ReadingLevel = 1;
+    let assignedType: ReadingContentType = 'sentence';
+    let expectedTimeSec = 15;
+
+    if (quickTargetCategory === 'struggling') {
+      assignedLevel = wordCount > 7 ? 2 : 1;
+      assignedType = 'sentence';
+      expectedTimeSec = Math.max(12, wordCount * 2);
+    } else if (quickTargetCategory === 'short_text') {
+      assignedLevel = wordCount > 25 ? 4 : 3;
+      assignedType = wordCount > 25 ? 'short_text' : 'sentences_group';
+      expectedTimeSec = Math.max(25, Math.round(wordCount * 1.5));
+    } else {
+      assignedLevel = wordCount > 70 ? 6 : 5;
+      assignedType = wordCount > 70 ? 'long_text' : 'medium_text';
+      expectedTimeSec = Math.max(60, Math.round(wordCount * 1.2));
+    }
+
+    // Auto title
+    const autoTitle = quickInputTitle.trim() || 
+      (words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : ''));
+
+    // Detect skills
+    const detectedSkills: string[] = [];
+    if (trimmed.includes('ا') || trimmed.includes('ـا') || trimmed.includes('ى')) detectedSkills.push('المد بالألف');
+    if (trimmed.includes('و') || trimmed.includes('ـو')) detectedSkills.push('المد بالواو');
+    if (trimmed.includes('ي') || trimmed.includes('ـي') || trimmed.includes('ـيـ')) detectedSkills.push('المد بالياء');
+    if (trimmed.includes('ّ')) detectedSkills.push('الحرف المشدد');
+    if (trimmed.includes('ً') || trimmed.includes('ٍ') || trimmed.includes('ٌ')) detectedSkills.push('التنوين');
+    if (trimmed.includes('الْ') || trimmed.includes('ال')) detectedSkills.push('اللام القمرية والشمسية');
+    if (trimmed.includes('ة') || trimmed.includes('ـة')) detectedSkills.push('التاء المربوطة');
+    if (trimmed.includes('ْ')) detectedSkills.push('المقطع الساكن');
+    if (detectedSkills.length === 0) detectedSkills.push('القراءة والطلاقة', 'الفهم والاستيعاب');
+
+    // Extract potential vocabulary (words > 4 chars)
+    const longWords: string[] = Array.from(new Set<string>(words.filter(w => w.replace(/[ًٌٍَُِّْـ]/g, '').length >= 4))).slice(0, 3);
+    const newVocab: VocabularyItem[] = longWords.map(w => ({
+      word: w,
+      meaning: 'كلمة هامة في سياق النص وفهم المعنى'
+    }));
+
+    // Auto Questions
+    const autoQuestions: ComprehensionQuestion[] = [
+      {
+        id: `q_quick_${Date.now()}_1`,
+        type: 'multiple_choice',
+        question: `عَمَّ يَتَحَدَّثُ النَّصُّ الرَّئِيسُ؟`,
+        options: [autoTitle, 'مَوْضُوعٌ آخَرُ مُخْتَلِفٌ', 'قِصَّةٌ أُخْرَى', 'لَا شَيْءَ مِمَّا سَبَقَ'],
+        correctAnswer: 0,
+        explanation: `يتحدث النص عن: ${autoTitle}`
+      }
+    ];
+
+    if (words.length >= 8) {
+      autoQuestions.push({
+        id: `q_quick_${Date.now()}_2`,
+        type: 'find_word',
+        question: `ابْحَثْ فِي النَّصِّ عَنْ كَلِمَةِ: (${words[1] || words[0]})`,
+        targetWord: words[1] || words[0],
+        options: [words[1] || words[0], words[Math.min(3, words.length - 1)] || 'الْمَدْرَسَة', 'الْكِتَاب', 'الْعَمَل'],
+        correctAnswer: words[1] || words[0],
+        explanation: 'وردت هذه الكلمة في النص القرائي.'
+      });
+    }
+
+    const newItem: ReadingTextItem = {
+      id: `text_custom_${Date.now()}`,
+      title: autoTitle,
+      level: assignedLevel,
+      contentType: assignedType,
+      content: trimmed,
+      paragraphs: assignedType === 'long_text' ? trimmed.split('\n\n').filter(Boolean) : undefined,
+      wordCount,
+      targetSkills: detectedSkills.slice(0, 4),
+      newVocabulary: newVocab,
+      questions: autoQuestions,
+      expectedDurationSec: expectedTimeSec,
+      orderIndex: texts.length + 1,
+      isCustom: true
+    };
+
+    setTexts([newItem, ...texts]);
+    setQuickInputContent('');
+    setQuickInputTitle('');
+    setQuickAddSuccess(`تمت إضافة "${autoTitle}" بنجاح إلى مسار ${
+      assignedLevel <= 2 ? 'المتعثرين (جمل)' : assignedLevel <= 4 ? 'النصوص القصيرة' : 'المتميزين (نصوص طويلة)'
+    }! ✨`);
+
+    audioManager.play('fanfare');
+
+    setTimeout(() => {
+      setQuickAddSuccess(null);
+    }, 4000);
+  };
+
   // Reset all student progress
   const handleResetProgress = () => {
     if (confirm('هل تريد إعادة ضبط سجل قراءات الطالب والبدء من جديد؟')) {
@@ -179,19 +310,34 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
     }
   };
 
-  // Filter texts
+  // Filter texts by Track & Level & Search
   const filteredTexts = texts.filter((item) => {
+    // Track Match
+    let matchesTrack = true;
+    if (selectedTrackFilter === 'struggling') {
+      matchesTrack = item.level === 1 || item.level === 2;
+    } else if (selectedTrackFilter === 'short_text') {
+      matchesTrack = item.level === 3 || item.level === 4;
+    } else if (selectedTrackFilter === 'advanced') {
+      matchesTrack = item.level === 5 || item.level === 6;
+    }
+
     const matchesLevel = selectedLevelFilter === 0 || item.level === selectedLevelFilter;
     const matchesSearch = 
       item.title.includes(searchQuery) ||
       item.content.includes(searchQuery) ||
       item.targetSkills?.some(s => s.includes(searchQuery)) ||
       item.newVocabulary?.some(v => v.word.includes(searchQuery));
-    return matchesLevel && matchesSearch;
+
+    return matchesTrack && matchesLevel && matchesSearch;
   });
 
   // Calculate global summary stats
   const completedCount = (Object.values(records) as StudentReadingRecord[]).filter(r => r?.completed).length;
+
+  const strugglingCount = texts.filter(t => t.level <= 2).length;
+  const shortTextCount = texts.filter(t => t.level === 3 || t.level === 4).length;
+  const advancedCount = texts.filter(t => t.level >= 5).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-right">
@@ -266,6 +412,14 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
               {/* Action Buttons Top */}
               <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
                 <button
+                  onClick={() => setShowQuickIngestBox(!showQuickIngestBox)}
+                  className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-lg animate-pulse"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-950" />
+                  <span>📥 إضافة نص ترسله فوراً</span>
+                </button>
+
+                <button
                   id="open-stats-dashboard-btn"
                   onClick={() => setViewMode('stats')}
                   className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -283,13 +437,112 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>+ إضافة نص جديد</span>
+                  <span>+ محرر متقدم</span>
                 </button>
               </div>
             </div>
 
+            {/* Three Dedicated Tracks Selector */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-6 pt-6 border-t border-emerald-800/60">
+              {/* Struggling Track Card */}
+              <button
+                onClick={() => {
+                  setSelectedTrackFilter(selectedTrackFilter === 'struggling' ? 'all' : 'struggling');
+                  setSelectedLevelFilter(0);
+                }}
+                className={`p-3.5 rounded-2xl text-right transition-all cursor-pointer relative overflow-hidden border ${
+                  selectedTrackFilter === 'struggling'
+                    ? 'bg-emerald-500 text-slate-950 ring-2 ring-white shadow-xl scale-[1.02]'
+                    : 'bg-emerald-950/60 hover:bg-emerald-800/50 text-emerald-100 border-emerald-500/30'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🌱</span>
+                    <span className={`text-xs font-black ${selectedTrackFilter === 'struggling' ? 'text-slate-950' : 'text-emerald-300'}`}>
+                      مسار المتعثرين (قراءة الجمل)
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                    selectedTrackFilter === 'struggling' ? 'bg-slate-950 text-white' : 'bg-emerald-500/30 text-emerald-200'
+                  }`}>
+                    {strugglingCount} نصوص
+                  </span>
+                </div>
+                <p className={`text-[11px] leading-relaxed line-clamp-2 ${
+                  selectedTrackFilter === 'struggling' ? 'text-slate-900 font-bold' : 'text-emerald-200/80'
+                }`}>
+                  جمل قصيرة ومتوسطة (المستوى 1 و 2) لكسر حاجز التهجئة البطيئة وتنمية القراءة المسترسلة.
+                </p>
+              </button>
+
+              {/* Short Texts Track Card */}
+              <button
+                onClick={() => {
+                  setSelectedTrackFilter(selectedTrackFilter === 'short_text' ? 'all' : 'short_text');
+                  setSelectedLevelFilter(0);
+                }}
+                className={`p-3.5 rounded-2xl text-right transition-all cursor-pointer relative overflow-hidden border ${
+                  selectedTrackFilter === 'short_text'
+                    ? 'bg-cyan-500 text-slate-950 ring-2 ring-white shadow-xl scale-[1.02]'
+                    : 'bg-cyan-950/60 hover:bg-cyan-800/50 text-cyan-100 border-cyan-500/30'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🌿</span>
+                    <span className={`text-xs font-black ${selectedTrackFilter === 'short_text' ? 'text-slate-950' : 'text-cyan-300'}`}>
+                      مسار النصوص القصيرة (التطويري)
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                    selectedTrackFilter === 'short_text' ? 'bg-slate-950 text-white' : 'bg-cyan-500/30 text-cyan-200'
+                  }`}>
+                    {shortTextCount} نصوص
+                  </span>
+                </div>
+                <p className={`text-[11px] leading-relaxed line-clamp-2 ${
+                  selectedTrackFilter === 'short_text' ? 'text-slate-900 font-bold' : 'text-cyan-200/80'
+                }`}>
+                  نصوص من 2 إلى 4 جمل ونصوص 40-80 كلمة (المستوى 3 و 4) مع مؤقت القراءة وأسئلة الاستيعاب.
+                </p>
+              </button>
+
+              {/* Advanced Long Texts Track Card */}
+              <button
+                onClick={() => {
+                  setSelectedTrackFilter(selectedTrackFilter === 'advanced' ? 'all' : 'advanced');
+                  setSelectedLevelFilter(0);
+                }}
+                className={`p-3.5 rounded-2xl text-right transition-all cursor-pointer relative overflow-hidden border ${
+                  selectedTrackFilter === 'advanced'
+                    ? 'bg-amber-400 text-slate-950 ring-2 ring-white shadow-xl scale-[1.02]'
+                    : 'bg-amber-950/60 hover:bg-amber-800/50 text-amber-100 border-amber-500/30'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">👑</span>
+                    <span className={`text-xs font-black ${selectedTrackFilter === 'advanced' ? 'text-slate-950' : 'text-amber-300'}`}>
+                      مسار المتميزين (النصوص الطويلة)
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                    selectedTrackFilter === 'advanced' ? 'bg-slate-950 text-white' : 'bg-amber-500/30 text-amber-200'
+                  }`}>
+                    {advancedCount} نصوص
+                  </span>
+                </div>
+                <p className={`text-[11px] leading-relaxed line-clamp-2 ${
+                  selectedTrackFilter === 'advanced' ? 'text-slate-900 font-bold' : 'text-amber-200/80'
+                }`}>
+                  نصوص طويلة مقسمة لفقرات (المستوى 5 و 6) مع الفهم العميق والتحليل ومعدل الطلاقة وسرعة WPM.
+                </p>
+              </button>
+            </div>
+
             {/* Quick Level Navigator Mini Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 mt-6 pt-6 border-t border-emerald-800/60">
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 mt-4 pt-4 border-t border-emerald-800/40">
               {[1, 2, 3, 4, 5, 6].map((lvl) => {
                 const info = READING_LEVEL_INFO[lvl];
                 const count = texts.filter(t => t.level === lvl).length;
@@ -298,7 +551,10 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
                 return (
                   <button
                     key={lvl}
-                    onClick={() => setSelectedLevelFilter(lvl)}
+                    onClick={() => {
+                      setSelectedLevelFilter(selectedLevelFilter === lvl ? 0 : lvl);
+                      setSelectedTrackFilter('all');
+                    }}
                     className={`p-2.5 rounded-2xl text-right transition-all cursor-pointer ${
                       selectedLevelFilter === lvl 
                         ? 'bg-white text-slate-950 shadow-md ring-2 ring-amber-400' 
@@ -325,15 +581,129 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
             </div>
           </div>
 
+          {/* Direct Quick Text Feeder Box (Always ready for new texts from teacher) */}
+          {showQuickIngestBox && (
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-3xl border-2 border-amber-300 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
+                    📥
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900 font-alexandria">
+                      إضافة سريعة لأي نص جديد ترسله للمنصة
+                    </h3>
+                    <p className="text-xs text-amber-900 font-medium">
+                      اكتب أو الصق النص هنا وسيتم تحليله وإدراجه في المسار وتوليد أسئلته فوراً.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowQuickIngestBox(false)}
+                  className="w-8 h-8 rounded-full bg-amber-200/70 hover:bg-amber-300 text-slate-800 flex items-center justify-center text-sm font-bold cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {quickAddSuccess && (
+                <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-2xl text-xs font-bold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>{quickAddSuccess}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="md:col-span-2 space-y-3">
+                  <input
+                    type="text"
+                    value={quickInputTitle}
+                    onChange={(e) => setQuickInputTitle(e.target.value)}
+                    placeholder="عنوان النص (اختياري، مثلاً: قصة العصفور الصغير)"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-white text-xs font-bold text-slate-900 focus:ring-2 focus:ring-amber-400 outline-hidden"
+                  />
+
+                  <textarea
+                    rows={4}
+                    value={quickInputContent}
+                    onChange={(e) => setQuickInputContent(e.target.value)}
+                    placeholder="الصق أو اكتب النص هنا مع الحركات إن وجدت... (مثال: ذَهَبَ عَلِيٌّ إِلَى الْمَدْرَسَةِ فَرِحًا...)"
+                    className="w-full p-4 rounded-2xl border border-amber-200 bg-white text-sm font-amiri leading-relaxed text-slate-900 focus:ring-2 focus:ring-amber-400 outline-hidden resize-none"
+                  />
+                </div>
+
+                <div className="flex flex-col justify-between gap-3 bg-white/80 p-4 rounded-2xl border border-amber-200">
+                  <div>
+                    <label className="block text-xs font-black text-slate-800 mb-2">
+                      اختر فئة ومسار النص:
+                    </label>
+                    <div className="space-y-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setQuickTargetCategory('struggling')}
+                        className={`w-full p-2 rounded-xl text-right text-xs font-black flex items-center justify-between border cursor-pointer ${
+                          quickTargetCategory === 'struggling'
+                            ? 'bg-emerald-100 border-emerald-400 text-emerald-950'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>🌱 جملة للمتعثرين (م 1-2)</span>
+                        {quickTargetCategory === 'struggling' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setQuickTargetCategory('short_text')}
+                        className={`w-full p-2 rounded-xl text-right text-xs font-black flex items-center justify-between border cursor-pointer ${
+                          quickTargetCategory === 'short_text'
+                            ? 'bg-cyan-100 border-cyan-400 text-cyan-950'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>🌿 نص قصير متوسط (م 3-4)</span>
+                        {quickTargetCategory === 'short_text' && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" />}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setQuickTargetCategory('advanced')}
+                        className={`w-full p-2 rounded-xl text-right text-xs font-black flex items-center justify-between border cursor-pointer ${
+                          quickTargetCategory === 'advanced'
+                            ? 'bg-amber-200 border-amber-500 text-amber-950'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>👑 نص طويل للمتميزين (م 5-6)</span>
+                        {quickTargetCategory === 'advanced' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleQuickAddText}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-300" />
+                    <span>تحليل وتثبيت في المسار فوراً</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Level Filter Tabs & Search Bar */}
           <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               {/* Filter Tabs */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
-                  onClick={() => setSelectedLevelFilter(0)}
+                  onClick={() => {
+                    setSelectedLevelFilter(0);
+                    setSelectedTrackFilter('all');
+                  }}
                   className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                    selectedLevelFilter === 0 
+                    selectedLevelFilter === 0 && selectedTrackFilter === 'all'
                       ? 'bg-emerald-800 text-white shadow-sm' 
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
@@ -344,7 +714,10 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
                 {[1, 2, 3, 4, 5, 6].map((lvl) => (
                   <button
                     key={lvl}
-                    onClick={() => setSelectedLevelFilter(lvl)}
+                    onClick={() => {
+                      setSelectedLevelFilter(lvl);
+                      setSelectedTrackFilter('all');
+                    }}
                     className={`px-3 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1 ${
                       selectedLevelFilter === lvl 
                         ? 'bg-emerald-700 text-white shadow-sm' 
@@ -355,6 +728,20 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
                     <span>المستوى {lvl}</span>
                   </button>
                 ))}
+
+                {selectedTrackFilter !== 'all' && (
+                  <span className="px-2.5 py-1.5 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-xs font-black flex items-center gap-1">
+                    <span>
+                      {selectedTrackFilter === 'struggling' ? '🌱 مسار المتعثرين' : selectedTrackFilter === 'short_text' ? '🌿 مسار النصوص القصيرة' : '👑 مسار المتميزين'}
+                    </span>
+                    <button
+                      onClick={() => setSelectedTrackFilter('all')}
+                      className="text-amber-700 hover:text-amber-950 font-bold ml-1"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
               </div>
 
               {/* Search Bar */}

@@ -20,13 +20,15 @@ interface GradeSelectorProps {
   onSelectGrade: (grade: GradeId) => void;
   completedQuizzesCount: number;
   onOpenSupportPlans?: () => void;
+  onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
 }
 
 export const GradeSelector: React.FC<GradeSelectorProps> = ({
   selectedGrade,
   onSelectGrade,
   completedQuizzesCount,
-  onOpenSupportPlans
+  onOpenSupportPlans,
+  onOpenReadingPathway
 }) => {
   return (
     <div className="bg-gradient-to-b from-slate-100 to-slate-50 border-b border-slate-200 py-6 px-4 sm:px-6">
@@ -60,6 +62,76 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Highlighted Banner: 🚀 مسار الانطلاق في القراءة المتدرج */}
+        {onOpenReadingPathway && (
+          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white border-2 border-emerald-400/50 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 -translate-x-10 -translate-y-10 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shrink-0 shadow-lg text-2xl">
+                  🚀
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black tracking-wide">
+                      جديد وحصري • ٦ مستويات متدرجة
+                    </span>
+                    <span className="text-xs text-emerald-200 font-bold">
+                      موجّه لجميع الطلاب (المتعثرين والمتوسطين والمتميزين)
+                    </span>
+                  </div>
+                  <h2 className="text-base sm:text-xl font-black font-alexandria text-white">
+                    📖 مسار الانطلاق في القراءة وفهم المقروء
+                  </h2>
+                  <p className="text-xs text-slate-200 mt-0.5 max-w-2xl leading-relaxed">
+                    من قراءة الجمل البسيطة للمتعثرين إلى النصوص القصيرة والمتوسطة ثم النصوص الطويلة للمتميزين، مع مؤقت القراءة، التسجيل الصوتي، وأسئلة الفهم والإضافة السريعة.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Launch Buttons into Specific Tracks */}
+              <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto shrink-0">
+                <button
+                  id="grade-selector-launch-struggling-btn"
+                  onClick={() => onOpenReadingPathway('struggling')}
+                  className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-100 hover:text-white text-xs font-bold border border-emerald-400/40 transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <span>🟢</span>
+                  <span>مسار المتعثرين (الجمل)</span>
+                </button>
+
+                <button
+                  id="grade-selector-launch-short-btn"
+                  onClick={() => onOpenReadingPathway('short_text')}
+                  className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-amber-500/30 hover:bg-amber-500/50 text-amber-100 hover:text-white text-xs font-bold border border-amber-400/40 transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <span>🟡</span>
+                  <span>النصوص القصيرة</span>
+                </button>
+
+                <button
+                  id="grade-selector-launch-advanced-btn"
+                  onClick={() => onOpenReadingPathway('advanced')}
+                  className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-purple-500/30 hover:bg-purple-500/50 text-purple-100 hover:text-white text-xs font-bold border border-purple-400/40 transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <span>🟣</span>
+                  <span>النصوص الطويلة (المتميزين)</span>
+                </button>
+
+                <button
+                  id="grade-selector-launch-full-btn"
+                  onClick={() => onOpenReadingPathway('all')}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-slate-950" />
+                  <span>دخول مسار الانطلاق الشامل</span>
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Highlighted Callout for Grade 1 Support Plans & Google Drive */}
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-rose-900 via-rose-950 to-slate-900 text-white border border-rose-500/40 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
