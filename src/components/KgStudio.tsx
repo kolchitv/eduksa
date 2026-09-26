@@ -102,13 +102,15 @@ export const KgStudio: React.FC = () => {
   // ==========================
   // 100 Spelling Words State (KG1 & KG2)
   // ==========================
-  const [wordFilter, setWordFilter] = useState<'all' | 'fatha' | 'kasra' | 'damma' | 'mad'>('all');
+  const [wordFilter, setWordFilter] = useState<'all' | 'fatha' | 'kasra' | 'damma' | 'rubai'>('all');
+  const [kg1Filter, setKg1Filter] = useState<'all' | 'fatha' | 'kasra' | 'damma' | 'rubai'>('all');
+  const [kg1SearchQuery, setKg1SearchQuery] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentWordIdx, setCurrentWordIdx] = useState<number>(0);
-  const [activeSpellStep, setActiveSpellStep] = useState<number>(0); // 0: None, 1: char1, 2: char2, 3: char3, 4: full
+  const [activeSpellStep, setActiveSpellStep] = useState<number>(0); // 0: None, 1: char1, 2: char2, 3: char3, 4: char4, 5: full
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false);
 
-  // Filtered words
+  // Filtered words for KG2
   const filteredWords = SPELLING_100_WORDS.filter((w) => {
     const matchesCategory = wordFilter === 'all' || w.category === wordFilter;
     const matchesSearch = 
@@ -117,7 +119,22 @@ export const KgStudio: React.FC = () => {
       w.meaning.includes(searchQuery.trim()) ||
       w.char1.includes(searchQuery.trim()) ||
       w.char2.includes(searchQuery.trim()) ||
-      w.char3.includes(searchQuery.trim());
+      w.char3.includes(searchQuery.trim()) ||
+      (w.char4 && w.char4.includes(searchQuery.trim()));
+    return matchesCategory && matchesSearch;
+  });
+
+  // Filtered words for KG1 Beginner Spelling
+  const kg1FilteredWords = SPELLING_100_WORDS.filter((w) => {
+    const matchesCategory = kg1Filter === 'all' || w.category === kg1Filter;
+    const matchesSearch = 
+      !kg1SearchQuery.trim() || 
+      w.full.includes(kg1SearchQuery.trim()) || 
+      w.meaning.includes(kg1SearchQuery.trim()) ||
+      w.char1.includes(kg1SearchQuery.trim()) ||
+      w.char2.includes(kg1SearchQuery.trim()) ||
+      w.char3.includes(kg1SearchQuery.trim()) ||
+      (w.char4 && w.char4.includes(kg1SearchQuery.trim()));
     return matchesCategory && matchesSearch;
   });
 
@@ -183,11 +200,11 @@ export const KgStudio: React.FC = () => {
 
   // Setup Builder Game
   const initWordBuilder = (word: SpellingWord) => {
-    setBuilderSlots([null, null, null]);
+    const correctChars = [word.char1, word.char2, word.char3, word.char4].filter(Boolean) as string[];
+    setBuilderSlots(new Array(correctChars.length).fill(null));
     setBuilderFeedback(null);
-    const correctChars = [word.char1, word.char2, word.char3].filter(Boolean);
-    const randomDistractors = ['مَ', 'بَ', 'سَ', 'لَ', 'رَ', 'فَ'].filter(c => !correctChars.includes(c));
-    const allOptions = [...correctChars, randomDistractors[0] || 'نَ', randomDistractors[1] || 'تَ'].sort(() => Math.random() - 0.5);
+    const randomDistractors = ['مَـ', 'بَـ', 'سَـ', 'لَـ', 'رَ', 'فَـ', 'نَـ', 'تَـ'].filter(c => !correctChars.includes(c));
+    const allOptions = [...correctChars, randomDistractors[0] || 'نَـ', randomDistractors[1] || 'تَـ'].sort(() => Math.random() - 0.5);
     setBuilderOptions(allOptions);
   };
 
@@ -281,7 +298,14 @@ export const KgStudio: React.FC = () => {
     if (step === 1) speakText(activeSpellingWord.char1);
     if (step === 2) speakText(activeSpellingWord.char2);
     if (step === 3) speakText(activeSpellingWord.char3);
-    if (step === 4) speakText(activeSpellingWord.full);
+    if (step === 4) {
+      if (activeSpellingWord.char4) {
+        speakText(activeSpellingWord.char4);
+      } else {
+        speakText(activeSpellingWord.full);
+      }
+    }
+    if (step === 5) speakText(activeSpellingWord.full);
   };
 
   // Auto Full Blending (Sequential Step Player)
@@ -303,11 +327,18 @@ export const KgStudio: React.FC = () => {
     if (activeSpellingWord.char3) {
       setActiveSpellStep(3);
       await audioManager.speakArabic(activeSpellingWord.char3, 0.8);
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 350));
     }
 
-    // Step 4: Complete Blended Word
-    setActiveSpellStep(4);
+    // Step 4: Purple Char (for 4-letter words)
+    if (activeSpellingWord.char4) {
+      setActiveSpellStep(4);
+      await audioManager.speakArabic(activeSpellingWord.char4, 0.8);
+      await new Promise((r) => setTimeout(r, 350));
+    }
+
+    // Step 5 or 4: Complete Blended Word
+    setActiveSpellStep(activeSpellingWord.char4 ? 5 : 4);
     await audioManager.speakArabic(activeSpellingWord.full, 0.75);
     audioManager.playCorrect();
 
@@ -341,8 +372,8 @@ export const KgStudio: React.FC = () => {
     newSlots[firstEmpty] = char;
     setBuilderSlots(newSlots);
 
-    // If filled 3 slots, verify
-    const expected = [activeSpellingWord.char1, activeSpellingWord.char2, activeSpellingWord.char3].filter(Boolean);
+    // If filled all slots, verify
+    const expected = [activeSpellingWord.char1, activeSpellingWord.char2, activeSpellingWord.char3, activeSpellingWord.char4].filter(Boolean);
     const filledCount = newSlots.filter(Boolean).length;
 
     if (filledCount === expected.length) {
@@ -362,7 +393,8 @@ export const KgStudio: React.FC = () => {
   // Reset Builder
   const handleResetBuilder = () => {
     audioManager.playClick();
-    setBuilderSlots([null, null, null]);
+    const expected = [activeSpellingWord.char1, activeSpellingWord.char2, activeSpellingWord.char3, activeSpellingWord.char4].filter(Boolean);
+    setBuilderSlots(new Array(expected.length).fill(null));
     setBuilderFeedback(null);
   };
 
@@ -675,7 +707,7 @@ export const KgStudio: React.FC = () => {
                 }`}
               >
                 <span>🌟</span>
-                <span>كلمات التهجئة الأولى (٣٠ بالفتح)</span>
+                <span>كلمات التهجئة الأولى (١٠٠ كلمة شاملة الرباعية)</span>
               </button>
 
               <button
@@ -881,36 +913,127 @@ export const KgStudio: React.FC = () => {
             </div>
           )}
 
-          {/* VIEW 3: Beginner Spelling Words (30 Fatha Words) */}
+          {/* VIEW 3: Beginner Spelling Words (100 Words with 4-Letter Support) */}
           {kg1Tab === 'beginnerSpelling' && (
             <div className="space-y-6">
               <div className="bg-sky-50 border border-sky-200 rounded-3xl p-6 text-center">
-                <h3 className="text-xl font-black text-sky-950 mb-1 font-alexandria">
-                  🌟 كلمات التهجئة الأولى للبراعم (٣٠ كلمة بحركة الفتح فقط)
+                <h3 className="text-xl sm:text-2xl font-black text-sky-950 mb-1 font-alexandria">
+                  🌟 كلمات التهجئة الأولى للبراعم (بنك الـ ١٠٠ كلمة شاملاً الكلمات الرباعية)
                 </h3>
-                <p className="text-xs text-sky-800">
-                  انقر على أي كلمة للاستماع لنطقها الصوتي المجزأ وتدريب الطفل على القراءة السريعة
+                <p className="text-xs sm:text-sm text-sky-800">
+                  انقر على أي كلمة للاستماع لنطقها الصوتي المجزأ وتدريب الطفل على القراءة والتهجئة السريعة
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                {SPELLING_100_WORDS.filter(w => w.category === 'fatha').map((w) => (
+              {/* Category Pills & Search Toolbar in KG1 */}
+              <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => setKg1Filter('all')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        kg1Filter === 'all'
+                          ? 'bg-sky-700 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      🌟 جميع الكلمات (١٠٠ كلمة)
+                    </button>
+                    <button
+                      onClick={() => setKg1Filter('fatha')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        kg1Filter === 'fatha'
+                          ? 'bg-rose-700 text-white shadow-sm'
+                          : 'bg-rose-50 text-rose-800 hover:bg-rose-100'
+                      }`}
+                    >
+                      🔴 ثلاثي بالفتح (٣٠ كلمة)
+                    </button>
+                    <button
+                      onClick={() => setKg1Filter('kasra')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        kg1Filter === 'kasra'
+                          ? 'bg-sky-700 text-white shadow-sm'
+                          : 'bg-sky-50 text-sky-800 hover:bg-sky-100'
+                      }`}
+                    >
+                      🔵 حركة الكسر (١٥ كلمة)
+                    </button>
+                    <button
+                      onClick={() => setKg1Filter('damma')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        kg1Filter === 'damma'
+                          ? 'bg-emerald-700 text-white shadow-sm'
+                          : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                      }`}
+                    >
+                      🟢 حركة الضم (١٥ كلمة)
+                    </button>
+                    <button
+                      onClick={() => setKg1Filter('rubai')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        kg1Filter === 'rubai'
+                          ? 'bg-purple-700 text-white shadow-sm'
+                          : 'bg-purple-50 text-purple-800 hover:bg-purple-100'
+                      }`}
+                    >
+                      🟣 كلمات رباعية ومقاطع ساكنة (٤٠ كلمة)
+                    </button>
+                  </div>
+
+                  {/* Search Input */}
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="ابحث في كلمات التهجئة الأولى..."
+                      value={kg1SearchQuery}
+                      onChange={(e) => setKg1SearchQuery(e.target.value)}
+                      className="w-full pl-3 pr-9 py-2 rounded-xl text-xs font-bold bg-slate-50 border border-slate-200 focus:bg-white focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                  <span>
+                    عرض <strong className="text-sky-700">{kg1FilteredWords.length}</strong> كلمة في هذا القسم
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    💡 انقر على البطاقة للاستماع للتهجئة الصوتية المجزأة الملونة
+                  </span>
+                </div>
+              </div>
+
+              {/* KG1 100 Words Grid Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+                {kg1FilteredWords.map((w) => (
                   <button
                     key={w.id}
                     onClick={() => {
-                      speakText(`${w.char1}.. ${w.char2}.. ${w.char3}.. ${w.full}`);
+                      if (w.char4) {
+                        speakText(`${w.char1}.. ${w.char2}.. ${w.char3}.. ${w.char4}.. ${w.full}`);
+                      } else {
+                        speakText(`${w.char1}.. ${w.char2}.. ${w.char3}.. ${w.full}`);
+                      }
                       audioManager.playClick();
                     }}
-                    className="p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-sky-400 text-center transition-all hover:scale-105 shadow-xs group"
+                    className="p-4 rounded-3xl bg-white border-2 border-slate-200 hover:border-sky-400 text-center transition-all hover:scale-105 shadow-xs hover:shadow-md group relative"
                   >
-                    <div className="text-3xl mb-1">{w.emoji}</div>
-                    <div className="text-2xl font-black text-slate-900 font-alexandria mb-1">
+                    <div className="absolute top-3 left-3 text-[10px] font-bold text-slate-400">
+                      #{w.id}
+                    </div>
+                    <div className="text-3xl mb-1 group-hover:scale-110 transition-transform">{w.emoji}</div>
+                    <div className="text-2xl font-black text-slate-900 font-alexandria mb-1 flex items-center justify-center gap-0.5 flex-wrap">
                       <span className="text-rose-600">{w.char1}</span>
                       <span className="text-sky-600">{w.char2}</span>
                       <span className="text-emerald-600">{w.char3}</span>
+                      {w.char4 && <span className="text-purple-600">{w.char4}</span>}
                     </div>
-                    <div className="text-[11px] font-bold text-slate-500">
+                    <div className="text-[11px] font-bold text-slate-600 mb-1">
                       {w.meaning}
+                    </div>
+                    <div className="text-[9px] font-bold px-2 py-0.5 rounded-full inline-block bg-sky-50 text-sky-800">
+                      {w.categoryName}
                     </div>
                   </button>
                 ))}
@@ -1266,7 +1389,7 @@ export const KgStudio: React.FC = () => {
                           : 'bg-sky-50 text-sky-800 hover:bg-sky-100'
                       }`}
                     >
-                      🔵 حركة الكسر (٢٥ كلمة)
+                      🔵 حركة الكسر (١٥ كلمة)
                     </button>
                     <button
                       onClick={() => {
@@ -1279,20 +1402,20 @@ export const KgStudio: React.FC = () => {
                           : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
                       }`}
                     >
-                      🟢 حركة الضم (٢٠ كلمة)
+                      🟢 حركة الضم (١٥ كلمة)
                     </button>
                     <button
                       onClick={() => {
-                        setWordFilter('mad');
+                        setWordFilter('rubai');
                         setCurrentWordIdx(0);
                       }}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        wordFilter === 'mad'
-                          ? 'bg-amber-600 text-white shadow-sm'
-                          : 'bg-amber-50 text-amber-900 hover:bg-amber-100'
+                        wordFilter === 'rubai'
+                          ? 'bg-purple-700 text-white shadow-sm'
+                          : 'bg-purple-50 text-purple-800 hover:bg-purple-100'
                       }`}
                     >
-                      🟡 المدود والكلمات (٢٥ كلمة)
+                      🟣 كلمات رباعية ومقاطع ساكنة (٤٠ كلمة)
                     </button>
                   </div>
 
@@ -1340,10 +1463,11 @@ export const KgStudio: React.FC = () => {
                     <div className="text-3xl mb-1 group-hover:scale-110 transition-transform">
                       {w.emoji}
                     </div>
-                    <div className="text-2xl font-black text-slate-900 font-alexandria mb-1">
+                    <div className="text-2xl font-black text-slate-900 font-alexandria mb-1 flex items-center justify-center gap-0.5 flex-wrap">
                       <span className="text-rose-600">{w.char1}</span>
                       <span className="text-sky-600">{w.char2}</span>
                       <span className="text-emerald-600">{w.char3}</span>
+                      {w.char4 && <span className="text-purple-600">{w.char4}</span>}
                     </div>
                     <div className="text-[11px] font-bold text-slate-600 mb-1">
                       {w.meaning}
@@ -1407,7 +1531,7 @@ export const KgStudio: React.FC = () => {
                 </div>
 
                 {/* Big Color Letters Display */}
-                <div className="my-6 p-6 rounded-3xl bg-slate-50 border border-slate-200 flex items-center justify-center gap-4 sm:gap-6 text-6xl sm:text-7xl font-black font-alexandria select-none">
+                <div className="my-6 p-6 rounded-3xl bg-slate-50 border border-slate-200 flex items-center justify-center gap-3 sm:gap-5 text-5xl sm:text-6xl font-black font-alexandria select-none flex-wrap">
                   {/* Char 1 (Red) */}
                   <span
                     onClick={() => handlePlaySpellStep(1)}
@@ -1419,7 +1543,7 @@ export const KgStudio: React.FC = () => {
                     {activeSpellingWord.char1}
                   </span>
 
-                  <span className="text-slate-300 text-3xl font-light">-</span>
+                  <span className="text-slate-300 text-2xl font-light">-</span>
 
                   {/* Char 2 (Blue) */}
                   <span
@@ -1434,7 +1558,7 @@ export const KgStudio: React.FC = () => {
 
                   {activeSpellingWord.char3 && (
                     <>
-                      <span className="text-slate-300 text-3xl font-light">-</span>
+                      <span className="text-slate-300 text-2xl font-light">-</span>
                       {/* Char 3 (Green) */}
                       <span
                         onClick={() => handlePlaySpellStep(3)}
@@ -1444,6 +1568,22 @@ export const KgStudio: React.FC = () => {
                         title="الحرف الثالث (أخضر)"
                       >
                         {activeSpellingWord.char3}
+                      </span>
+                    </>
+                  )}
+
+                  {activeSpellingWord.char4 && (
+                    <>
+                      <span className="text-slate-300 text-2xl font-light">-</span>
+                      {/* Char 4 (Purple) */}
+                      <span
+                        onClick={() => handlePlaySpellStep(4)}
+                        className={`cursor-pointer transition-transform hover:scale-110 ${
+                          activeSpellStep === 4 ? 'scale-125 text-purple-600 drop-shadow-md' : 'text-purple-500'
+                        }`}
+                        title="الحرف الرابع (بنفسجي)"
+                      >
+                        {activeSpellingWord.char4}
                       </span>
                     </>
                   )}
@@ -1464,20 +1604,20 @@ export const KgStudio: React.FC = () => {
                 </div>
 
                 {/* Step Pronunciation Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 max-w-xl mx-auto mb-6">
+                <div className={`grid grid-cols-2 ${activeSpellingWord.char4 ? 'sm:grid-cols-5' : 'sm:grid-cols-4'} gap-2.5 max-w-xl mx-auto mb-6`}>
                   <button
                     onClick={() => handlePlaySpellStep(1)}
                     className="p-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
                   >
                     <Volume2 className="w-4 h-4 text-rose-600" />
-                    <span>١. نطق ({activeSpellingWord.char1})</span>
+                    <span>١. ({activeSpellingWord.char1})</span>
                   </button>
                   <button
                     onClick={() => handlePlaySpellStep(2)}
                     className="p-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
                   >
                     <Volume2 className="w-4 h-4 text-sky-600" />
-                    <span>٢. نطق ({activeSpellingWord.char2})</span>
+                    <span>٢. ({activeSpellingWord.char2})</span>
                   </button>
                   {activeSpellingWord.char3 && (
                     <button
@@ -1485,15 +1625,24 @@ export const KgStudio: React.FC = () => {
                       className="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
                     >
                       <Volume2 className="w-4 h-4 text-emerald-600" />
-                      <span>٣. نطق ({activeSpellingWord.char3})</span>
+                      <span>٣. ({activeSpellingWord.char3})</span>
+                    </button>
+                  )}
+                  {activeSpellingWord.char4 && (
+                    <button
+                      onClick={() => handlePlaySpellStep(4)}
+                      className="p-3 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                    >
+                      <Volume2 className="w-4 h-4 text-purple-600" />
+                      <span>٤. ({activeSpellingWord.char4})</span>
                     </button>
                   )}
                   <button
-                    onClick={() => handlePlaySpellStep(4)}
-                    className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                    onClick={() => handlePlaySpellStep(activeSpellingWord.char4 ? 5 : 4)}
+                    className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 col-span-2 sm:col-span-1"
                   >
                     <Volume2 className="w-4 h-4 text-amber-600" />
-                    <span>٤. دمج الكلمة</span>
+                    <span>{activeSpellingWord.char4 ? '٥. دمج' : '٤. دمج'}</span>
                   </button>
                 </div>
 
@@ -1545,17 +1694,26 @@ export const KgStudio: React.FC = () => {
                 </div>
               </div>
 
-              {/* 3 Slots */}
-              <div className="flex items-center justify-center gap-3 sm:gap-4 my-6">
-                <div className="w-20 h-20 rounded-2xl border-3 border-dashed border-rose-400 bg-rose-50 flex items-center justify-center text-3xl font-black text-rose-700 font-alexandria">
-                  {builderSlots[0] || '؟'}
-                </div>
-                <div className="w-20 h-20 rounded-2xl border-3 border-dashed border-sky-400 bg-sky-50 flex items-center justify-center text-3xl font-black text-sky-700 font-alexandria">
-                  {builderSlots[1] || '؟'}
-                </div>
-                <div className="w-20 h-20 rounded-2xl border-3 border-dashed border-emerald-400 bg-emerald-50 flex items-center justify-center text-3xl font-black text-emerald-700 font-alexandria">
-                  {builderSlots[2] || '؟'}
-                </div>
+              {/* Dynamic Slots for 3 or 4 letters */}
+              <div className="flex items-center justify-center gap-2 sm:gap-4 my-6 flex-wrap">
+                {builderSlots.map((slot, sIdx) => {
+                  const colorClasses = [
+                    'border-rose-400 bg-rose-50 text-rose-700',
+                    'border-sky-400 bg-sky-50 text-sky-700',
+                    'border-emerald-400 bg-emerald-50 text-emerald-700',
+                    'border-purple-400 bg-purple-50 text-purple-700'
+                  ];
+                  return (
+                    <div
+                      key={sIdx}
+                      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-3 border-dashed flex items-center justify-center text-2xl sm:text-3xl font-black font-alexandria shadow-xs ${
+                        colorClasses[sIdx % colorClasses.length]
+                      }`}
+                    >
+                      {slot || '؟'}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Scrambled Character Buttons */}
