@@ -238,6 +238,127 @@ async function startServer() {
     }
   });
 
+  // AI Smart Reading Text Analyzer (مسار الانطلاق في القراءة)
+  app.post("/api/ai/analyze-reading-text", async (req, res) => {
+    try {
+      const { text, title } = req.body;
+      if (!text || typeof text !== "string") {
+        return res.status(400).json({ error: "النص مطلوب للتحليل" });
+      }
+
+      const words = text.trim().split(/\s+/).filter(Boolean);
+      const wordCount = words.length;
+
+      const ai = getGeminiClient();
+      if (!ai) {
+        // Fallback heuristic analyzer if Gemini client not available
+        let suggestedLevel = 1;
+        let contentType = "sentence";
+        if (wordCount <= 8) {
+          suggestedLevel = 1;
+          contentType = "sentence";
+        } else if (wordCount <= 18) {
+          suggestedLevel = 2;
+          contentType = "sentence";
+        } else if (wordCount <= 35) {
+          suggestedLevel = 3;
+          contentType = "short_text";
+        } else if (wordCount <= 70) {
+          suggestedLevel = 4;
+          contentType = "short_text";
+        } else if (wordCount <= 110) {
+          suggestedLevel = 5;
+          contentType = "medium_text";
+        } else {
+          suggestedLevel = 6;
+          contentType = "long_text";
+        }
+
+        return res.json({
+          title: title || "نص قرائي جديد",
+          wordCount,
+          suggestedLevel,
+          contentType,
+          targetSkills: ["المدود والحركات", "اللام الشمسية والقمرية", "التنوين"],
+          newVocabulary: [
+            { word: words[0] || "الكلمة", meaning: "مفردة مهمة في سياق النص" }
+          ],
+          questions: [
+            {
+              id: `q_${Date.now()}_1`,
+              type: "multiple_choice",
+              question: "عن ماذا يتحدث هذا النص؟",
+              options: ["الفكرة الرئيسية للنص", "موضوع آخر غير مذكور", "أحداث سابقة", "خاتمة القصة"],
+              correctAnswer: 0,
+              explanation: "الإجابة الصحيحة مستنبطة من المعنى العام للنص."
+            }
+          ],
+          expectedDurationSec: Math.max(12, Math.round((wordCount / 50) * 60))
+        });
+      }
+
+      const prompt = `أنت خبير مناهج لغة عربية سعودية للمرحلة الابتدائية ومختص في مهارات القراءة والطلاقة والفهم القرائي.
+قم بتحليل النص القرائي التالي:
+العنوان: "${title || "بدون عنوان"}"
+النص:
+"""
+${text}
+"""
+
+المطلوب:
+1. تحديد عدد الكلمات بدقة.
+2. اقتراح المستوى الأنسب من 1 إلى 6 حسب معايير مسار القراءة:
+   - المستوى 1: كلمات وجمل قصيرة (حتى 8 كلمات)
+   - المستوى 2: جمل متوسطة (8 إلى 18 كلمة)
+   - المستوى 3: نصوص قصيرة جداً (2 إلى 4 جمل، 18 إلى 35 كلمة)
+   - المستوى 4: نصوص قصيرة (35 إلى 70 كلمة)
+   - المستوى 5: نصوص متوسطة (70 إلى 110 كلمات)
+   - المستوى 6: نصوص طويلة ومتقدمة (أكثر من 110 كلمات)
+3. تحديد نوع المحتوى: 'sentence' | 'sentences_group' | 'short_text' | 'medium_text' | 'long_text'
+4. استخراج المهارات القرائية والإملائية الموجودة بالنص (مثل: المد بالألف، اللام الشمسية، التاء المربوطة، الشدة، التنوين، همزة الوصل...).
+5. استخراج 2 إلى 4 كلمات جديدة أو مميزة مع شرح معناها المبسط للأطفال.
+6. صياغة 2 إلى 3 أسئلة فهم قرائي ذكية متنوعة (اختيار من متعدد، من/أين/ماذا/لماذا) مع 4 خيارات وتحديد الفهرس الصحيح (correctAnswer: 0).
+7. حساب المدة المتوقعة للقراءة بالثواني (expectedDurationSec).
+
+أخرج JSON فقط بالشكل التالي:
+{
+  "title": "العنوان المناسب إذا لم يكن محددًا",
+  "wordCount": ${wordCount},
+  "suggestedLevel": 1-6,
+  "contentType": "sentence" | "sentences_group" | "short_text" | "medium_text" | "long_text",
+  "targetSkills": ["مهارة 1", "مهارة 2", "مهارة 3"],
+  "newVocabulary": [
+    { "word": "الكلمة", "meaning": "الشرح المبسط" }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "multiple_choice",
+      "question": "نص السؤال مع الحركات",
+      "options": ["الخيار الصحيح", "خيار خطأ 1", "خيار خطأ 2", "خيار خطأ 3"],
+      "correctAnswer": 0,
+      "explanation": "شرح توضيحي لصحة الإجابة"
+    }
+  ],
+  "expectedDurationSec": 30
+}`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+
+      const parsed = JSON.parse(response.text || "{}");
+      res.json(parsed);
+    } catch (err: any) {
+      console.error("AI Text Analyzer Error:", err);
+      res.status(500).json({ error: "فشل التحليل الذكي للنص" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

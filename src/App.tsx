@@ -17,6 +17,7 @@ import { WhatsAppContact } from './components/WhatsAppContact';
 import { AppInstallAndTelegramModal } from './components/AppInstallAndTelegramModal';
 import { Grade1SupportPlans } from './components/Grade1SupportPlans';
 import { InteractiveWhiteboard } from './components/whiteboard/InteractiveWhiteboard';
+import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStudio';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -45,21 +46,7 @@ export default function App() {
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>(['quiz_found_1']);
   const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
-  const [showSupportPlansFloatingBar, setShowSupportPlansFloatingBar] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('hide_support_plans_bar') !== 'true';
-    } catch (e) {
-      return true;
-    }
-  });
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const handleDismissSupportBar = () => {
-    setShowSupportPlansFloatingBar(false);
-    try {
-      localStorage.setItem('hide_support_plans_bar', 'true');
-    } catch (e) {}
-  };
 
   // Local storage persistence
   useEffect(() => {
@@ -210,6 +197,14 @@ export default function App() {
 
         {activeTab === 'ai' && <AiTutor currentGrade={currentGrade} />}
 
+        {activeTab === 'reading_path' && (
+          <ReadingPathwayStudio
+            studentName={studentName}
+            onAddStars={handleAddStars}
+            onBackToHome={() => setActiveTab('units')}
+          />
+        )}
+
         {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
 
         {activeTab === 'support_plans' && (
@@ -256,71 +251,6 @@ export default function App() {
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
       />
-
-      {/* Floating Quick Bar for Grade 1 Support Plans & App Install (Closable) */}
-      {showSupportPlansFloatingBar && (
-        <div className="no-print fixed bottom-4 right-4 left-4 sm:left-auto sm:right-4 z-40 max-w-sm sm:max-w-md bg-slate-950/95 backdrop-blur-md text-white p-3 sm:p-3.5 rounded-2xl border border-rose-500/40 shadow-2xl flex items-center justify-between gap-2.5 animate-fade-in">
-          <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-9 h-9 rounded-xl bg-rose-600/30 border border-rose-500/50 flex items-center justify-center shrink-0">
-              <FolderOpen className="w-5 h-5 text-amber-300" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <p className="text-[11px] font-black text-rose-300 truncate">
-                  خطط دعم الصف الأول
-                </p>
-              </div>
-              <p className="text-[10px] text-slate-300 truncate">
-                مذكرات علاج الفاقد والضعف القرائي
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              id="floating-install-app-btn"
-              onClick={() => setIsInstallModalOpen(true)}
-              className="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white text-[11px] font-black transition-all flex items-center gap-1 shadow-xs"
-              title="تثبيت التطبيق على جهازك"
-            >
-              <span>📲</span>
-              <span>تثبيت</span>
-            </button>
-            <button
-              id="floating-open-support-plans-btn"
-              onClick={() => {
-                setCurrentGrade('grade1');
-                setActiveTab('support_plans');
-              }}
-              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition-all"
-              title="تصفح بالموقع"
-            >
-              تصفح
-            </button>
-            <a
-              id="floating-open-drive-btn"
-              href={GRADE1_SUPPORT_DRIVE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-[11px] transition-all flex items-center gap-1 shadow-xs"
-              title="فتح Google Drive"
-            >
-              <span>Drive</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
-            <button
-              id="close-floating-support-bar-btn"
-              onClick={handleDismissSupportBar}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-rose-600/80 text-slate-300 hover:text-white flex items-center justify-center transition-colors shrink-0"
-              title="إغلاق النافذة"
-              aria-label="إغلاق"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Saudi Platform Footer */}
       <footer className="no-print bg-slate-900 text-slate-300 border-t border-slate-800 pt-12 pb-8 px-4 sm:px-6 lg:px-8 mt-auto">

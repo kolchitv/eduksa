@@ -29,7 +29,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard';
+export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -297,6 +297,20 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="hidden md:flex items-center justify-between border-t border-slate-100 py-1.5 overflow-x-auto">
           <nav className="flex items-center gap-1">
             <button
+              id="nav-tab-reading-path"
+              onClick={() => onChangeTab('reading_path')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'reading_path'
+                  ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-md ring-2 ring-emerald-300'
+                  : 'text-emerald-950 hover:text-white hover:bg-emerald-700 bg-emerald-100/90 border border-emerald-300 shadow-2xs'
+              }`}
+            >
+              <span className="text-amber-300 font-bold">🚀</span>
+              <span>الانطلاق في القراءة</span>
+              <span className="text-[9px] bg-amber-400 text-amber-950 px-1 rounded font-black">المسار 📖</span>
+            </button>
+
+            <button
               id="nav-tab-units"
               onClick={() => onChangeTab('units')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -502,6 +516,23 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="border-t border-slate-100 pt-3 space-y-1">
+            <button
+              id="mobile-nav-reading-path"
+              onClick={() => {
+                onChangeTab('reading_path');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
+                activeTab === 'reading_path' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'text-emerald-950 bg-emerald-100/80 border border-emerald-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-base">🚀</span>
+                <span>الانطلاق في القراءة (المسار المتدرج)</span>
+              </div>
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-1.5 py-0.5 rounded-full">٦ مستويات</span>
+            </button>
+
             <button
               onClick={() => {
                 onChangeTab('units');
