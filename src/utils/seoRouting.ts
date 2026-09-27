@@ -168,7 +168,9 @@ export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: str
  * Computes descriptive, SEO-rich metadata tailored for search engines and social share cards
  */
 export function getSeoMetadata(state: RouteState): SeoMetadata {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lughati.edu.sa';
+  const origin = typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') 
+    ? window.location.origin 
+    : 'https://www.arabicksa.com';
   const path = getUrlForRoute(state.tab, state.grade, state.readingTrack);
   const canonicalUrl = `${origin}${path}`;
   const gradeData = GRADES_DATA[state.grade] || GRADES_DATA.grade1;

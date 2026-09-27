@@ -97,6 +97,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2 font-medium">
           <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
+          <span className="hidden lg:inline-flex items-center gap-1 font-mono text-[10px] bg-white/15 px-2 py-0.5 rounded-full text-emerald-100 border border-white/20">
+            🌐 arabicksa.com
+          </span>
         </div>
         <div className="flex items-center gap-2 text-emerald-100 text-[11px] sm:text-xs">
           {/* Direct Google Drive Grade 1 Support Link in Top Strip */}

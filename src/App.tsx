@@ -150,7 +150,10 @@ export default function App() {
   const handleCopyCurrentPageLink = () => {
     if (typeof window === 'undefined') return;
     const targetPath = getUrlForRoute(activeTab, currentGrade, selectedReadingTrack);
-    const fullUrl = `${window.location.origin}${targetPath}`;
+    const domain = window.location.origin && !window.location.origin.includes('localhost')
+      ? window.location.origin
+      : 'https://www.arabicksa.com';
+    const fullUrl = `${domain}${targetPath}`;
     navigator.clipboard?.writeText(fullUrl).then(() => {
       setCopiedLinkToast(true);
       setTimeout(() => setCopiedLinkToast(false), 2500);
@@ -457,9 +460,25 @@ export default function App() {
                 <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
                   <BookOpen className="w-5 h-5" />
                 </div>
-                <span className="font-extrabold text-xl text-white font-alexandria">
-                  منصة لُغَتِي التعليمية
-                </span>
+                <div>
+                  <span className="font-extrabold text-xl text-white font-alexandria">
+                    منصة لُغَتِي التعليمية
+                  </span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <a 
+                      href="https://www.arabicksa.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+                    >
+                      <span>www.arabicksa.com</span>
+                      <ExternalLink className="w-2.5 h-2.5 opacity-80" />
+                    </a>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-800/80 text-emerald-200 border border-emerald-600/40">
+                      الموقع الرسمي 🇸🇦
+                    </span>
+                  </div>
+                </div>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed max-w-md">
                 منصة رقمية تفاعلية شاملة لتعليم مقرر لغتي الجميلة حسب المنهاج السعودي المعتمد من مرحلة التأسيس القرائي حتى الصف السادس الابتدائي، مدعومة بالمختبر الصوتي، المعرب الفوري، وبنك التمارين التفاعلية.
