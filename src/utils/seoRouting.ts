@@ -25,9 +25,31 @@ export function parseRouteFromLocation(): RouteState {
     return { tab: 'units', grade: 'grade1' };
   }
 
-  const pathname = window.location.pathname.toLowerCase();
+  // Check for SPA fallback redirect from 404.html or ?p= query param
+  let effectivePathname = window.location.pathname.toLowerCase();
   const searchParams = new URLSearchParams(window.location.search);
-  const hash = window.location.hash.replace('#', '').toLowerCase();
+
+  try {
+    const spaRedirect = sessionStorage.getItem('lughati_spa_redirect');
+    if (spaRedirect) {
+      sessionStorage.removeItem('lughati_spa_redirect');
+      const parsedUrl = new URL(spaRedirect, window.location.origin);
+      if (parsedUrl.pathname && parsedUrl.pathname !== '/') {
+        effectivePathname = parsedUrl.pathname.toLowerCase();
+        window.history.replaceState(null, '', parsedUrl.pathname + parsedUrl.search + parsedUrl.hash);
+      }
+    } else if (searchParams.has('p')) {
+      const p = searchParams.get('p');
+      if (p) {
+        const decoded = decodeURIComponent(p);
+        const parsedUrl = new URL(decoded, window.location.origin);
+        effectivePathname = parsedUrl.pathname.toLowerCase();
+        window.history.replaceState(null, '', parsedUrl.pathname + parsedUrl.search + parsedUrl.hash);
+      }
+    }
+  } catch (e) {}
+
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
 
   // 1. Check query parameters first (?tab=...&grade=...)
   const queryTab = searchParams.get('tab') as TabType | null;
@@ -49,7 +71,7 @@ export function parseRouteFromLocation(): RouteState {
   }
 
   // 2. Parse path-based routes (e.g. /summaries, /units/intermediate1, /reading-path/struggling)
-  const segments = pathname.split('/').filter(Boolean);
+  const segments = effectivePathname.split('/').filter(Boolean);
 
   if (segments.length > 0) {
     const first = segments[0];
@@ -178,12 +200,12 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
   switch (state.tab) {
     case 'summaries':
       return {
-        title: 'ملخصات ومذكرات لغتي الخالدة - الأول والثاني والثالث متوسط | المنهاج السعودي',
-        description: 'مذكرات شاملة لقواعد النحو والإملاء والأساليب لصفوف المرحلة المتوسطة (م١، م٢، م٣) مع نماذج الاختبارات المركزية وجداول الفروق.',
+        title: 'مذكرات المتوسطة - لغتي الخالدة | منصة لغتي التعليمية',
+        description: 'مذكرات شاملة لقواعد النحو والإملاء والأساليب لصفوف القسم المتوسط (م١، م٢، م٣) مع نماذج الاختبارات المركزية وجداول الفروق.',
         canonicalUrl,
-        ogTitle: 'مذكرات وملخصات لغتي الخالدة للمرحلة المتوسطة',
-        ogDescription: 'شرح مبسط، قواعد أقوى الحركات، الفاعل ونائب الفاعل، المبتدأ والخبر، والهمزات مع تدريبات تفاعلية.',
-        keywords: 'ملخصات لغتي الخالدة, الأول متوسط, الثاني متوسط, الثالث متوسط, اختبارات مركزية, مذكرات لغتي'
+        ogTitle: 'مذكرات المتوسطة — لغتي الخالدة بالقسم المتوسط',
+        ogDescription: 'شرح مبسط، قواعد أقوى الحركات، الفاعل ونائب الفاعل، المبتدأ والخبر، والهمزات مع تدريبات تفاعلية لصفوف المرحلة المتوسطة.',
+        keywords: 'مذكرات المتوسطة, لغتي الخالدة, القسم المتوسط, الأول متوسط, الثاني متوسط, الثالث متوسط, اختبارات مركزية'
       };
 
     case 'reading_path': {

@@ -38,6 +38,7 @@ interface UnitViewerProps {
   onOpenWorksheetForLesson?: (lesson: Lesson) => void;
   onOpenSupportPlans?: () => void;
   onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
+  onOpenSummaries?: () => void;
 }
 
 export const UnitViewer: React.FC<UnitViewerProps> = ({
@@ -45,7 +46,8 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   onOpenQuizForLesson,
   onOpenWorksheetForLesson,
   onOpenSupportPlans,
-  onOpenReadingPathway
+  onOpenReadingPathway: _onOpenReadingPathway,
+  onOpenSummaries
 }) => {
   const [selectedUnitIdx, setSelectedUnitIdx] = useState(0);
   const [selectedLessonIdx, setSelectedLessonIdx] = useState(0);
@@ -106,45 +108,43 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   };
 
   const isGrade1Unit1 = curriculum.id === 'grade1' && selectedUnitIdx === 0;
+  const isIntermediate = curriculum.id.startsWith('intermediate');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Quick Launch Banner for Reading Pathway */}
-      {onOpenReadingPathway && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white border-2 border-emerald-400/50 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Intermediate Stage Notes Callout Banner (القسم المتوسط - مذكرات المتوسطة) */}
+      {isIntermediate && onOpenSummaries && (
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-indigo-950 via-slate-900 to-purple-950 text-white border-2 border-indigo-400/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-xl shrink-0 font-bold shadow-md">
-              🚀
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center text-2xl shrink-0 font-bold shadow-md">
+              📑
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black uppercase">
-                  مسار القراءة المتدرج 📖
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black uppercase">
+                  القسم المتوسط 🌟
                 </span>
-                <span className="text-xs text-emerald-200 font-bold">
-                  الانطلاق في القراءة (٦ مستويات)
+                <span className="text-xs text-indigo-200 font-bold">
+                  مذكرات لغتي الخالدة المعتمدة
                 </span>
               </div>
-              <h3 className="text-sm sm:text-base font-black font-alexandria text-white">
-                تعلّم القراءة من الجمل البسيطة للمتعثرين إلى النصوص الطويلة للمتميزين
+              <h3 className="text-base sm:text-lg font-black font-alexandria text-white">
+                مذكرات المتوسطة • ملخصات وقواعد الاختبار المركزي
               </h3>
               <p className="text-xs text-slate-300">
-                تسجيل صوتي، مؤقت القراءة، أسئلة فهم مقروء، وإمكانية إضافة نصوص جديدة مباشرة للمسار.
+                شروح مبسطة، خرائط ذهنية، نماذج اختبارية تفاعلية، وقوالب قابلة للطباعة لصفوف المرحلة المتوسطة.
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-            <button
-              id="unitviewer-launch-reading-pathway-btn"
-              onClick={() => onOpenReadingPathway('all')}
-              className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>دخول مسار الانطلاق في القراءة</span>
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <button
+            id="unitviewer-open-intermediate-notes-btn"
+            onClick={onOpenSummaries}
+            className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>فتح مذكرات المتوسطة</span>
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -152,9 +152,18 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-              {curriculum.name}
+            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+              isIntermediate
+                ? 'bg-indigo-100 text-indigo-900 border-indigo-300'
+                : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+            }`}>
+              {isIntermediate ? 'القسم المتوسط' : curriculum.name}
             </span>
+            {isIntermediate && (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-600 text-white shadow-xs">
+                {curriculum.name} • مذكرات المتوسطة 📑
+              </span>
+            )}
             <span className="text-xs text-slate-500">
               {curriculum.units.length} وحدات دراسية معتمدة
             </span>

@@ -246,6 +246,7 @@ export default function App() {
         completedQuizzesCount={completedQuizzes.length}
         onOpenSupportPlans={() => setActiveTab('support_plans')}
         onOpenReadingPathway={handleOpenReadingPathway}
+        onOpenSummaries={() => setActiveTab('summaries')}
       />
 
       {/* Main View Router */}
@@ -259,6 +260,7 @@ export default function App() {
             onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
             onOpenSupportPlans={() => setActiveTab('support_plans')}
             onOpenReadingPathway={handleOpenReadingPathway}
+            onOpenSummaries={() => setActiveTab('summaries')}
           />
         )}
 

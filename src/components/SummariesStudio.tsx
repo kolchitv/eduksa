@@ -77,17 +77,17 @@ export const SummariesStudio: React.FC<SummariesStudioProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950 shadow-xs">
-                مذكرات لغتي الخالدة • المرحلة المتوسطة
+                القسم المتوسط • مذكرات المتوسطة
               </span>
               <span className="text-xs text-emerald-200 font-bold">
                 إعداد: أ. ذاكر الشمري & منهاج وزارة التعليم
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold font-alexandria tracking-tight">
-              📑 ملخصات ومذكرات مهارات الاختبار المركزي
+              📑 مذكرات المتوسطة — مهارات وقواعد الاختبار المركزي
             </h1>
             <p className="text-xs sm:text-sm text-slate-200 max-w-2xl leading-relaxed">
-              شرح مبسط، خرائط ذهنية، قواعد أقوى الحركات، الفروق النحوية والإملائية، ونماذج اختبارية تفاعلية للصفوف: الأول، الثاني، والثالث متوسط.
+              مذكرات شاملة، شروح مبسطة، خرائط ذهنية، قواعد أقوى الحركات، الفروق النحوية والإملائية، ونماذج اختبارية تفاعلية لصفوف القسم المتوسط: الأول، الثاني، والثالث متوسط.
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export const SummariesStudio: React.FC<SummariesStudioProps> = ({
             <button
               onClick={handlePrint}
               className="flex-1 md:flex-initial px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-black border border-white/20 transition-all flex items-center justify-center gap-2 shadow-sm"
-              title="طباعة المذكرة الدراسية"
+              title="طباعة مذكرات المتوسطة"
             >
               <Printer className="w-4 h-4 text-amber-300" />
               <span>طباعة المذكرة</span>
@@ -113,44 +113,44 @@ export const SummariesStudio: React.FC<SummariesStudioProps> = ({
               onClick={() => setSelectedGrade('all')}
               className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all ${
                 selectedGrade === 'all'
-                  ? 'bg-emerald-700 text-white shadow-xs'
+                  ? 'bg-indigo-700 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              جميع المراحل المتوسطة
+              جميع مذكرات المتوسطة
             </button>
             <button
               onClick={() => setSelectedGrade('intermediate1')}
               className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedGrade === 'intermediate1'
-                  ? 'bg-emerald-700 text-white shadow-xs'
+                  ? 'bg-indigo-700 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               <span>📘</span>
-              <span>الأول متوسط (م١)</span>
+              <span>مذكرات الأول متوسط (م١)</span>
             </button>
             <button
               onClick={() => setSelectedGrade('intermediate2')}
               className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedGrade === 'intermediate2'
-                  ? 'bg-emerald-700 text-white shadow-xs'
+                  ? 'bg-indigo-700 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               <span>📗</span>
-              <span>الثاني متوسط (م٢)</span>
+              <span>مذكرات الثاني متوسط (م٢)</span>
             </button>
             <button
               onClick={() => setSelectedGrade('intermediate3')}
               className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedGrade === 'intermediate3'
-                  ? 'bg-emerald-700 text-white shadow-xs'
+                  ? 'bg-indigo-700 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               <span>📙</span>
-              <span>الثالث متوسط (م٣)</span>
+              <span>مذكرات الثالث متوسط (م٣)</span>
             </button>
           </div>
 

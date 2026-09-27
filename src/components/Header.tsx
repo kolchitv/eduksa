@@ -222,37 +222,120 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Dropdown Menu */}
             {gradeDropdownOpen && (
-              <div className="absolute top-full right-0 mt-1.5 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute top-full right-0 mt-1.5 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
                 <div className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider">
-                  اختر الصف الدراسي:
+                  اختر الصف أو القسم الدراسي:
                 </div>
-                <div className="grid grid-cols-1 gap-1 max-h-80 overflow-y-auto">
-                  {Object.values(GRADES_DATA).map((grade) => {
-                    const isSelected = currentGrade === grade.id;
-                    return (
+                <div className="space-y-2.5 max-h-84 overflow-y-auto">
+                  {/* القسم المتوسط (مذكرات المتوسطة) */}
+                  <div className="p-1.5 bg-indigo-50/60 rounded-xl border border-indigo-100 space-y-1">
+                    <div className="flex items-center justify-between px-1.5 py-0.5 text-[10px] font-black text-indigo-900">
+                      <span>القسم المتوسط (مذكرات المتوسطة)</span>
                       <button
-                        key={grade.id}
-                        id={`dropdown-grade-${grade.id}`}
                         onClick={() => {
-                          onSelectGrade(grade.id);
+                          onChangeTab('summaries');
                           setGradeDropdownOpen(false);
                         }}
-                        className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold text-right transition-colors ${
-                          isSelected
-                            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
-                            : 'hover:bg-slate-50 text-slate-700'
-                        }`}
+                        className="text-[9px] text-indigo-700 hover:underline font-bold"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">
-                            {grade.id.startsWith('kg') ? '🌱' : grade.id === 'foundation' ? '✨' : '📖'}
-                          </span>
-                          <span>{grade.name}</span>
-                        </div>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                        فتح المذكرات 📑
                       </button>
-                    );
-                  })}
+                    </div>
+                    {(['intermediate1', 'intermediate2'] as GradeId[]).map((gId) => {
+                      const grade = GRADES_DATA[gId];
+                      if (!grade) return null;
+                      const isSelected = currentGrade === grade.id;
+                      return (
+                        <button
+                          key={grade.id}
+                          id={`dropdown-grade-${grade.id}`}
+                          onClick={() => {
+                            onSelectGrade(grade.id);
+                            setGradeDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between p-1.5 rounded-lg text-xs font-bold text-right transition-colors ${
+                            isSelected
+                              ? 'bg-indigo-600 text-white shadow-xs'
+                              : 'hover:bg-white text-indigo-950'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs">📑</span>
+                            <span>{grade.name}</span>
+                          </div>
+                          <span className={`text-[9px] px-1 rounded ${isSelected ? 'bg-indigo-700 text-white' : 'bg-indigo-100 text-indigo-900'}`}>
+                            مذكرات المتوسطة
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* القسم الابتدائي */}
+                  <div className="space-y-1">
+                    <div className="px-1.5 text-[10px] font-bold text-slate-500">
+                      القسم الابتدائي (الصفوف ١ - ٦)
+                    </div>
+                    {(['grade1', 'grade2', 'grade3', 'grade4', 'grade5', 'grade6'] as GradeId[]).map((gId) => {
+                      const grade = GRADES_DATA[gId];
+                      if (!grade) return null;
+                      const isSelected = currentGrade === grade.id;
+                      return (
+                        <button
+                          key={grade.id}
+                          id={`dropdown-grade-${grade.id}`}
+                          onClick={() => {
+                            onSelectGrade(grade.id);
+                            setGradeDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between p-1.5 rounded-lg text-xs font-bold text-right transition-colors ${
+                            isSelected
+                              ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                              : 'hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs">📖</span>
+                            <span>{grade.name}</span>
+                          </div>
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* قسم الروضة والتأسيس */}
+                  <div className="space-y-1 border-t border-slate-100 pt-1.5">
+                    <div className="px-1.5 text-[10px] font-bold text-slate-500">
+                      قسم الروضة والتأسيس
+                    </div>
+                    {(['kg1', 'kg2', 'foundation'] as GradeId[]).map((gId) => {
+                      const grade = GRADES_DATA[gId];
+                      if (!grade) return null;
+                      const isSelected = currentGrade === grade.id;
+                      return (
+                        <button
+                          key={grade.id}
+                          id={`dropdown-grade-${grade.id}`}
+                          onClick={() => {
+                            onSelectGrade(grade.id);
+                            setGradeDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between p-1.5 rounded-lg text-xs font-bold text-right transition-colors ${
+                            isSelected
+                              ? 'bg-sky-50 text-sky-900 border border-sky-200'
+                              : 'hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs">{grade.id === 'foundation' ? '✨' : '🌱'}</span>
+                            <span>{grade.name}</span>
+                          </div>
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
@@ -337,20 +420,6 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="hidden md:flex items-center justify-between border-t border-slate-100 py-1.5 overflow-x-auto">
           <nav className="flex items-center gap-1">
             <button
-              id="nav-tab-reading-path"
-              onClick={() => onChangeTab('reading_path')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeTab === 'reading_path'
-                  ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-md ring-2 ring-emerald-300'
-                  : 'text-emerald-950 hover:text-white hover:bg-emerald-700 bg-emerald-100/90 border border-emerald-300 shadow-2xs'
-              }`}
-            >
-              <span className="text-amber-300 font-bold">🚀</span>
-              <span>الانطلاق في القراءة</span>
-              <span className="text-[9px] bg-amber-400 text-amber-950 px-1 rounded font-black">المسار 📖</span>
-            </button>
-
-            <button
               id="nav-tab-units"
               onClick={() => onChangeTab('units')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -361,20 +430,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>الوحدات والدروس</span>
-            </button>
-
-            <button
-              id="nav-tab-summaries"
-              onClick={() => onChangeTab('summaries')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeTab === 'summaries'
-                  ? 'bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md ring-2 ring-indigo-300'
-                  : 'text-indigo-950 hover:text-white hover:bg-indigo-700 bg-indigo-50 border border-indigo-200 shadow-2xs'
-              }`}
-            >
-              <span>📑</span>
-              <span>مذكرات المتوسطة</span>
-              <span className="text-[9px] bg-indigo-200 text-indigo-950 px-1 rounded font-black">م١ وم٢ وم٣</span>
             </button>
 
             <button
@@ -571,23 +626,6 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="border-t border-slate-100 pt-3 space-y-1">
             <button
-              id="mobile-nav-reading-path"
-              onClick={() => {
-                onChangeTab('reading_path');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
-                activeTab === 'reading_path' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'text-emerald-950 bg-emerald-100/80 border border-emerald-300'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">🚀</span>
-                <span>الانطلاق في القراءة (المسار المتدرج)</span>
-              </div>
-              <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-1.5 py-0.5 rounded-full">٦ مستويات</span>
-            </button>
-
-            <button
               onClick={() => {
                 onChangeTab('units');
                 setMobileMenuOpen(false);
@@ -598,23 +636,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-4 h-4 text-emerald-600" />
               <span>الوحدات والدروس</span>
-            </button>
-
-            <button
-              id="mobile-nav-summaries"
-              onClick={() => {
-                onChangeTab('summaries');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
-                activeTab === 'summaries' ? 'bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md' : 'text-indigo-950 bg-indigo-50 border border-indigo-200'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span>📑</span>
-                <span>مذكرات وملخصات المتوسطة</span>
-              </div>
-              <span className="text-[10px] bg-indigo-200 text-indigo-900 font-bold px-1.5 py-0.5 rounded-full">م١ وم٢ وم٣</span>
             </button>
 
             <button
