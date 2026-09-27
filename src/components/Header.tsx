@@ -189,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-md hover:shadow-lg border border-emerald-400/40 active:scale-95 transition-all cursor-pointer group shrink-0"
             title="الانتقال إلى مسار الانطلاق في القراءة المتدرج (للمتعثرين والمتقدمين)"
           >
-            <span className="text-base sm:text-lg animate-bounce">🚀</span>
+            <span className="text-base sm:text-lg">🚀</span>
             <div className="text-right">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs sm:text-sm font-black tracking-tight font-alexandria">الانطلاق في القراءة</span>

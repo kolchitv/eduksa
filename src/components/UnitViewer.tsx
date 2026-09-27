@@ -220,7 +220,7 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
               }`}
             >
               <Layers className="w-4 h-4 text-amber-700" />
-              <span>🎯 قِسْمُ الأَنْشِطَةِ التَّفَاعُلِيَّةِ (الوحدة الأولى - ٤ أنشطة)</span>
+              <span>🎯 قِسْمُ الأَنْشِطَةِ وَالتَّقْيِيمَاتِ (الوحدة الأولى - ٧ أنشطة)</span>
             </button>
           </div>
 
@@ -247,12 +247,12 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                   </div>
                   <div>
                     <h3 className="font-black text-slate-900 text-sm">قِسْمُ الأَنْشِطَةِ (الوحدة الأولى)</h3>
-                    <p className="text-[10px] text-amber-800 font-bold">جميع الأنشطة مجمعة هنا</p>
+                    <p className="text-[10px] text-amber-800 font-bold">جميع الأنشطة والتقييمات مجمعة هنا</p>
                   </div>
                 </div>
 
                 <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 font-black text-[10px]">
-                  ٤ أنشطة
+                  ٧ أنشطة
                 </span>
               </div>
 
@@ -273,6 +273,63 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                   <div className="flex items-center gap-2">
                     <Layers className="w-3.5 h-3.5 text-amber-700" />
                     <span>جَمِيعُ الأَنْشِطَةِ (مَرْكَزُ التَّدْرِيبِ)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('letters_review');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'letters_review'
+                      ? 'bg-teal-600 text-white border-teal-700 shadow-xs'
+                      : 'bg-white hover:bg-teal-50 text-slate-800 border-teal-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span>📑</span>
+                    <span className="line-clamp-1 font-black">مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ (الأَصْوَاتُ وَالمُدُودُ)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('assessment');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'assessment'
+                      ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                      : 'bg-white hover:bg-rose-50 text-slate-800 border-rose-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span>📝</span>
+                    <span className="line-clamp-1 font-black">تَقْيِيمُ الوَحْدَةِ ١ (الفَتْرَةُ الأُولَى)</span>
+                  </div>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('letter_d');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                    unitSection === 'activities' && selectedActivityId === 'letter_d'
+                      ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
+                      : 'bg-white hover:bg-amber-50 text-slate-800 border-amber-200/70'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span>🚲</span>
+                    <span className="line-clamp-1 font-black">مَعْمَلُ حَرْفِ الدَّالِ (د) الشَّامِلُ</span>
                   </div>
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
@@ -518,6 +575,42 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                   <button
                     onClick={() => {
                       setUnitSection('activities');
+                      setSelectedActivityId('letters_review');
+                      audioManager.play('click');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition-all whitespace-nowrap shadow-2xs"
+                  >
+                    <span>📑</span>
+                    <span>مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('assessment');
+                      audioManager.play('click');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all whitespace-nowrap shadow-2xs"
+                  >
+                    <span>📝</span>
+                    <span>تَقْيِيمُ الفَتْرَةِ ١</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('letter_d');
+                      audioManager.play('click');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all whitespace-nowrap shadow-2xs"
+                  >
+                    <span>🚲</span>
+                    <span>مَعْمَلُ حَرْفِ (د)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
                       setSelectedActivityId('activity1');
                       audioManager.play('click');
                     }}
@@ -594,6 +687,108 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                 </div>
               )}
 
+              {/* Quick shortcut banner for Letter D Lesson (PDF 3: أ. ميعاد الشريف) */}
+              {currentLesson?.id === 'g1_u1_ld' && (
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 border-2 border-amber-400 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">🚲</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-black text-amber-950">
+                          مَعْمَلُ حَرْفِ الدَّالِ (د) الشَّامِلُ وَقِصَّةُ الأَصْدِقَاءِ الثَّلَاثَةِ
+                        </h4>
+                        <span className="text-[10px] bg-amber-200 text-amber-950 font-black px-2 py-0.5 rounded-full border border-amber-300">
+                          تفاعلي معتمد
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-amber-900 mt-0.5">
+                        مخرج حرف الدال الصوتي • تجريد الأصوات والمدود • محاكاة الضميرين (أَنْتَ / أَنْتِ) • قصة الأصدقاء الثلاثة الإثرائية.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('letter_d');
+                      audioManager.play('click');
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 shadow-md shrink-0 cursor-pointer"
+                  >
+                    <span>دُخُولُ مَعْمَلِ الدَّالِ</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Quick shortcut banner for Letters Review Lesson (PDF 1) */}
+              {currentLesson?.id === 'g1_u1_review_letters' && (
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-teal-500/15 border-2 border-teal-400 text-teal-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">📑</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-black text-teal-950">
+                          جَدْوَلُ مُرَاجَعَةِ حُرُوفِ الوَحْدَةِ الأُولَى: الأَصْوَاتُ وَالمُدُودُ
+                        </h4>
+                        <span className="text-[10px] bg-teal-200 text-teal-950 font-black px-2 py-0.5 rounded-full border border-teal-300">
+                          جدول أصوات معتمد
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-teal-900 mt-0.5">
+                        الأصوات القصيرة والطويلة لجميع حروف الوحدة (م، ب، ل، د، ن، ر) مع التهجئة السريعة لمقاطع الحرفين.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('letters_review');
+                      audioManager.play('click');
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center gap-1.5 shadow-md shrink-0 cursor-pointer"
+                  >
+                    <span>فَتْحُ جَدْوَلِ المُرَاجَعَةِ</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Quick shortcut banner for Assessment Lesson (PDF 2: أ. منيرة العمري) */}
+              {currentLesson?.id === 'g1_u1_evaluation_quiz' && (
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-500/15 via-pink-500/10 to-rose-500/15 border-2 border-rose-400 text-rose-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">📝</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-black text-rose-950">
+                          نَمُوذَجُ تَقْيِيمِ كِفَايَاتِ الوَحْدَةِ الأُولَى (الفَتْرَةُ الأُولَى)
+                        </h4>
+                        <span className="text-[10px] bg-rose-200 text-rose-950 font-black px-2 py-0.5 rounded-full border border-rose-300">
+                          تقييم الفترة ١
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-rose-900 mt-0.5">
+                        نموذج قياس مهارات تفاعلي: صل الكلمة بشكل الحرف، صل الحرف بالصورة، التحليل الصوتي لكلمة بَلَدُ، والحرف الناقص.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setUnitSection('activities');
+                      setSelectedActivityId('assessment');
+                      audioManager.play('click');
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all flex items-center gap-1.5 shadow-md shrink-0 cursor-pointer"
+                  >
+                    <span>بَدْءُ التَّقْيِيمِ التَّفَاعُلِيِّ</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
               {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
               <div className="my-8">
                 <InteractiveTextReader
@@ -643,51 +838,147 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
 
               {/* Grade 1 Unit 1 Quick Access Cards */}
               {isGrade1Unit1 && (
-                <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div 
-                    onClick={() => {
-                      setUnitSection('activities');
-                      setSelectedActivityId('activity2');
-                      audioManager.play('click');
-                    }}
-                    className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100/80 hover:to-orange-100/80 border border-amber-300 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-2xl shadow-xs">
-                        ⭐
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <h5 className="font-black text-xs text-amber-950">النَّشَاطُ ٢: مَوَاقِعُ الحَرْفِ وَالْمُدُودُ</h5>
-                          <span className="text-[9px] bg-amber-200 text-amber-900 font-bold px-1.5 rounded">إنجازاتي</span>
-                        </div>
-                        <p className="text-[11px] text-amber-800 mt-0.5">رسم دائرة حول الميم وتحديد موضعه والمدود وسبورة الكتابة</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-amber-800 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
-                  </div>
+                <div className="mt-8 pt-6 border-t border-slate-100">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <span>الأنشطة والتقييمات المعتمدة للوحدة الأولى (أسرتي)</span>
+                  </h4>
 
-                  <div 
-                    onClick={() => {
-                      setUnitSection('activities');
-                      setSelectedActivityId('activity1');
-                      audioManager.play('click');
-                    }}
-                    className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100/80 hover:to-teal-100/80 border border-emerald-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-amiri font-black text-2xl shadow-xs">
-                        🎯
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <h5 className="font-black text-xs text-emerald-950">نَشَاطُ ص ٤٢: أَصِلُ الصُّوَرَ</h5>
-                          <span className="text-[9px] bg-emerald-200 text-emerald-900 font-bold px-1.5 rounded">ص ٤٢</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('letters_review');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 hover:from-teal-100/90 hover:to-emerald-100/90 border border-teal-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-xl shadow-xs">
+                          📑
                         </div>
-                        <p className="text-[11px] text-emerald-800 mt-0.5">توصيل الحرف بالصور الستة ونطق الكلمات والمخارج</p>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-teal-950">مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ</h5>
+                            <span className="text-[8px] bg-teal-200 text-teal-900 font-bold px-1 rounded">معتمد</span>
+                          </div>
+                          <p className="text-[10px] text-teal-800 mt-0.5 line-clamp-1">الأصوات والمدود ومقاطع الحرفين</p>
+                        </div>
                       </div>
+                      <span className="text-xs text-teal-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
                     </div>
-                    <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('assessment');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100/90 hover:to-pink-100/90 border border-rose-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-black text-xl shadow-xs">
+                          📝
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-rose-950">تَقْيِيمُ الوَحْدَةِ ١</h5>
+                            <span className="text-[8px] bg-rose-200 text-rose-900 font-bold px-1 rounded">الفترة ١</span>
+                          </div>
+                          <p className="text-[10px] text-rose-800 mt-0.5 line-clamp-1">أشكال الحروف، التحليل الصوتي، والحرف الناقص</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-rose-700 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('letter_d');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100/90 hover:to-orange-100/90 border border-amber-300 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-xs">
+                          🚲
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-amber-950">مَعْمَلُ حَرْفِ الدَّالِ</h5>
+                            <span className="text-[8px] bg-amber-200 text-amber-900 font-bold px-1 rounded">شامل</span>
+                          </div>
+                          <p className="text-[10px] text-amber-800 mt-0.5 line-clamp-1">مخرج الحرف، الضمائر، وقصة الأصدقاء الثلاثة</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-amber-800 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('activity2');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-black text-xl shadow-xs">
+                          ⭐
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-slate-900">نَشَاطُ ٢: مَوَاقِعُ الحَرْفِ</h5>
+                            <span className="text-[8px] bg-slate-200 text-slate-800 font-bold px-1 rounded">إنجازاتي</span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-1">رسم دائرة والمدود وسبورة الكتابة</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-slate-600 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('activity1');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-xl shadow-xs">
+                          🎯
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-slate-900">نَشَاطُ ص ٤٢: أَصِلُ الصُّوَرَ</h5>
+                            <span className="text-[8px] bg-slate-200 text-slate-800 font-bold px-1 rounded">ص ٤٢</span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-1">توصيل الحرف بالصور ونطق الأصوات</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-slate-600 font-bold group-hover:translate-x-1 transition-transform">فتح ◀</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
+                        setUnitSection('activities');
+                        setSelectedActivityId('hub');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-300 cursor-pointer transition-all flex items-center justify-between group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-xs">
+                          🎯
+                        </div>
+                        <div>
+                          <h5 className="font-black text-xs text-amber-950">قِسْمُ الأَنْشِطَةِ الكَامِلُ</h5>
+                          <p className="text-[10px] text-amber-800 mt-0.5 line-clamp-1">جميع الـ ٧ أنشطة مجمعة في مكان واحد</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-amber-800 font-bold group-hover:translate-x-1 transition-transform">عرض الكل ◀</span>
+                    </div>
                   </div>
                 </div>
               )}

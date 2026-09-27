@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   Target, 
@@ -12,15 +12,20 @@ import {
   Award, 
   Play, 
   CircleDot,
-  PenTool
+  PenTool,
+  ClipboardCheck,
+  FileCheck2
 } from 'lucide-react';
 import { Grade1Unit1LetterMActivity } from './Grade1Unit1LetterMActivity';
 import { Grade1Unit1Activity2 } from './Grade1Unit1Activity2';
+import { Grade1Unit1LetterReview } from './Grade1Unit1LetterReview';
+import { Grade1Unit1Assessment } from './Grade1Unit1Assessment';
+import { Grade1Unit1LetterDStudio } from './Grade1Unit1LetterDStudio';
 import { FamilyHotspotReader } from './FamilyHotspotReader';
 import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
 import { audioManager } from '../utils/audio';
 
-export type Unit1ActivityId = 'hub' | 'activity1' | 'activity2' | 'hotspot' | 'phonetics';
+export type Unit1ActivityId = 'hub' | 'activity1' | 'activity2' | 'letters_review' | 'assessment' | 'letter_d' | 'hotspot' | 'phonetics';
 
 interface Grade1Unit1ActivitiesHubProps {
   initialActivity?: Unit1ActivityId;
@@ -33,10 +38,53 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
 }) => {
   const [selectedActivity, setSelectedActivity] = useState<Unit1ActivityId>(initialActivity);
 
+  useEffect(() => {
+    setSelectedActivity(initialActivity);
+  }, [initialActivity]);
+
   const activitiesList = [
     {
-      id: 'activity1' as const,
+      id: 'letters_review' as const,
       number: '١',
+      title: 'مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ الأُولَى (الأَصْوَاتُ وَالمُدُودُ)',
+      badge: 'مراجعة معتمدة • الأصوات والمقاطع',
+      themeColor: 'from-teal-600 to-emerald-700',
+      badgeBg: 'bg-teal-100 text-teal-900 border-teal-300',
+      icon: BookOpen,
+      iconEmoji: '📑',
+      description: 'جدول الأصوات القصيرة والطويلة لجميع حروف الوحدة (م، ب، ل، د، ن، ر) مع التهجئة السريعة لمقاطع الحرفين (مَنْ، نَبْ، لَدْ، رَدْ، نَمْ...).',
+      skills: ['الأصوات القصيرة', 'المدود بالألف والواو والياء', 'تهجئة مقاطع الحرفين'],
+      estimatedTime: '٤ دقائق'
+    },
+    {
+      id: 'assessment' as const,
+      number: '٢',
+      title: 'تَقْيِيمُ الوَحْدَةِ الأُولَى (الفَتْرَةُ الأُولَى)',
+      badge: 'نموذج تقييم رسمي • الفترة ١',
+      themeColor: 'from-rose-600 to-pink-700',
+      badgeBg: 'bg-rose-100 text-rose-900 border-rose-300',
+      icon: ClipboardCheck,
+      iconEmoji: '📝',
+      description: 'اختبار تفاعلي لقياس المهارات: صِل الكلمة بشكل الحرف، صِل الحرف بالصورة، تحليل الكلمة لمقاطع (بَلَدُ)، وإكمال الحرف الناقص.',
+      skills: ['أشكال الحروف', 'التحليل الصوتي', 'الحرف الناقص'],
+      estimatedTime: '٥ دقائق'
+    },
+    {
+      id: 'letter_d' as const,
+      number: '٣',
+      title: 'مَعْمَلُ حَرْفِ الدَّالِ (د) الشَّامِلُ وَقِصَّةُ الأَصْدِقَاءِ الثَّلَاثَةِ',
+      badge: 'الدرس الرابع النموذجي • أ. ميعاد الشريف',
+      themeColor: 'from-amber-600 to-orange-600',
+      badgeBg: 'bg-amber-100 text-amber-900 border-amber-300',
+      icon: Sparkles,
+      iconEmoji: '🚲',
+      description: 'مخرج حرف الدال الصوتي، تجريد الأصوات (دَرَّاجَة، دُمْيَة، حَدِيقَة)، محاكاة الضميرين (أَنْتَ / أَنْتِ)، وقصة الأصدقاء الثلاثة الإثرائية.',
+      skills: ['مخرج الحرف', 'محاكاة أنتَ وأنتِ', 'النص الإثرائي'],
+      estimatedTime: '٥ دقائق'
+    },
+    {
+      id: 'activity1' as const,
+      number: '٤',
       title: 'نَشَاطُ ص ٤٢: أَصِلُ الصُّوَرَ بِحَرْفِ (م)',
       badge: 'النشاط الأول • ص ٤٢',
       themeColor: 'from-amber-500 to-orange-500',
@@ -49,7 +97,7 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
     },
     {
       id: 'activity2' as const,
-      number: '٢',
+      number: '٥',
       title: 'نَشَاطُ ٢: مَوَاقِعُ الحَرْفِ وَالْمُدُودُ وَالكِتَابَةُ',
       badge: 'النشاط الثاني • إنجازاتي',
       themeColor: 'from-emerald-600 to-teal-700',
@@ -62,7 +110,7 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
     },
     {
       id: 'hotspot' as const,
-      number: '٣',
+      number: '٦',
       title: 'نَشَاطُ أفراد الأسرة التفاعلي (HOTSPOT)',
       badge: 'لوحة تفاعلية • ص ١٩',
       themeColor: 'from-rose-500 to-pink-600',
@@ -75,7 +123,7 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
     },
     {
       id: 'phonetics' as const,
-      number: '٤',
+      number: '٧',
       title: 'مُخْتَبَرُ قِرَاءَةِ الحُرُوفِ بِالحَرَكَاتِ وَالْمَدِّ',
       badge: 'المكون ٤ و ٥ • أصوات الحروف',
       themeColor: 'from-indigo-600 to-violet-700',
@@ -306,6 +354,69 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
               <span>الاستماع للأهداف</span>
             </button>
           </div>
+        </div>
+      ) : selectedActivity === 'letters_review' ? (
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <button
+              onClick={() => setSelectedActivity('hub')}
+              className="text-xs font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+              <span>العودة لجميع أنشطة الوحدة الأولى</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedActivity('assessment')}
+              className="text-xs font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200 cursor-pointer"
+            >
+              <span>الانتقال إلى تقييم الفترة الأولى</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+          <Grade1Unit1LetterReview />
+        </div>
+      ) : selectedActivity === 'assessment' ? (
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <button
+              onClick={() => setSelectedActivity('hub')}
+              className="text-xs font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+              <span>العودة لجميع أنشطة الوحدة الأولى</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedActivity('letter_d')}
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 cursor-pointer"
+            >
+              <span>معمل حرف الدال (د)</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+          <Grade1Unit1Assessment />
+        </div>
+      ) : selectedActivity === 'letter_d' ? (
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <button
+              onClick={() => setSelectedActivity('hub')}
+              className="text-xs font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+              <span>العودة لجميع أنشطة الوحدة الأولى</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedActivity('letters_review')}
+              className="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1 bg-teal-50 px-3 py-1.5 rounded-xl border border-teal-200 cursor-pointer"
+            >
+              <span>مراجعة الحروف والأصوات</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+          <Grade1Unit1LetterDStudio />
         </div>
       ) : selectedActivity === 'activity1' ? (
         <div>

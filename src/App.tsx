@@ -214,52 +214,6 @@ export default function App() {
         onCopyPageLink={handleCopyCurrentPageLink}
       />
 
-      {/* Prominent Sticky Top Quick Banner for Reading Pathway */}
-      {activeTab !== 'reading_path' && (
-        <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-900 border-b-2 border-amber-400 px-4 py-2.5 shadow-md">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2.5 text-center sm:text-right">
-              <span className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-base shrink-0 animate-bounce">
-                🚀
-              </span>
-              <div>
-                <p className="text-white text-xs sm:text-sm font-extrabold font-alexandria">
-                  قسم جديد: <span className="text-amber-300">«الانطلاق في القراءة»</span> — مسار متدرّج للمتعثرين والمتوسطين والمتميزين
-                </p>
-                <p className="text-emerald-200 text-[11px] hidden md:block">
-                  جمل للمتعثرين • نصوص قصيرة • نصوص متقدمة • مؤقت القراءة وتسجيل صوتي
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                id="top-banner-open-struggling-btn"
-                onClick={() => handleOpenReadingPathway('struggling')}
-                className="px-2.5 py-1 rounded-lg bg-emerald-700/80 hover:bg-emerald-600 text-emerald-100 text-xs font-bold border border-emerald-400/30 transition-all cursor-pointer"
-              >
-                جمل المتعثرين 🟢
-              </button>
-              <button
-                id="top-banner-open-short-btn"
-                onClick={() => handleOpenReadingPathway('short_text')}
-                className="px-2.5 py-1 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 text-amber-200 text-xs font-bold border border-amber-400/30 transition-all cursor-pointer"
-              >
-                نصوص قصيرة 🟡
-              </button>
-              <button
-                id="top-banner-open-reading-path-btn"
-                onClick={() => handleOpenReadingPathway('all')}
-                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>دخول القسم الآن</span>
-                <span>←</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Grade Selector Ribbon */}
       <GradeSelector
         selectedGrade={currentGrade}
@@ -562,33 +516,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Floating Persistent Fast-Access Button for Reading Pathway (Visible Everywhere) */}
-      {activeTab !== 'reading_path' && (
-        <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-40 animate-in fade-in slide-in-from-bottom-5 duration-300">
-          <button
-            id="persistent-floating-reading-pathway-btn"
-            onClick={() => handleOpenReadingPathway('all')}
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-700 via-teal-700 to-slate-900 hover:from-emerald-600 hover:to-teal-600 text-white shadow-2xl border-2 border-amber-400 ring-4 ring-emerald-500/30 transition-all transform hover:scale-105 active:scale-95 group cursor-pointer"
-            title="انقر هنا للانتقال المباشر إلى قسم الانطلاق في القراءة"
-          >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-md group-hover:scale-110 transition-transform">
-              🚀
-            </div>
-            <div className="text-right">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs sm:text-sm font-black font-alexandria text-amber-300">الانطلاق في القراءة</span>
-                <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded font-black animate-pulse">
-                  انقر هنا 👈
-                </span>
-              </div>
-              <p className="text-[10px] text-emerald-100">
-                جمل للمتعثرين • نصوص قصيرة • نصوص متميزة
-              </p>
-            </div>
-          </button>
-        </div>
-      )}
 
       {/* Mobile Sticky Bottom Quick Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
