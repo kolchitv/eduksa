@@ -99,6 +99,19 @@ export default function App() {
     } catch (e) {}
   }, []);
 
+  // Auto-open install and telegram modal on first visit after 2.5s
+  useEffect(() => {
+    try {
+      const alreadyDismissed = sessionStorage.getItem('lughati_install_popup_dismissed');
+      if (!alreadyDismissed) {
+        const timer = setTimeout(() => {
+          setIsInstallModalOpen(true);
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {}
+  }, []);
+
   const handleUpdateStudentName = (name: string) => {
     setStudentName(name);
     try {
@@ -284,6 +297,7 @@ export default function App() {
         {activeTab === 'quiz' && (
           <QuizHub
             currentGrade={currentGrade}
+            studentName={studentName}
             onAddStars={handleAddStars}
             onQuizCompleted={handleQuizCompleted}
           />
@@ -344,7 +358,12 @@ export default function App() {
       {/* Compact App Install Popup Modal */}
       <AppInstallAndTelegramModal
         isOpen={isInstallModalOpen}
-        onClose={() => setIsInstallModalOpen(false)}
+        onClose={() => {
+          setIsInstallModalOpen(false);
+          try {
+            sessionStorage.setItem('lughati_install_popup_dismissed', 'true');
+          } catch (e) {}
+        }}
       />
 
       {/* Saudi Platform Footer */}
