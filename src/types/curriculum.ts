@@ -1,4 +1,4 @@
-export type GradeId = 'kg1' | 'kg2' | 'foundation' | 'grade1' | 'grade2' | 'grade3' | 'grade4' | 'grade5' | 'grade6';
+export type GradeId = 'kg1' | 'kg2' | 'foundation' | 'grade1' | 'grade2' | 'grade3' | 'grade4' | 'grade5' | 'grade6' | 'intermediate1' | 'intermediate2' | 'intermediate3';
 
 export interface LetterVowel {
   letter: string;

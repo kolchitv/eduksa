@@ -29,7 +29,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path';
+export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -41,6 +41,7 @@ interface HeaderProps {
   onOpenCertificate: () => void;
   onSearchQuery?: (q: string) => void;
   onOpenInstallModal?: () => void;
+  onCopyPageLink?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -52,7 +53,8 @@ export const Header: React.FC<HeaderProps> = ({
   studentName,
   onOpenCertificate,
   onSearchQuery,
-  onOpenInstallModal
+  onOpenInstallModal,
+  onCopyPageLink
 }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [audioModalOpen, setAudioModalOpen] = useState(false);
@@ -137,6 +139,20 @@ export const Header: React.FC<HeaderProps> = ({
             <span>تلغرام: @arabiaeasy</span>
             <ExternalLink className="w-2.5 h-2.5 opacity-70" />
           </a>
+
+          {/* Dedicated Page Link / SEO share button */}
+          {onCopyPageLink && (
+            <button
+              id="top-strip-copy-link-btn"
+              onClick={onCopyPageLink}
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/50 hover:bg-emerald-500 text-white font-bold border border-emerald-300/40 transition-all text-[11px] cursor-pointer"
+              title="نسخ الرابط المباشر المخصص لهذه الصفحة"
+            >
+              <span>🔗</span>
+              <span>رابط مخصص للصفحة</span>
+            </button>
+          )}
+
           <span className="hidden sm:inline opacity-50">|</span>
           <span className="hidden sm:inline">المملكة العربية السعودية 🇸🇦</span>
         </div>
@@ -342,6 +358,20 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>الوحدات والدروس</span>
+            </button>
+
+            <button
+              id="nav-tab-summaries"
+              onClick={() => onChangeTab('summaries')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'summaries'
+                  ? 'bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md ring-2 ring-indigo-300'
+                  : 'text-indigo-950 hover:text-white hover:bg-indigo-700 bg-indigo-50 border border-indigo-200 shadow-2xs'
+              }`}
+            >
+              <span>📑</span>
+              <span>مذكرات المتوسطة</span>
+              <span className="text-[9px] bg-indigo-200 text-indigo-950 px-1 rounded font-black">م١ وم٢ وم٣</span>
             </button>
 
             <button
@@ -565,6 +595,23 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-4 h-4 text-emerald-600" />
               <span>الوحدات والدروس</span>
+            </button>
+
+            <button
+              id="mobile-nav-summaries"
+              onClick={() => {
+                onChangeTab('summaries');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
+                activeTab === 'summaries' ? 'bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md' : 'text-indigo-950 bg-indigo-50 border border-indigo-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span>📑</span>
+                <span>مذكرات وملخصات المتوسطة</span>
+              </div>
+              <span className="text-[10px] bg-indigo-200 text-indigo-900 font-bold px-1.5 py-0.5 rounded-full">م١ وم٢ وم٣</span>
             </button>
 
             <button

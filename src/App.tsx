@@ -18,8 +18,15 @@ import { AppInstallAndTelegramModal } from './components/AppInstallAndTelegramMo
 import { Grade1SupportPlans } from './components/Grade1SupportPlans';
 import { InteractiveWhiteboard } from './components/whiteboard/InteractiveWhiteboard';
 import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStudio';
+import { SummariesStudio } from './components/SummariesStudio';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
+import { 
+  parseRouteFromLocation, 
+  getUrlForRoute, 
+  getSeoMetadata, 
+  applySeoMetadataToDom 
+} from './utils/seoRouting';
 import { 
   BookOpen, 
   Sparkles, 
@@ -35,19 +42,50 @@ import {
   Send,
   ExternalLink,
   FolderOpen,
+  Link2,
+  Check,
   X
 } from 'lucide-react';
 
 export default function App() {
-  const [currentGrade, setCurrentGrade] = useState<GradeId>('grade1');
-  const [activeTab, setActiveTab] = useState<TabType>('units');
+  const initialRoute = parseRouteFromLocation();
+  const [currentGrade, setCurrentGrade] = useState<GradeId>(initialRoute.grade);
+  const [activeTab, setActiveTab] = useState<TabType>(initialRoute.tab);
   const [studentName, setStudentName] = useState<string>('فهد المنصور');
   const [stars, setStars] = useState<number>(35);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>(['quiz_found_1']);
   const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedReadingTrack, setSelectedReadingTrack] = useState<'all' | 'struggling' | 'short_text' | 'advanced'>('all');
+  const [selectedReadingTrack, setSelectedReadingTrack] = useState<'all' | 'struggling' | 'short_text' | 'advanced'>(initialRoute.readingTrack || 'all');
+  const [copiedLinkToast, setCopiedLinkToast] = useState<boolean>(false);
+
+  // Dedicated URL Synchronization & Dynamic SEO Metadata
+  useEffect(() => {
+    const targetUrl = getUrlForRoute(activeTab, currentGrade, selectedReadingTrack);
+    const seo = getSeoMetadata({ tab: activeTab, grade: currentGrade, readingTrack: selectedReadingTrack });
+    applySeoMetadataToDom(seo);
+
+    // Keep URL in sync without triggering full page reload
+    if (typeof window !== 'undefined' && (window.location.pathname + window.location.search) !== targetUrl) {
+      window.history.pushState({ tab: activeTab, grade: currentGrade, readingTrack: selectedReadingTrack }, '', targetUrl);
+    }
+  }, [activeTab, currentGrade, selectedReadingTrack]);
+
+  // Handle browser Back / Forward navigation (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseRouteFromLocation();
+      setActiveTab(route.tab);
+      setCurrentGrade(route.grade);
+      if (route.readingTrack) setSelectedReadingTrack(route.readingTrack);
+      const seo = getSeoMetadata(route);
+      applySeoMetadataToDom(seo);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Local storage persistence
   useEffect(() => {
@@ -96,10 +134,30 @@ export default function App() {
     setActiveTab('reading_path');
   };
 
+  const handleCopyCurrentPageLink = () => {
+    if (typeof window === 'undefined') return;
+    const targetPath = getUrlForRoute(activeTab, currentGrade, selectedReadingTrack);
+    const fullUrl = `${window.location.origin}${targetPath}`;
+    navigator.clipboard?.writeText(fullUrl).then(() => {
+      setCopiedLinkToast(true);
+      setTimeout(() => setCopiedLinkToast(false), 2500);
+    });
+  };
+
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
-    // Automatically route to units tab, reading pathway, support plans, or foundation if relevant
-    if (query.includes('انطلاق') || query.includes('قراءة') || query.includes('مسار') || query.includes('متعثر') || query.includes('طلاقة') || query.includes('نصوص') || query.includes('نص')) {
+    // Automatically route to units tab, summaries, reading pathway, support plans, or foundation if relevant
+    if (query.includes('ملخص') || query.includes('مذكرة') || query.includes('تذكير') || query.includes('قواعد المتوسطة') || query.includes('مذكرات')) {
+      setActiveTab('summaries');
+    } else if (query.includes('أول متوسط') || query.includes('اول متوسط') || query.includes('متوسط 1') || query.includes('م1') || query.includes('القيم الإسلامية')) {
+      setCurrentGrade('intermediate1');
+      setActiveTab('units');
+    } else if (query.includes('ثاني متوسط') || query.includes('ثاني متوسط') || query.includes('متوسط 2') || query.includes('م2') || query.includes('تقنيات')) {
+      setCurrentGrade('intermediate2');
+      setActiveTab('units');
+    } else if (query.includes('ثالث متوسط') || query.includes('متوسط 3') || query.includes('م3')) {
+      setActiveTab('summaries');
+    } else if (query.includes('انطلاق') || query.includes('قراءة') || query.includes('مسار') || query.includes('متعثر') || query.includes('طلاقة') || query.includes('نصوص') || query.includes('نص')) {
       handleOpenReadingPathway('all');
     } else if (query.includes('سبورة') || query.includes('رسم') || query.includes('whiteboard') || query.includes('لوحة')) {
       setActiveTab('whiteboard');
@@ -123,6 +181,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      {/* Toast Notification for Copied SEO Page Link */}
+      {copiedLinkToast && (
+        <div className="fixed top-18 left-1/2 -translate-x-1/2 z-50 bg-slate-950 text-white px-5 py-2.5 rounded-2xl shadow-2xl border-2 border-emerald-400 flex items-center gap-2.5 text-xs sm:text-sm font-black animate-in fade-in zoom-in-95 duration-200">
+          <span className="w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xs">
+            ✓
+          </span>
+          <span>تم نسخ الرابط المباشر المخصص لهذه الصفحة بنجاح! 📋</span>
+        </div>
+      )}
+
       {/* Platform Header with Grade Selector & Controls */}
       <Header
         currentGrade={currentGrade}
@@ -143,6 +211,7 @@ export default function App() {
         onOpenCertificate={() => setIsCertificateOpen(true)}
         onSearchQuery={handleSearchQuery}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
+        onCopyPageLink={handleCopyCurrentPageLink}
       />
 
       {/* Prominent Sticky Top Quick Banner for Reading Pathway */}
@@ -220,6 +289,21 @@ export default function App() {
             onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
             onOpenSupportPlans={() => setActiveTab('support_plans')}
             onOpenReadingPathway={handleOpenReadingPathway}
+          />
+        )}
+
+        {activeTab === 'summaries' && (
+          <SummariesStudio
+            initialGrade={
+              currentGrade === 'intermediate1' || currentGrade === 'intermediate2' || currentGrade === 'intermediate3'
+                ? currentGrade
+                : 'all'
+            }
+            onAddStars={handleAddStars}
+            onNavigateToCurriculum={(gId) => {
+              setCurrentGrade(gId as GradeId);
+              setActiveTab('units');
+            }}
           />
         )}
 

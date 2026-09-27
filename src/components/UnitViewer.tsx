@@ -188,58 +188,6 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
         </div>
       </div>
 
-      {/* Grade 1 Support & Remedial Plans Alert Banner */}
-      {curriculum.id === 'grade1' && (
-        <div className="mb-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 border border-rose-500/30 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0">
-              <FolderOpen className="w-6 h-6 text-amber-300" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-extrabold uppercase">
-                  جديد • خطط الدعم
-                </span>
-                <span className="text-xs text-rose-300 font-bold">
-                  علاج الفاقد التعليمي والضعف القرائي
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-black font-alexandria text-white">
-                حقائب وخطط الدعم للصف الأول الابتدائي (Google Drive)
-              </h3>
-              <p className="text-xs text-slate-300 mt-0.5 max-w-2xl">
-                مذكرات علاج الحروف، تدريبات المقطع الساكن، بطاقات الكلمات البصرية، واختبارات قياس الأثر العلاجي.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto relative z-10">
-            {onOpenSupportPlans && (
-              <button
-                id="unitviewer-open-support-plans-btn"
-                onClick={onOpenSupportPlans}
-                className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all flex items-center justify-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>تصفح الخطط هنا</span>
-              </button>
-            )}
-
-            <a
-              id="unitviewer-open-drive-btn"
-              href={GRADE1_SUPPORT_DRIVE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md"
-            >
-              <FolderOpen className="w-3.5 h-3.5" />
-              <span>فتح Google Drive</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
-      )}
-
       {/* Grade 1 Unit 1 Master Mode Selector (الدروس vs قسم الأنشطة) */}
       {isGrade1Unit1 && (
         <div className="mb-8 p-3 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -772,6 +720,59 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
           )}
         </div>
       </div>
+
+      {/* Grade 1 Support & Remedial Plans Callout Card (At the end of Grade 1 units only) */}
+      {curriculum.id === 'grade1' && (
+        <div className="mt-10 p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 border-2 border-rose-500/40 text-white shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center shrink-0 shadow-lg">
+              <FolderOpen className="w-7 h-7 text-amber-300 animate-bounce" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black uppercase">
+                  مجلد Google Drive المعتمد
+                </span>
+                <span className="text-xs text-rose-300 font-bold">
+                  ختام وحدات الصف الأول الابتدائي
+                </span>
+              </div>
+              <h3 className="text-base sm:text-xl font-black font-alexandria text-white">
+                خطط الدعم الشاملة وعلاج الفاقد التعليمي ومذكرات الحروف الهجائية
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                تشمل كراسات الحروف، تدريبات المقطع الساكن، الكلمات البصرية، واختبارات قياس الأثر العلاجي المعتمدة لمعلمي وأولياء أمور الصف الأول.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto relative z-10 shrink-0">
+            {onOpenSupportPlans && (
+              <button
+                id="unitviewer-bottom-open-support-plans-btn"
+                onClick={onOpenSupportPlans}
+                className="flex-1 md:flex-initial px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>تصفح الخطط بالموقع</span>
+              </button>
+            )}
+
+            <a
+              id="unitviewer-bottom-open-drive-btn"
+              href={GRADE1_SUPPORT_DRIVE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 md:flex-initial px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95"
+            >
+              <FolderOpen className="w-4 h-4 text-slate-950" />
+              <span>تحميل من Google Drive</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
