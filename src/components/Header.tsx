@@ -173,8 +173,8 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
               <BookOpen className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1.5 pb-0.5">
                 <span className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight font-alexandria leading-none">
                   لُغَتِي
                 </span>
@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                   السعودية
                 </span>
               </div>
-              <span className="block text-[11px] font-black text-emerald-700 tracking-wide dir-ltr leading-none mt-1 group-hover:text-emerald-800 transition-colors">
+              <span className="block text-[10px] sm:text-[11px] font-extrabold text-emerald-700 tracking-wider dir-ltr leading-none mt-2 sm:mt-2.5 group-hover:text-emerald-800 transition-colors">
                 arabicksa.com
               </span>
             </div>
