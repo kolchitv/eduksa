@@ -39,6 +39,7 @@ interface UnitViewerProps {
   onOpenSupportPlans?: () => void;
   onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
   onOpenSummaries?: () => void;
+  onOpenSpellingChampions?: () => void;
 }
 
 export const UnitViewer: React.FC<UnitViewerProps> = ({
@@ -47,7 +48,8 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   onOpenWorksheetForLesson,
   onOpenSupportPlans,
   onOpenReadingPathway: _onOpenReadingPathway,
-  onOpenSummaries
+  onOpenSummaries,
+  onOpenSpellingChampions
 }) => {
   const [selectedUnitIdx, setSelectedUnitIdx] = useState(0);
   const [selectedLessonIdx, setSelectedLessonIdx] = useState(0);
@@ -500,6 +502,33 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Access Card for Spelling Champions */}
+          {onOpenSpellingChampions && (
+            <div 
+              onClick={onOpenSpellingChampions}
+              className="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 hover:from-amber-500 hover:to-amber-400 p-4 rounded-3xl border-2 border-amber-300 shadow-sm cursor-pointer transition-all active:scale-95 group text-slate-950"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-8 h-8 rounded-xl bg-slate-950 text-white flex items-center justify-center text-sm font-black shadow-xs">
+                  📝
+                </div>
+                <span className="text-[10px] font-black bg-rose-600 text-white px-2 py-0.5 rounded-full shadow-xs">
+                  تفاعلي جديد
+                </span>
+              </div>
+              <h4 className="font-black text-sm text-slate-950 font-alexandria group-hover:text-emerald-950 transition-colors">
+                أبطال الإملاء التفاعلي
+              </h4>
+              <p className="text-[11px] text-slate-800 mt-1 line-clamp-2">
+                تدريب متدرج للفئات الضعيفة، المتوسطة، والمتميزة مع الإملاء المنظور والاختباري والتصحيح الفوري.
+              </p>
+              <div className="mt-2.5 pt-2 border-t border-amber-500/30 flex items-center justify-between text-xs font-black text-slate-950">
+                <span>فتح المختبر الإملائي</span>
+                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
               </div>
             </div>
           )}

@@ -21,6 +21,7 @@ interface GradeSelectorProps {
   onOpenSupportPlans?: () => void;
   onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
   onOpenSummaries?: () => void;
+  onOpenSpellingChampions?: () => void;
 }
 
 export const GradeSelector: React.FC<GradeSelectorProps> = ({
@@ -29,7 +30,8 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
   completedQuizzesCount,
   onOpenSupportPlans: _onOpenSupportPlans,
   onOpenReadingPathway: _onOpenReadingPathway,
-  onOpenSummaries
+  onOpenSummaries,
+  onOpenSpellingChampions
 }) => {
   const [stageFilter, setStageFilter] = useState<'all' | 'primary' | 'intermediate' | 'early'>('all');
 
@@ -203,6 +205,19 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
           >
             روضة لغتي والتأسيس (KG)
           </button>
+
+          {onOpenSpellingChampions && (
+            <button
+              id="grade-selector-spelling-champions-btn"
+              onClick={onOpenSpellingChampions}
+              className="px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 hover:from-amber-500 hover:to-amber-400 text-slate-950 shadow-xs border border-amber-300 active:scale-95"
+              title="الانتقال إلى مختبر أبطال الإملاء التفاعلي (ضعيفة • متوسطة • متميزة)"
+            >
+              <span>📝</span>
+              <span>أبطال الإملاء التفاعلي</span>
+              <span className="bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">جديد 🔥</span>
+            </button>
+          )}
         </div>
 
         {/* Section 1: Intermediate Section (القسم المتوسط - مذكرات المتوسطة) */}

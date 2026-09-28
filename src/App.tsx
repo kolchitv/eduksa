@@ -19,6 +19,7 @@ import { Grade1SupportPlans } from './components/Grade1SupportPlans';
 import { InteractiveWhiteboard } from './components/whiteboard/InteractiveWhiteboard';
 import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStudio';
 import { SummariesStudio } from './components/SummariesStudio';
+import { SpellingChampionsStudio } from './components/SpellingChampionsStudio';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -182,7 +183,9 @@ export default function App() {
       setActiveTab('units');
     } else if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
       setActiveTab('support_plans');
-    } else if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
+    } else if (query.includes('إملاء') || query.includes('املاء') || query.includes('أبطال') || query.includes('ابطال') || query.includes('منظور') || query.includes('اختباري')) {
+      setActiveTab('spelling_champions');
+    } else if (query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
       setActiveTab('dictionary');
     } else if (query.includes('حرف') || query.includes('شمسية') || query.includes('قمرية') || query.includes('تأسيس')) {
       setActiveTab('foundation');
@@ -247,6 +250,7 @@ export default function App() {
         onOpenSupportPlans={() => setActiveTab('support_plans')}
         onOpenReadingPathway={handleOpenReadingPathway}
         onOpenSummaries={() => setActiveTab('summaries')}
+        onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
       />
 
       {/* Main View Router */}
@@ -261,6 +265,7 @@ export default function App() {
             onOpenSupportPlans={() => setActiveTab('support_plans')}
             onOpenReadingPathway={handleOpenReadingPathway}
             onOpenSummaries={() => setActiveTab('summaries')}
+            onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
           />
         )}
 
@@ -320,6 +325,15 @@ export default function App() {
         )}
 
         {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
+
+        {activeTab === 'spelling_champions' && (
+          <SpellingChampionsStudio
+            studentName={studentName}
+            onAddStars={handleAddStars}
+            onOpenCertificate={() => setIsCertificateOpen(true)}
+            onBackToHome={() => setActiveTab('units')}
+          />
+        )}
 
         {activeTab === 'support_plans' && (
           <Grade1SupportPlans

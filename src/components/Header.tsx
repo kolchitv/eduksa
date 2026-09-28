@@ -29,7 +29,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path';
+export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -517,6 +517,22 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-spelling-champions"
+              onClick={() => onChangeTab('spelling_champions')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                activeTab === 'spelling_champions'
+                  ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 shadow-md ring-2 ring-amber-300'
+                  : 'text-amber-900 hover:text-amber-950 hover:bg-amber-100/90 bg-amber-50/90 border border-amber-300/80 shadow-2xs'
+              }`}
+            >
+              <span className="text-sm">📝</span>
+              <span>أبطال الإملاء</span>
+              <span className="text-[9px] bg-rose-600 text-white px-1.5 py-0.2 rounded font-black shadow-xs">
+                تفاعلي
+              </span>
+            </button>
+
+            <button
               id="nav-tab-whiteboard"
               onClick={() => onChangeTab('whiteboard')}
               className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -722,6 +738,24 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-4 h-4 text-emerald-600" />
               <span>المُعرب الذكي</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('spelling_champions');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'spelling_champions'
+                  ? 'bg-amber-400 text-slate-950 shadow-md'
+                  : 'text-amber-950 bg-amber-50 border border-amber-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-base">📝</span>
+                <span>أبطال الإملاء التفاعلي (ضعيفة • متوسطة • متميزة)</span>
+              </div>
+              <span className="text-[10px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded-full">جديد</span>
             </button>
 
             <button

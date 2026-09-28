@@ -102,6 +102,8 @@ export function parseRouteFromLocation(): RouteState {
     } else if (first === 'quiz') {
       tab = 'quiz';
       if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
+    } else if (first === 'spelling-champions' || first === 'spelling_champions' || first === 'spelling' || first === 'dictation' || first === 'imlaa') {
+      tab = 'spelling_champions';
     } else if (first === 'ai') {
       tab = 'ai';
     } else if (first === 'whiteboard') {
@@ -146,7 +148,8 @@ function isValidTab(tab: string): tab is TabType {
     'dictionary',
     'support_plans',
     'whiteboard',
-    'reading_path'
+    'reading_path',
+    'spelling_champions'
   ];
   return validTabs.includes(tab as TabType);
 }
@@ -172,6 +175,8 @@ export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: str
       return grade ? `/dictionary/${grade}` : '/dictionary';
     case 'quiz':
       return grade ? `/quiz/${grade}` : '/quiz';
+    case 'spelling_champions':
+      return '/spelling-champions';
     case 'ai':
       return '/ai';
     case 'whiteboard':
@@ -198,6 +203,16 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
   const gradeData = GRADES_DATA[state.grade] || GRADES_DATA.grade1;
 
   switch (state.tab) {
+    case 'spelling_champions':
+      return {
+        title: 'أبطال الإملاء التفاعلي - المنهاج السعودي | منصة لغتي',
+        description: 'تطبيق الإملاء التفاعلي الشامل لجميع المستويات: الفئة الضعيفة (الدعم والتأسيس)، الفئة المتوسطة (المنهاج المعياري)، والفئة المتميزة (فرسان التحدي) مع التصحيح الذكي والمساعد الصوتي.',
+        canonicalUrl,
+        ogTitle: 'أبطال الإملاء التفاعلي — المنهاج السعودي المعتمد',
+        ogDescription: 'إملاء منظور واختباري، مقارنة فورية وتصحيح ذكي للأخطاء الإملائية مع لوحة الحركات المساعدة والمؤقت الزمني وشهادات التميز.',
+        keywords: 'أبطال الإملاء, إملاء تفاعلي, إملاء منظور, إملاء اختباري, علاج ضعف الإملاء, لغتي الجميلة, المنهاج السعودي'
+      };
+
     case 'summaries':
       return {
         title: 'مذكرات المتوسطة - لغتي الخالدة | منصة لغتي التعليمية',
