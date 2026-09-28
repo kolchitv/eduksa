@@ -86,6 +86,15 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((t: ReadingTextItem) => t.id));
+          const missingInitial = INITIAL_READING_TEXTS.filter(t => !existingIds.has(t.id));
+          if (missingInitial.length > 0) {
+            const merged = [...parsed, ...missingInitial];
+            try {
+              localStorage.setItem('lughati_custom_reading_texts', JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          }
           return parsed;
         }
       }
@@ -524,19 +533,19 @@ export const ReadingPathwayStudio: React.FC<ReadingPathwayStudioProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="text-xl">👑</span>
                     <span className={`text-xs font-black ${selectedTrackFilter === 'advanced' ? 'text-slate-950' : 'text-amber-300'}`}>
-                      مسار المتميزين (النصوص الطويلة)
+                      مسار المتميزين • نصوص الصف الثالث متقدم
                     </span>
                   </div>
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                     selectedTrackFilter === 'advanced' ? 'bg-slate-950 text-white' : 'bg-amber-500/30 text-amber-200'
                   }`}>
-                    {advancedCount} نصوص
+                    {advancedCount} نصاً
                   </span>
                 </div>
                 <p className={`text-[11px] leading-relaxed line-clamp-2 ${
                   selectedTrackFilter === 'advanced' ? 'text-slate-900 font-bold' : 'text-amber-200/80'
                 }`}>
-                  نصوص طويلة مقسمة لفقرات (المستوى 5 و 6) مع الفهم العميق والتحليل ومعدل الطلاقة وسرعة WPM.
+                  نصوص قصصية وثقافية وطويلة (المستوى 5 و 6 ونصوص الصف الثالث متقدم) مع الفهم العميق ومؤقت القراءة.
                 </p>
               </button>
             </div>

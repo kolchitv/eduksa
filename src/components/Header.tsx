@@ -175,13 +175,16 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight font-alexandria">
+                <span className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight font-alexandria leading-none">
                   لُغَتِي
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
                   السعودية
                 </span>
               </div>
+              <span className="block text-[11px] font-black text-emerald-700 tracking-wide dir-ltr leading-none mt-1 group-hover:text-emerald-800 transition-colors">
+                arabicksa.com
+              </span>
             </div>
           </div>
 

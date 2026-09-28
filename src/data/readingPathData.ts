@@ -1,4 +1,5 @@
 import { ReadingTextItem } from '../types/readingPath';
+import { grade3AdvancedReadingTexts } from './grade3AdvancedReadingTexts';
 
 export const READING_LEVEL_INFO: Record<number, {
   title: string;
@@ -598,5 +599,8 @@ export const INITIAL_READING_TEXTS: ReadingTextItem[] = [
     ],
     expectedDurationSec: 115,
     orderIndex: 2
-  }
+  },
+
+  // ===================== نصوص الصف الثالث متقدم (المسار المتقدم) =====================
+  ...grade3AdvancedReadingTexts
 ];
