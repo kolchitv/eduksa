@@ -390,3 +390,437 @@ export const SPELLING_CHAMPIONS_DATA: SpellingPassage[] = [
     badgeEmoji: '💎'
   }
 ];
+
+export interface DictationWordItem {
+  id: string;
+  word: string; // الكلمة مضبوطة بالشكل التام
+  wordWithoutTashkeel: string; // الكلمة بدون حركات للمقارنة
+  tier: SpellingTier;
+  targetSkill: string; // المهارة الإملائية
+  hint: string; // تلميح عند طلب المساعدة
+  explanation: string; // شرح وقاعدة إملائية تظهر عند التقييم
+  categoryName: string;
+  exampleSentence?: string;
+  audioSpeed?: number;
+}
+
+export const DICTATION_CHALLENGE_WORDS: DictationWordItem[] = [
+  // =========================================================================
+  // الفئة الأولى: فئة الدعم والتمكين (الضعيفة)
+  // =========================================================================
+  {
+    id: 'w_supp_1',
+    word: 'دَرَسَ',
+    wordWithoutTashkeel: 'درس',
+    tier: 'support',
+    targetSkill: 'الحركات القصيرة (الفتح)',
+    hint: 'ثلاثة أحرف كلها مفتوحة: دَ - رَ - سَ',
+    explanation: 'كلمة ثلاثية مجردة، كل حروفها متحركة بالفتح (دَ-رَ-سَ) دون مدود.',
+    categoryName: 'ثلاثي بالفتح',
+    exampleSentence: 'دَرَسَ الطَّالِبُ كِتَابَهُ'
+  },
+  {
+    id: 'w_supp_2',
+    word: 'كَتَبَ',
+    wordWithoutTashkeel: 'كتب',
+    tier: 'support',
+    targetSkill: 'الحركات القصيرة (الفتح)',
+    hint: 'الكاف ثم التاء ثم الباء بالفتحة',
+    explanation: 'حروف متصلة بالفتحة: كَـ ثم تَـ ثم بَ.',
+    categoryName: 'ثلاثي بالفتح',
+    exampleSentence: 'كَتَبَ سَالِمٌ وَاجِبَهُ'
+  },
+  {
+    id: 'w_supp_3',
+    word: 'قَرَأَ',
+    wordWithoutTashkeel: 'قرأ',
+    tier: 'support',
+    targetSkill: 'الهمزة المتطرفة على ألف بالفتح',
+    hint: 'القاف والراء ثم همزة على ألف في آخر الكلمة',
+    explanation: 'تكتب الهمزة المتطرفة على ألف إذا كان ما قبلها مفتوحاً (رَ-أَ).',
+    categoryName: 'ثلاثي بالفتح وهمزة',
+    exampleSentence: 'قَرَأَ فَوَّازٌ القِصَّةَ'
+  },
+  {
+    id: 'w_supp_4',
+    word: 'لَعِبَ',
+    wordWithoutTashkeel: 'لعب',
+    tier: 'support',
+    targetSkill: 'حركة الكسر في وسط الكلمة',
+    hint: 'اللام مفتوحة والعين مكسورة والباء مفتوحة',
+    explanation: 'انتبه لحركة الكسر تحت حرف العين (عِـ) مع فتح اللام والباء.',
+    categoryName: 'حركة الكسر',
+    exampleSentence: 'لَعِبَ الوَلَدُ بِالكُرَةِ'
+  },
+  {
+    id: 'w_supp_5',
+    word: 'شَرِبَ',
+    wordWithoutTashkeel: 'شرب',
+    tier: 'support',
+    targetSkill: 'حركة الكسر مع الراء',
+    hint: 'الشين مفتوحة والراء مكسورة والباء مفتوحة',
+    explanation: 'حرف الراء مكسور (رِ) يرقق صوته.',
+    categoryName: 'حركة الكسر',
+    exampleSentence: 'شَرِبَ عُمَرُ الحَلِيبَ'
+  },
+  {
+    id: 'w_supp_6',
+    word: 'سَمِعَ',
+    wordWithoutTashkeel: 'سمع',
+    tier: 'support',
+    targetSkill: 'حركة الكسر في الميم',
+    hint: 'السين مفتوحة والميم مكسورة والعين مفتوحة',
+    explanation: 'صوت الكسر تحت الميم (مِـ) قصير وليس مداً بالياء.',
+    categoryName: 'حركة الكسر',
+    exampleSentence: 'سَمِعَ فَارِسٌ النَّصِيحَةَ'
+  },
+  {
+    id: 'w_supp_7',
+    word: 'كَرُمَ',
+    wordWithoutTashkeel: 'كرم',
+    tier: 'support',
+    targetSkill: 'حركة الضم في الراء',
+    hint: 'الكاف مفتوحة والراء مضمومة والميم مفتوحة',
+    explanation: 'ضم الشفتين عند نطق الراء المضمومة (رُ).',
+    categoryName: 'حركة الضم',
+    exampleSentence: 'كَرُمَ الرَّجُلُ مَعَ الضَّيْفِ'
+  },
+  {
+    id: 'w_supp_8',
+    word: 'بَابٌ',
+    wordWithoutTashkeel: 'باب',
+    tier: 'support',
+    targetSkill: 'مد الألف وتنوين الضم',
+    hint: 'الباء ممدودة بالألف ثم باء بتنوين ضم',
+    explanation: 'مد الألف صوت طويل يسبقه فتح، والتنوين نون تنطق ولا تكتب.',
+    categoryName: 'المدود والتنوين',
+    exampleSentence: 'هَذَا بَابٌ كَبِيرٌ'
+  },
+  {
+    id: 'w_supp_9',
+    word: 'نُورٌ',
+    wordWithoutTashkeel: 'نور',
+    tier: 'support',
+    targetSkill: 'مد الواو وتنوين الضم',
+    hint: 'النون مضمومة ممدودة بالواو ثم راء بتنوين ضم',
+    explanation: 'مد الواو يسبقه حرف مضموم (نُـو)، مع تنوين الضم في النهاية.',
+    categoryName: 'مد الواو',
+    exampleSentence: 'العِلْمُ نُورٌ سَاطِعٌ'
+  },
+  {
+    id: 'w_supp_10',
+    word: 'عِيدٌ',
+    wordWithoutTashkeel: 'عيد',
+    tier: 'support',
+    targetSkill: 'مد الياء وتنوين الضم',
+    hint: 'العين مكسورة ممدودة بالياء ثم دال بتنوين ضم',
+    explanation: 'مد الياء صوت طويل يسبقه حرف مكسور (عِـي).',
+    categoryName: 'مد الياء',
+    exampleSentence: 'عِيدٌ سَعِيدٌ وَمُبَارَكٌ'
+  },
+  {
+    id: 'w_supp_11',
+    word: 'بَيْتٌ',
+    wordWithoutTashkeel: 'بيت',
+    tier: 'support',
+    targetSkill: 'المقطع الساكن وتنوين الضم',
+    hint: 'الباء مفتوحة والياء ساكنة والتاء بتنوين ضم',
+    explanation: 'المقطع الساكن (بَيْـ) ينطق دفعة واحدة مع تاء منونة.',
+    categoryName: 'المقطع الساكن',
+    exampleSentence: 'هَذَا بَيْتٌ نَظِيفٌ'
+  },
+  {
+    id: 'w_supp_12',
+    word: 'مَسْجِدٌ',
+    wordWithoutTashkeel: 'مسجد',
+    tier: 'support',
+    targetSkill: 'المقطع الساكن والكسر وتنوين الضم',
+    hint: 'ميم مفتوحة وسين ساكنة ثم جيم مكسورة ودال بتنوين ضم',
+    explanation: 'مقطع ساكن (مَسْـ) يليه حرف مكسور (جِـ) ودال منونة (دٌ).',
+    categoryName: 'رباعي ومقطع ساكن',
+    exampleSentence: 'صَلَّيْتُ فِي مَسْجِدِ الحَيِّ'
+  },
+
+  // =========================================================================
+  // الفئة الثانية: الفئة المتوسطة (المنهاج المعياري)
+  // =========================================================================
+  {
+    id: 'w_std_1',
+    word: 'الشَّمْسُ',
+    wordWithoutTashkeel: 'الشمس',
+    tier: 'standard',
+    targetSkill: 'اللام الشمسية والتضعيف',
+    hint: 'تبدأ بـ ال، اللام لا تلفظ والشين مشددة مفتوحة',
+    explanation: 'اللام الشمسية تكتب ولا تنطق ويأتي بعدها حرف مشدد (الشَّـ).',
+    categoryName: 'ال الشمسية',
+    exampleSentence: 'تُشْرِقُ الشَّمْسُ فِي الصَّبَاحِ'
+  },
+  {
+    id: 'w_std_2',
+    word: 'الْقَمَرُ',
+    wordWithoutTashkeel: 'القمر',
+    tier: 'standard',
+    targetSkill: 'اللام القمرية',
+    hint: 'تبدأ بـ ال، اللام عليها سكون وتلفظ بوضوح',
+    explanation: 'اللام القمرية تكتب وتنطق وعلامتها السكون (الْـ).',
+    categoryName: 'ال القمرية',
+    exampleSentence: 'يَظْهَرُ الْقَمَرُ فِي اللَّيْلِ'
+  },
+  {
+    id: 'w_std_3',
+    word: 'الرَّحِمُ',
+    wordWithoutTashkeel: 'الرحم',
+    tier: 'standard',
+    targetSkill: 'اللام الشمسية مع الراء المشددة',
+    hint: 'اللام شمسية والراء مشددة مفتوحة والحاء مكسورة',
+    explanation: 'اللام شمسية تدغم في الراء (الرَّ)، والحاء مكسورة (حِ).',
+    categoryName: 'ال الشمسية',
+    exampleSentence: 'صِلَةُ الرَّحِمِ تَبْسُطُ فِي الرِّزْقِ'
+  },
+  {
+    id: 'w_std_4',
+    word: 'فَوَّازٌ',
+    wordWithoutTashkeel: 'فواز',
+    tier: 'standard',
+    targetSkill: 'التضعيف (الشدة) مع مد الألف وتنوين الضم',
+    hint: 'الفاء مفتوحة والواو مشددة ممدودة بالألف والزاي بتنوين ضم',
+    explanation: 'الحرف المضعف (وّ) ينطق مرتين (ساكن ثم متحرك) مع مد الألف.',
+    categoryName: 'التضعيف والشدة',
+    exampleSentence: 'فَوَّازٌ تِلْمِيذٌ مُهَذَّبٌ'
+  },
+  {
+    id: 'w_std_5',
+    word: 'مَكْتَبَةٌ',
+    wordWithoutTashkeel: 'مكتبة',
+    tier: 'standard',
+    targetSkill: 'التاء المربوطة والمقطع الساكن',
+    hint: 'تنتهي بتاء مربوطة منقوطة تنطق هاء عند الوقف',
+    explanation: 'التاء المربوطة (ـة) تكتب بنقطتين وتنطق هاء عند الوقف وتاء عند الوصل.',
+    categoryName: 'التاء المربوطة',
+    exampleSentence: 'زُرْتُ مَكْتَبَةَ المَدْرَسَةِ'
+  },
+  {
+    id: 'w_std_6',
+    word: 'سَقَطَتْ',
+    wordWithoutTashkeel: 'سقطت',
+    tier: 'standard',
+    targetSkill: 'التاء المفتوحة (المبسوطة) الساكنة',
+    hint: 'تنتهي بتاء مفتوحة تظهر صريحة عند الوقف',
+    explanation: 'التاء المفتوحة (تْ) تنطق تاء واضحة في الوصل والوقف.',
+    categoryName: 'التاء المفتوحة',
+    exampleSentence: 'سَقَطَتِ اللُّعْبَةُ عَلَى الأَرْضِ'
+  },
+  {
+    id: 'w_std_7',
+    word: 'لَوْنُهُ',
+    wordWithoutTashkeel: 'لونه',
+    tier: 'standard',
+    targetSkill: 'هاء الضمير (الفرق بين الهاء والتاء المربوطة)',
+    hint: 'تنتهي بهاء ضمير بدون نقط',
+    explanation: 'هاء الضمير تنطق هاء في الوصل والوقف ولا توضع عليها نقاط أبداً.',
+    categoryName: 'هاء الضمير',
+    exampleSentence: 'عَلَمُ بِلَادِي لَوْنُهُ أَخْضَرُ'
+  },
+  {
+    id: 'w_std_8',
+    word: 'كِتَابًا',
+    wordWithoutTashkeel: 'كتابا',
+    tier: 'standard',
+    targetSkill: 'تنوين الفتح مع ألف التنوين الزائدة',
+    hint: 'تنتهي بتنوين فتح على الباء متبوعاً بألف تنوين',
+    explanation: 'تنوين الفتح يلحقه ألف زائدة إذا لم تنته الكلمة بتاء مربوطة أو همزة على ألف.',
+    categoryName: 'تنوين الفتح',
+    exampleSentence: 'قَرَأَ زَيْدٌ كِتَابًا مُفِيدًا'
+  },
+  {
+    id: 'w_std_9',
+    word: 'قَصْدٍ',
+    wordWithoutTashkeel: 'قصد',
+    tier: 'standard',
+    targetSkill: 'تنوين الكسر والمقطع الساكن',
+    hint: 'قاف مفتوحة وصاد ساكنة ودال بتنوين كسر',
+    explanation: 'تنوين الكسر يوضع تحت الحرف الأخير ولا تزاد معه ألف.',
+    categoryName: 'تنوين الكسر',
+    exampleSentence: 'سَقَطَتْ مِنْ يَدِي عَنْ غَيْرِ قَصْدٍ'
+  },
+  {
+    id: 'w_std_10',
+    word: 'أَخْطَأْتَ',
+    wordWithoutTashkeel: 'أخطأت',
+    tier: 'standard',
+    targetSkill: 'الهمزة على ألف والتاء المفتوحة',
+    hint: 'همزة قطع في البداية وهمزة متوسطة على ألف وتاء مفتوحة',
+    explanation: 'كتبت الهمزة على ألف لأنها ساكنة وما قبلها مفتوح (طَـأْ).',
+    categoryName: 'الهمزة المتوسطة',
+    exampleSentence: 'لَقَدْ أَخْطَأْتَ يَا بَطَلُ'
+  },
+  {
+    id: 'w_std_11',
+    word: 'الْمُعَلِّمُ',
+    wordWithoutTashkeel: 'المعلم',
+    tier: 'standard',
+    targetSkill: 'اللام القمرية وتشديد اللام',
+    hint: 'ال قمرية، وميم مضمومة وعين مفتوحة ولام مشددة مكسورة وميم مضمومة',
+    explanation: 'اللام قمرية ساكنة، مع تشديد حرف اللام المكسور (لِّـ).',
+    categoryName: 'ال القمرية والتضعيف',
+    exampleSentence: 'شَرَحَ الْمُعَلِّمُ الدَّرْسَ'
+  },
+  {
+    id: 'w_std_12',
+    word: 'دَقِيقًا',
+    wordWithoutTashkeel: 'دقيقا',
+    tier: 'standard',
+    targetSkill: 'مد الياء وتنوين الفتح',
+    hint: 'قاف مكسورة ممدودة بالياء ثم قاف بتنوين فتح وألف',
+    explanation: 'مد ياء ثم تنوين فتح تلحقه ألف التنوين.',
+    categoryName: 'المد وتنوين الفتح',
+    exampleSentence: 'تُطْحَنُ الحَبَّاتُ لِتُصْبِحَ دَقِيقًا'
+  },
+
+  // =========================================================================
+  // الفئة الثالثة: الفئة المتميزة (فرسان الإتقان والتحدي)
+  // =========================================================================
+  {
+    id: 'w_adv_1',
+    word: 'مُؤْمِنٌ',
+    wordWithoutTashkeel: 'مؤمن',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتوسطة على الواو',
+    hint: 'الميم مضمومة والهمزة ساكنة على واو',
+    explanation: 'تكتب الهمزة على واو لأنها ساكنة وما قبلها مضموم، والضمة أقوى من السكون.',
+    categoryName: 'الهمزة على الواو',
+    exampleSentence: 'الْمُؤْمِنُ القَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللهِ'
+  },
+  {
+    id: 'w_adv_2',
+    word: 'يُؤْثِرُ',
+    wordWithoutTashkeel: 'يؤثر',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتوسطة على الواو',
+    hint: 'ياء مضمومة ثم همزة ساكنة على واو وثاء مكسورة وراء مضمومة',
+    explanation: 'همزة متوسطة ساكنة بعد ضم تكتب على واو.',
+    categoryName: 'الهمزة على الواو',
+    exampleSentence: 'لَا يُؤْثِرُ عَلَى الحَقِّ أَحَدًا'
+  },
+  {
+    id: 'w_adv_3',
+    word: 'شَأْنٌ',
+    wordWithoutTashkeel: 'شأن',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتوسطة على الألف',
+    hint: 'الشين مفتوحة والهمزة ساكنة على ألف والنون بتنوين ضم',
+    explanation: 'كتبت الهمزة على ألف لأنها ساكنة وما قبلها مفتوح، والفتحة تناسبها الألف.',
+    categoryName: 'الهمزة على الألف',
+    exampleSentence: 'العِلْمُ يُعْلِي شَأْنَ الأُمَّةِ'
+  },
+  {
+    id: 'w_adv_4',
+    word: 'سُئِلَ',
+    wordWithoutTashkeel: 'سئل',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتوسطة على نبرة (ياء)',
+    hint: 'السين مضمومة والهمزة مكسورة على نبرة واللام مفتوحة',
+    explanation: 'الهمزة مكسورة وما قبلها مضموم، والكسرة أقوى الحركات فتكتب على نبرة (ـئـ).',
+    categoryName: 'الهمزة على نبرة',
+    exampleSentence: 'سُئِلَ حَكِيمٌ عَنْ أَعْظَمِ الخِصَالِ'
+  },
+  {
+    id: 'w_adv_5',
+    word: 'سَمَاءٌ',
+    wordWithoutTashkeel: 'سماء',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتطرفة على السطر بعد ألف مد',
+    hint: 'سين وميم وألف مد وهمزة متطرفة على السطر بتنوين ضم',
+    explanation: 'تكتب الهمزة المتطرفة على السطر إذا سبقت بساكن أو حرف مد كالألف.',
+    categoryName: 'الهمزة المتطرفة',
+    exampleSentence: 'السَّمَاءُ صَافِيَةٌ وَجَمِيلَةٌ'
+  },
+  {
+    id: 'w_adv_6',
+    word: 'شَاطِئٌ',
+    wordWithoutTashkeel: 'شاطئ',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتطرفة على ياء غير منقوطة',
+    hint: 'شين ممدودة بالألف وطاء مكسورة وهمزة على ياء',
+    explanation: 'تكتب الهمزة المتطرفة على ياء لأن الحرف الذي قبلها مكسور (طِـئ).',
+    categoryName: 'الهمزة المتطرفة على ياء',
+    exampleSentence: 'جَلَسْنَا عَلَى شَاطِئِ البَحْرِ'
+  },
+  {
+    id: 'w_adv_7',
+    word: 'لُؤْلُؤٌ',
+    wordWithoutTashkeel: 'لؤلؤ',
+    tier: 'advanced',
+    targetSkill: 'همزة متوسطة على واو وهمزة متطرفة على واو',
+    hint: 'همزة أولى على واو وهمزة أخيرة على واو',
+    explanation: 'الأولى ساكنة بعد ضم (لُؤْ)، والأخيرة متطرفة بعد حرف مضموم فتكتب على واو.',
+    categoryName: 'الهمزة المزدوجة على الواو',
+    exampleSentence: 'تَبْدُو النُّجُومُ كَلُؤْلُؤٍ مَنْثُورٍ'
+  },
+  {
+    id: 'w_adv_8',
+    word: 'إِخْلَاصٌ',
+    wordWithoutTashkeel: 'إخلاص',
+    tier: 'advanced',
+    targetSkill: 'همزة القطع المكسورة',
+    hint: 'همزة تحت الألف مكسورة وخاء ساكنة',
+    explanation: 'همزة قطع في أول مصدر الفعل الرباعي (أخلص - إخلاصاً)، تثبت وصلاً وقطعاً.',
+    categoryName: 'همزة القطع',
+    exampleSentence: 'يَعْمَلُ بِلَا كَلَلٍ وَبِإِخْلَاصٍ'
+  },
+  {
+    id: 'w_adv_9',
+    word: 'اسْتِكْشَافٌ',
+    wordWithoutTashkeel: 'استكشاف',
+    tier: 'advanced',
+    targetSkill: 'همزة الوصل في مصدر سداسي',
+    hint: 'تبدأ بألف وصل بدون رأس همزة',
+    explanation: 'همزة وصل في مصدر الفعل السداسي (استكشف - استكشافاً)، تسقط عند وصل الكلام.',
+    categoryName: 'همزة الوصل',
+    exampleSentence: 'انْطَلَقَتِ الرِّحْلَةُ لِاسْتِكْشَافِ الفَضَاءِ'
+  },
+  {
+    id: 'w_adv_10',
+    word: 'يَسْعَى',
+    wordWithoutTashkeel: 'يسعى',
+    tier: 'advanced',
+    targetSkill: 'الألف اللينة المقصورة على صورة ياء',
+    hint: 'تنتهي بألف لينة على صورة ياء بدون نقط',
+    explanation: 'ألف لينة في فعل ثلاثي أصل ألفه ياء (يسعيان / السعي).',
+    categoryName: 'الألف اللينة',
+    exampleSentence: 'يَسْعَى المُجْتَهِدُ لِلنَّجَاحِ'
+  },
+  {
+    id: 'w_adv_11',
+    word: 'عَالِيًا',
+    wordWithoutTashkeel: 'عاليا',
+    tier: 'advanced',
+    targetSkill: 'تنوين الفتح على اسم منقوص',
+    hint: 'عين وألف ولام مكسورة وياء بتنوين فتح وألف',
+    explanation: 'تظهر فتحتا التنوين على الياء وتتبعها ألف تنوين النصب.',
+    categoryName: 'تنوين الفتح المتقدم',
+    exampleSentence: 'تَرْفَعُ الرَّايَةَ عَالِيًا'
+  },
+  {
+    id: 'w_adv_12',
+    word: 'هَؤُلَاءِ',
+    wordWithoutTashkeel: 'هؤلاء',
+    tier: 'advanced',
+    targetSkill: 'حذف الألف كتابة ورسم الهمزة على واو وعلى سطر',
+    hint: 'تنطق ألف بعد الهاء ولا تكتب، وهمزة على واو ثم همزة على السطر',
+    explanation: 'تحذف الألف بعد هاء التنبيه رسماً، والهمزة الأولى مضمومة على واو والأخيرة متطرفة على السطر.',
+    categoryName: 'حذف الألف والهمزات',
+    exampleSentence: 'هَؤُلَاءِ هُمُ الأَبْطَالُ الحَقِيقِيُّونَ'
+  },
+  {
+    id: 'w_adv_13',
+    word: 'الْمُرُوءَةُ',
+    wordWithoutTashkeel: 'المروءة',
+    tier: 'advanced',
+    targetSkill: 'الهمزة المتوسطة المفتوحة بعد واو مد على السطر',
+    hint: 'واو مد ساكنة تليها همزة مفردة على السطر ثم تاء مربوطة',
+    explanation: 'ترسم الهمزة المتوسطة مفردة على السطر إذا جاءت مفتوحة بعد واو مد ساكنة.',
+    categoryName: 'الهمزة على السطر بعد واو',
+    exampleSentence: 'الشَّهَامَةُ وَالْمُرُوءَةُ مِنْ خِصَالِ الكِرَامِ'
+  }
+];

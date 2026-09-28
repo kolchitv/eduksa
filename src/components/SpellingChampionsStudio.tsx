@@ -7,6 +7,7 @@ import {
 } from '../data/spellingChampionsData';
 import { audioManager } from '../utils/audio';
 import confetti from 'canvas-confetti';
+import { DictationChallenge } from './DictationChallenge';
 import { 
   Award, 
   Volume2, 
@@ -29,7 +30,8 @@ import {
   BookOpen, 
   Share2,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Zap
 } from 'lucide-react';
 
 interface SpellingChampionsStudioProps {
@@ -51,6 +53,7 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
 }) => {
   // Tier and Lesson State
   const [selectedTier, setSelectedTier] = useState<SpellingTier>(initialTier);
+  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge'>('passages');
   const [currentMode, setCurrentMode] = useState<DictationMode>('manthoor');
   const [selectedPassageId, setSelectedPassageId] = useState<string>('');
   
@@ -493,14 +496,57 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
               );
             })}
           </div>
+
+          {/* Studio Sub-Mode Switcher: Full Passages vs Instant Audio Words Challenge */}
+          <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center">
+            <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center gap-1.5 w-full sm:w-auto shadow-2xs">
+              <button
+                id="btn-studio-mode-passages"
+                onClick={() => setStudioMode('passages')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  studioMode === 'passages'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📜</span>
+                <span>نصوص الإملاء المتدرجة (منظور واختباري)</span>
+              </button>
+
+              <button
+                id="btn-studio-mode-words-challenge"
+                onClick={() => setStudioMode('words_challenge')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  studioMode === 'words_challenge'
+                    ? 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-slate-950 shadow-xs ring-2 ring-amber-300'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+                <span>تحدي الكلمات الصوتية السريع</span>
+                <span className="bg-rose-600 text-white text-[9px] px-2 py-0.5 rounded-full font-black shadow-xs">
+                  تقييم فوري ⚡
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Interactive Studio Container */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-6">
-        
-        {/* Tier Info & Lesson Selector Bar */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col lg:flex-row items-center justify-between gap-4">
+        {studioMode === 'words_challenge' ? (
+          <DictationChallenge
+            studentName={studentName}
+            onAddStars={onAddStars}
+            initialTier={selectedTier}
+            onOpenCertificate={onOpenCertificate}
+            onBackToStudio={() => setStudioMode('passages')}
+          />
+        ) : (
+          <>
+            {/* Tier Info & Lesson Selector Bar */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col lg:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full lg:w-auto">
             <span className="text-xl">{currentTierConfig.emoji}</span>
             <div>
@@ -1093,6 +1139,8 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
             </div>
           </div>
         )}
+        </>
+      )}
 
       </main>
     </div>
