@@ -8,6 +8,7 @@ import {
 import { audioManager } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { DictationChallenge } from './DictationChallenge';
+import { WrittenApplicationsStudio } from './WrittenApplicationsStudio';
 import { 
   Award, 
   Volume2, 
@@ -53,7 +54,7 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
 }) => {
   // Tier and Lesson State
   const [selectedTier, setSelectedTier] = useState<SpellingTier>(initialTier);
-  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge'>('passages');
+  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge' | 'applications'>('passages');
   const [currentMode, setCurrentMode] = useState<DictationMode>('manthoor');
   const [selectedPassageId, setSelectedPassageId] = useState<string>('');
   
@@ -397,14 +398,14 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-alexandria tracking-tight">
-                    أبطال الإملاء التفاعلي
+                    أبطال الإملاء والتطبيقات الكتابية
                   </h1>
-                  <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-                    مختبر الإملاء الذكي 🇸🇦
+                  <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                    مختبر الإملاء والتطبيقات 🇸🇦 📘
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  منظومة تدريب إملائي متدرجة للفئات الضعيفة، المتوسطة، والمتميزة مع التصحيح الذكي والمساعد الصوتي
+                  منظومة تدريب متكاملة: نصوص الإملاء المتدرجة، تحدي الكلمات الصوتية، ودفتر التطبيقات الكتابية المعتمد
                 </p>
               </div>
             </div>
@@ -528,6 +529,22 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
                   تقييم فوري ⚡
                 </span>
               </button>
+
+              <button
+                id="btn-studio-mode-applications"
+                onClick={() => setStudioMode('applications')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  studioMode === 'applications'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs ring-2 ring-indigo-300'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📑</span>
+                <span>دفتر التطبيقات الكتابية</span>
+                <span className="bg-amber-400 text-amber-950 text-[9px] px-2 py-0.5 rounded-full font-black shadow-xs">
+                  مرجع مرشدي 📘
+                </span>
+              </button>
             </div>
           </div>
         </div>
@@ -541,6 +558,12 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
             onAddStars={onAddStars}
             initialTier={selectedTier}
             onOpenCertificate={onOpenCertificate}
+            onBackToStudio={() => setStudioMode('passages')}
+          />
+        ) : studioMode === 'applications' ? (
+          <WrittenApplicationsStudio
+            studentName={studentName}
+            onAddStars={onAddStars}
             onBackToStudio={() => setStudioMode('passages')}
           />
         ) : (

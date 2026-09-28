@@ -526,9 +526,9 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <span className="text-sm">📝</span>
-              <span>أبطال الإملاء</span>
+              <span>أبطال الإملاء والتطبيقات</span>
               <span className="text-[9px] bg-rose-600 text-white px-1.5 py-0.2 rounded font-black shadow-xs">
-                تفاعلي
+                جديد
               </span>
             </button>
 
@@ -753,7 +753,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">📝</span>
-                <span>أبطال الإملاء التفاعلي (ضعيفة • متوسطة • متميزة)</span>
+                <span>أبطال الإملاء والتطبيقات الكتابية (المستويات والأنشطة)</span>
               </div>
               <span className="text-[10px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded-full">جديد</span>
             </button>
