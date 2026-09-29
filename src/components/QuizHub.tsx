@@ -22,6 +22,7 @@ import {
 import { GradeId, QuizQuestion } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
+import { shuffleArray, shuffleQuestionOptions } from '../utils/shuffle';
 import confetti from 'canvas-confetti';
 
 interface QuizHubProps {
@@ -159,9 +160,19 @@ export const QuizHub: React.FC<QuizHubProps> = ({
 
   // Generate a random 5-question test round
   const generateNewRound = () => {
-    // Shuffle questions
-    const shuffled = [...gradeQuestions].sort(() => 0.5 - Math.random());
-    const roundQuestions = shuffled.slice(0, 5);
+    // Shuffle questions with Fisher-Yates
+    const shuffled = shuffleArray(gradeQuestions);
+    // Shuffle the options of each question and recalculate correctIndex using Fisher-Yates
+    const roundQuestions = shuffled.slice(0, 5).map((q) => {
+      if (!q.options || q.options.length <= 1) return q;
+      const originalCorrectIndex = q.correctIndex !== undefined ? q.correctIndex : 0;
+      const { shuffledOptions, newCorrectIndex } = shuffleQuestionOptions(q.options, originalCorrectIndex);
+      return {
+        ...q,
+        options: shuffledOptions,
+        correctIndex: newCorrectIndex
+      };
+    });
     setCurrentSessionQuestions(roundQuestions);
     setCurrentIdx(0);
     setSelectedAnswer(null);

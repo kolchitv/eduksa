@@ -16,6 +16,7 @@ import {
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
 import { audioManager } from '../utils/audio';
+import { shuffleQuestionOptions } from '../utils/shuffle';
 
 interface AiTutorProps {
   currentGrade: GradeId;
@@ -153,14 +154,21 @@ export const AiTutor: React.FC<AiTutorProps> = ({ currentGrade }) => {
       });
 
       const data = await res.json();
-      setGenQuestions(data.questions || []);
+      const rawQuestions = data.questions || [];
+      const shuffled = rawQuestions.map((q: any) => {
+        const { shuffledOptions, newCorrectIndex } = shuffleQuestionOptions(q.options || [], q.correctIndex || 0);
+        return { ...q, options: shuffledOptions, correctIndex: newCorrectIndex };
+      });
+      setGenQuestions(shuffled);
     } catch (err) {
+      const fallbackOptions = ['الخيار الصحيح', 'خيار آخر', 'خيار ثالث'];
+      const { shuffledOptions, newCorrectIndex } = shuffleQuestionOptions(fallbackOptions, 0);
       setGenQuestions([
         {
           id: 'q_mock',
           question: `سؤال تطبيقي في موضوع: ${genTopic}`,
-          options: ['الخيار الصحيح', 'خيار آخر', 'خيار ثالث'],
-          correctIndex: 0,
+          options: shuffledOptions,
+          correctIndex: newCorrectIndex,
           explanation: 'إجابة نموذجية حسب كتاب لغتي.'
         }
       ]);

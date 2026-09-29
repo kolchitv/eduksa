@@ -34,6 +34,7 @@ import {
 } from '../../types/readingPath';
 import { READING_LEVEL_INFO } from '../../data/readingPathData';
 import { audioManager } from '../../utils/audio';
+import { shuffleArray, shuffleQuestionOptions } from '../../utils/shuffle';
 
 interface ReadingStudioPracticeProps {
   text: ReadingTextItem;
@@ -75,23 +76,49 @@ export const ReadingStudioPractice: React.FC<ReadingStudioPracticeProps> = ({
   // Questions & Answers state
   const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
   const [orderedItemsState, setOrderedItemsState] = useState<Record<string, string[]>>({});
+  const [shuffledOptionsMap, setShuffledOptionsMap] = useState<Record<string, { options: string[]; correctOptionText: string }>>({});
   const [isAnswersSubmitted, setIsAnswersSubmitted] = useState(false);
   const [comprehensionScore, setComprehensionScore] = useState(100);
 
   // Level Info
   const levelInfo = READING_LEVEL_INFO[text.level] || READING_LEVEL_INFO[1];
 
-  // Initialize Ordered items for order_events questions
+  // Initialize Ordered items and shuffle multiple choice options so the correct answer is randomized
   useEffect(() => {
     const initialOrders: Record<string, string[]> = {};
+    const newOptionsMap: Record<string, { options: string[]; correctOptionText: string }> = {};
+
     text.questions.forEach((q) => {
       if (q.type === 'order_events' && q.itemsToOrder) {
-        // Shuffle items initially
-        const shuffled = [...q.itemsToOrder].sort(() => Math.random() - 0.5);
-        initialOrders[q.id] = shuffled;
+        // Shuffle items with Fisher-Yates
+        initialOrders[q.id] = shuffleArray(q.itemsToOrder);
+      }
+
+      if (q.options && q.options.length > 0) {
+        let correctText = '';
+        if (q.type === 'find_word') {
+          correctText = q.targetWord || (typeof q.correctAnswer === 'string' ? q.correctAnswer : q.options[0]);
+        } else if (typeof q.correctAnswer === 'number') {
+          correctText = q.options[q.correctAnswer] || q.options[0];
+        } else if (typeof q.correctAnswer === 'string') {
+          correctText = q.correctAnswer;
+        } else {
+          correctText = q.options[0];
+        }
+
+        // Shuffle options with Fisher-Yates and ensure the correct answer is randomized across positions
+        const origIdx = typeof q.correctAnswer === 'number' ? q.correctAnswer : q.options.indexOf(correctText);
+        const { shuffledOptions } = shuffleQuestionOptions(q.options, origIdx >= 0 ? origIdx : 0);
+
+        newOptionsMap[q.id] = {
+          options: shuffledOptions,
+          correctOptionText: correctText
+        };
       }
     });
+
     setOrderedItemsState(initialOrders);
+    setShuffledOptionsMap(newOptionsMap);
   }, [text]);
 
   // Stopwatch timer effect
@@ -196,11 +223,14 @@ export const ReadingStudioPractice: React.FC<ReadingStudioPracticeProps> = ({
         const isAllCorrect = JSON.stringify(userOrder) === JSON.stringify(correctOrder);
         if (isAllCorrect) correctCount++;
       } else if (q.type === 'multiple_choice' || q.type === 'wh_question' || q.type === 'synonym_antonym') {
-        if (Number(userAnswers[q.id]) === Number(q.correctAnswer)) {
+        const targetCorrect = shuffledOptionsMap[q.id]?.correctOptionText ||
+          (typeof q.correctAnswer === 'number' && q.options ? q.options[q.correctAnswer] : String(q.correctAnswer));
+        if (userAnswers[q.id] === targetCorrect) {
           correctCount++;
         }
       } else if (q.type === 'find_word') {
-        if (userAnswers[q.id] === q.targetWord || userAnswers[q.id] === q.correctAnswer) {
+        const targetCorrect = shuffledOptionsMap[q.id]?.correctOptionText || q.targetWord || String(q.correctAnswer);
+        if (userAnswers[q.id] === targetCorrect) {
           correctCount++;
         }
       }
@@ -614,6 +644,10 @@ export const ReadingStudioPractice: React.FC<ReadingStudioPracticeProps> = ({
               }
 
               // Multiple Choice / WH Question / Find Word / Synonyms
+              const currentOptions = shuffledOptionsMap[q.id]?.options || q.options || [];
+              const correctTarget = shuffledOptionsMap[q.id]?.correctOptionText ||
+                (typeof q.correctAnswer === 'number' && q.options ? q.options[q.correctAnswer] : String(q.correctAnswer || ''));
+
               return (
                 <div key={q.id} className="p-5 sm:p-6 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-3">
                   <div className="flex items-center gap-2">
@@ -626,34 +660,46 @@ export const ReadingStudioPractice: React.FC<ReadingStudioPracticeProps> = ({
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3">
-                    {q.options?.map((opt, optIdx) => {
-                      const isSelected = q.type === 'find_word' 
-                        ? userAnswers[q.id] === opt 
-                        : userAnswers[q.id] === optIdx;
+                    {currentOptions.map((opt, optIdx) => {
+                      const isSelected = userAnswers[q.id] === opt;
+                      let btnStyle = 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800';
+
+                      if (isAnswersSubmitted) {
+                        if (opt === correctTarget) {
+                          btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-300 font-bold';
+                        } else if (isSelected) {
+                          btnStyle = 'bg-rose-50 border-rose-500 text-rose-950 ring-2 ring-rose-300 font-bold';
+                        } else {
+                          btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+                        }
+                      } else if (isSelected) {
+                        btnStyle = 'bg-indigo-50 border-indigo-500 text-indigo-950 ring-2 ring-indigo-200 font-bold';
+                      }
 
                       return (
                         <button
                           key={optIdx}
                           type="button"
+                          disabled={isAnswersSubmitted}
                           onClick={() => {
-                            if (q.type === 'find_word') {
-                              setUserAnswers({ ...userAnswers, [q.id]: opt });
-                            } else {
-                              setUserAnswers({ ...userAnswers, [q.id]: optIdx });
-                            }
+                            setUserAnswers((prev) => ({ ...prev, [q.id]: opt }));
                             audioManager.playClick();
                           }}
-                          className={`p-3.5 rounded-2xl border text-right text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                            isSelected
-                              ? 'bg-indigo-50 border-indigo-500 text-indigo-950 ring-2 ring-indigo-200'
-                              : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
-                          }`}
+                          className={`p-3.5 rounded-2xl border text-right text-xs transition-all flex items-center justify-between cursor-pointer ${btnStyle}`}
                         >
                           <span>{opt}</span>
                           <span className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] ${
-                            isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'
+                            isAnswersSubmitted
+                              ? opt === correctTarget
+                                ? 'bg-emerald-600 border-emerald-600 text-white'
+                                : isSelected
+                                ? 'bg-rose-600 border-rose-600 text-white'
+                                : 'border-slate-300'
+                              : isSelected
+                              ? 'bg-indigo-600 border-indigo-600 text-white'
+                              : 'border-slate-300'
                           }`}>
-                            {isSelected && '✓'}
+                            {isAnswersSubmitted ? (opt === correctTarget ? '✓' : isSelected ? '✕' : '') : (isSelected ? '✓' : '')}
                           </span>
                         </button>
                       );

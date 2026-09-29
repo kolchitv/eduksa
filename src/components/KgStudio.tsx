@@ -31,6 +31,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
+import { shuffleArray } from '../utils/shuffle';
 import { SPELLING_100_WORDS, SpellingWord } from '../data/spellingWordsData';
 import confetti from 'canvas-confetti';
 
@@ -191,8 +192,8 @@ export const KgStudio: React.FC = () => {
   const generateListenGame = () => {
     const target = KG_LETTERS[Math.floor(Math.random() * KG_LETTERS.length)];
     setListenTarget(target);
-    const pool = KG_LETTERS.filter((l) => l.char !== target.char).sort(() => Math.random() - 0.5);
-    const options = [target, pool[0], pool[1], pool[2]].sort(() => Math.random() - 0.5);
+    const pool = shuffleArray(KG_LETTERS.filter((l) => l.char !== target.char));
+    const options = shuffleArray([target, pool[0], pool[1], pool[2]]);
     setListenOptions(options);
     setListenFeedback(null);
     speakText(target.fatha);
@@ -204,7 +205,7 @@ export const KgStudio: React.FC = () => {
     setBuilderSlots(new Array(correctChars.length).fill(null));
     setBuilderFeedback(null);
     const randomDistractors = ['مَـ', 'بَـ', 'سَـ', 'لَـ', 'رَ', 'فَـ', 'نَـ', 'تَـ'].filter(c => !correctChars.includes(c));
-    const allOptions = [...correctChars, randomDistractors[0] || 'نَـ', randomDistractors[1] || 'تَـ'].sort(() => Math.random() - 0.5);
+    const allOptions = shuffleArray([...correctChars, randomDistractors[0] || 'نَـ', randomDistractors[1] || 'تَـ']);
     setBuilderOptions(allOptions);
   };
 
@@ -215,12 +216,11 @@ export const KgStudio: React.FC = () => {
     setQuizAnswered(false);
     setQuizFeedback(null);
 
-    const distractors = SPELLING_100_WORDS.filter(w => w.id !== randomWord.id)
-      .sort(() => Math.random() - 0.5)
+    const distractors = shuffleArray(SPELLING_100_WORDS.filter(w => w.id !== randomWord.id))
       .slice(0, 3)
       .map(w => w.full);
 
-    const options = [randomWord.full, ...distractors].sort(() => Math.random() - 0.5);
+    const options = shuffleArray([randomWord.full, ...distractors]);
     setQuizOptions(options);
     speakText(randomWord.full);
   };

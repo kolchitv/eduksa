@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Sparkles, 
   Volume2, 
@@ -21,6 +21,7 @@ import {
   Sparkle
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
+import { shuffleQuestionOptions } from '../utils/shuffle';
 
 export type SpellingLevel = 'beginner' | 'intermediate' | 'pro';
 
@@ -613,6 +614,14 @@ export const SpellingHeroesStudio: React.FC<SpellingHeroesStudioProps> = ({
 
   const currentWord = filteredWords[currentIndex] || filteredWords[0] || levelWords[0];
 
+  // ترتيب الخيارات عشوائياً في وضع التحدي (Quest) باستخدام فيشر-ياتس لضمان توزيع عشوائي حقيقي وتجنب أن تكون الإجابة دائماً الأولى
+  const questShuffledOptions = useMemo(() => {
+    if (!currentWord || !currentWord.options) return [];
+    const origIdx = currentWord.options.indexOf(currentWord.word);
+    const { shuffledOptions } = shuffleQuestionOptions(currentWord.options, origIdx >= 0 ? origIdx : 0);
+    return shuffledOptions;
+  }, [currentWord]);
+
   const handleSpeak = (text: string, rate: number = 0.85) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -1079,7 +1088,7 @@ export const SpellingHeroesStudio: React.FC<SpellingHeroesStudioProps> = ({
                 أي الكلمات التالية مكتوبة إملائياً بالشكل الصحيح؟
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {currentWord.options.map((opt, i) => (
+                {questShuffledOptions.map((opt, i) => (
                   <button
                     key={i}
                     onClick={() => handleSelectOption(opt)}

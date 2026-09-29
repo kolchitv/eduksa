@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   CheckCircle2, 
   Sparkles, 
@@ -11,6 +11,7 @@ import {
   X
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
+import { shuffleQuestionOptions } from '../utils/shuffle';
 
 export const Grade1Unit1Assessment: React.FC = () => {
   // Exercise 1: Match word to letter shape (ميم وأشكاله)
@@ -23,22 +24,35 @@ export const Grade1Unit1Assessment: React.FC = () => {
   const [q4Inputs, setQ4Inputs] = useState({ w1: '', w2: '', w3: '' });
   // Exercise 5: Selected shapes
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);
+  const [resetCount, setResetCount] = useState<number>(0);
 
-  // Q1 Data: Word to shape of letter M
-  const q1Words = [
-    { id: 'w_qalam', word: 'قَلَمُ', correctShape: 'ـم', options: ['ـم', 'ـمـ', 'مـ', 'د'] },
-    { id: 'w_zaman', word: 'زَمَانُ', correctShape: 'ـمـ', options: ['ـمـ', 'ـم', 'مـ', 'ر'] },
-    { id: 'w_mawz', word: 'مَوْزُ', correctShape: 'مـ', options: ['مـ', 'ـم', 'ـمـ', 'ن'] },
-    { id: 'w_hadiqah', word: 'حَدِيقَةُ', correctShape: 'ـد', options: ['ـد', 'د', 'ـل', 'مـ'] }
-  ];
+  // Q1 Data: Word to shape of letter M (options randomly shuffled so the answer is never predictable)
+  const q1Words = useMemo(() => {
+    const raw = [
+      { id: 'w_qalam', word: 'قَلَمُ', correctShape: 'ـم', options: ['ـم', 'ـمـ', 'مـ', 'د'] },
+      { id: 'w_zaman', word: 'زَمَانُ', correctShape: 'ـمـ', options: ['ـمـ', 'ـم', 'مـ', 'ر'] },
+      { id: 'w_mawz', word: 'مَوْزُ', correctShape: 'مـ', options: ['مـ', 'ـم', 'ـمـ', 'ن'] },
+      { id: 'w_hadiqah', word: 'حَدِيقَةُ', correctShape: 'ـد', options: ['ـد', 'د', 'ـل', 'مـ'] }
+    ];
+    return raw.map(item => {
+      const { shuffledOptions } = shuffleQuestionOptions(item.options, item.options.indexOf(item.correctShape));
+      return { ...item, options: shuffledOptions };
+    });
+  }, [resetCount]);
 
-  // Q2 Data: Letter to Picture
-  const q2Items = [
-    { letter: 'ب', name: 'باء', correctImage: 'بطة', emoji: '🦆', options: ['بطة', 'رمان', 'موز', 'نخلة'] },
-    { letter: 'ر', name: 'راء', correctImage: 'رمان', emoji: '🍎', options: ['رمان', 'موز', 'نخلة', 'بطة'] },
-    { letter: 'م', name: 'ميم', correctImage: 'موز', emoji: '🍌', options: ['موز', 'بطة', 'رمان', 'نخلة'] },
-    { letter: 'ن', name: 'نون', correctImage: 'نخلة', emoji: '🌴', options: ['نخلة', 'رمان', 'موز', 'بطة'] }
-  ];
+  // Q2 Data: Letter to Picture (options randomly shuffled so the answer is never predictably first)
+  const q2Items = useMemo(() => {
+    const raw = [
+      { letter: 'ب', name: 'باء', correctImage: 'بطة', emoji: '🦆', options: ['بطة', 'رمان', 'موز', 'نخلة'] },
+      { letter: 'ر', name: 'راء', correctImage: 'رمان', emoji: '🍎', options: ['رمان', 'موز', 'نخلة', 'بطة'] },
+      { letter: 'م', name: 'ميم', correctImage: 'موز', emoji: '🍌', options: ['موز', 'بطة', 'رمان', 'نخلة'] },
+      { letter: 'ن', name: 'نون', correctImage: 'نخلة', emoji: '🌴', options: ['نخلة', 'رمان', 'موز', 'بطة'] }
+    ];
+    return raw.map(item => {
+      const { shuffledOptions } = shuffleQuestionOptions(item.options, item.options.indexOf(item.correctImage));
+      return { ...item, options: shuffledOptions };
+    });
+  }, [resetCount]);
 
   const handleSelectQ1 = (wordId: string, shape: string) => {
     setQ1Matches(prev => ({ ...prev, [wordId]: shape }));
@@ -56,6 +70,7 @@ export const Grade1Unit1Assessment: React.FC = () => {
     setQ3Inputs({ s1: '', s2: '', s3: '', combined: '' });
     setQ4Inputs({ w1: '', w2: '', w3: '' });
     setCompletedExercises([]);
+    setResetCount(prev => prev + 1);
   };
 
   return (

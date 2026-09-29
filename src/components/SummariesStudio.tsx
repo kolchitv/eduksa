@@ -21,6 +21,7 @@ import {
   Download
 } from 'lucide-react';
 import { SUMMARIES_DATA, SummaryTopic } from '../data/summariesData';
+import { shuffleQuestionOptions } from '../utils/shuffle';
 
 interface SummariesStudioProps {
   initialGrade?: 'all' | 'intermediate1' | 'intermediate2' | 'intermediate3';
@@ -56,6 +57,19 @@ export const SummariesStudio: React.FC<SummariesStudioProps> = ({
   const activeTopic = useMemo(() => {
     return filteredTopics.find(t => t.id === activeTopicId) || filteredTopics[0] || SUMMARIES_DATA[0];
   }, [filteredTopics, activeTopicId]);
+
+  // عشوائية ترتيب الخيارات حتى لا تكون الإجابة الصحيحة متوقعة أو في نفس الموقع
+  const shuffledQuestions = useMemo(() => {
+    if (!activeTopic.testQuestions) return [];
+    return activeTopic.testQuestions.map((q) => {
+      const { shuffledOptions, newCorrectIndex } = shuffleQuestionOptions(q.options, q.correctIndex);
+      return {
+        ...q,
+        options: shuffledOptions,
+        correctIndex: newCorrectIndex
+      };
+    });
+  }, [activeTopic.id, activeTopic.testQuestions]);
 
   const handleSelectAnswer = (qKey: string, optionIdx: number, correctIdx: number) => {
     setQuizAnswers(prev => ({ ...prev, [qKey]: optionIdx }));
@@ -334,7 +348,7 @@ export const SummariesStudio: React.FC<SummariesStudioProps> = ({
                     </span>
                   </div>
 
-                  {activeTopic.testQuestions.map((q, qIdx) => {
+                  {shuffledQuestions.map((q, qIdx) => {
                     const qKey = `${activeTopic.id}_${qIdx}`;
                     const answered = quizAnswers[qKey] !== undefined;
                     const selectedIdx = quizAnswers[qKey];
