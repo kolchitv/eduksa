@@ -21,7 +21,8 @@ import {
   Send,
   ExternalLink,
   FolderOpen,
-  Sliders
+  Sliders,
+  Music
 } from 'lucide-react';
 import { GradeId } from '../types/curriculum';
 import { GRADES_DATA } from '../data/curriculumData';
@@ -29,7 +30,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions';
+export type TabType = 'home' | 'units' | 'spelling' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'songs';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -167,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Brand & Logo */}
           <div 
             id="brand-logo-btn"
-            onClick={() => onChangeTab('units')}
+            onClick={() => onChangeTab('home')}
             className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
@@ -187,6 +188,20 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
           </div>
+
+          {/* Quick Direct Home Portal Link */}
+          <button
+            onClick={() => onChangeTab('home')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              activeTab === 'home'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+            }`}
+            title="الانتقال إلى البوابة الرئيسية"
+          >
+            <span>🏠</span>
+            <span className="hidden sm:inline">البوابة الرئيسية</span>
+          </button>
 
           {/* Direct prominent Reading Pathway Launch Button */}
           <button
@@ -462,6 +477,20 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-songs"
+              onClick={() => onChangeTab('songs')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'songs'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md ring-2 ring-orange-300'
+                  : 'text-orange-800 hover:text-white hover:bg-orange-500 bg-orange-50/90 border border-orange-200/90 shadow-2xs'
+              }`}
+            >
+              <Music className="w-3.5 h-3.5 text-amber-500 group-hover:text-white" />
+              <span>أناشيد تربوية 🎵</span>
+              <span className="text-[9px] bg-amber-400 text-amber-950 px-1.5 py-0.2 rounded font-black">كراسة الأناشيد</span>
+            </button>
+
+            <button
               id="nav-tab-foundation"
               onClick={() => onChangeTab('foundation')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -514,22 +543,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-3.5 h-3.5 text-emerald-400" />
               <span>المُعرب الذكي</span>
-            </button>
-
-            <button
-              id="nav-tab-spelling-champions"
-              onClick={() => onChangeTab('spelling_champions')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                activeTab === 'spelling_champions'
-                  ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 shadow-md ring-2 ring-amber-300'
-                  : 'text-amber-900 hover:text-amber-950 hover:bg-amber-100/90 bg-amber-50/90 border border-amber-300/80 shadow-2xs'
-              }`}
-            >
-              <span className="text-sm">📝</span>
-              <span>أبطال الإملاء والتطبيقات</span>
-              <span className="text-[9px] bg-rose-600 text-white px-1.5 py-0.2 rounded font-black shadow-xs">
-                جديد
-              </span>
             </button>
 
             <button
@@ -685,6 +698,22 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => {
+                onChangeTab('songs');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'songs' ? 'bg-orange-50 text-orange-800 border border-orange-200' : 'text-slate-700'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Music className="w-4 h-4 text-orange-600" />
+                <span>أناشيد تربوية (كراسة الأناشيد)</span>
+              </div>
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-2 py-0.5 rounded-full">٥٠+ نشيد 🎵</span>
+            </button>
+
+            <button
+              onClick={() => {
                 onChangeTab('foundation');
                 setMobileMenuOpen(false);
               }}
@@ -738,24 +767,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-4 h-4 text-emerald-600" />
               <span>المُعرب الذكي</span>
-            </button>
-
-            <button
-              onClick={() => {
-                onChangeTab('spelling_champions');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-bold ${
-                activeTab === 'spelling_champions'
-                  ? 'bg-amber-400 text-slate-950 shadow-md'
-                  : 'text-amber-950 bg-amber-50 border border-amber-200'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">📝</span>
-                <span>أبطال الإملاء والتطبيقات الكتابية (المستويات والأنشطة)</span>
-              </div>
-              <span className="text-[10px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded-full">جديد</span>
             </button>
 
             <button

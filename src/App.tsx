@@ -19,7 +19,10 @@ import { Grade1SupportPlans } from './components/Grade1SupportPlans';
 import { InteractiveWhiteboard } from './components/whiteboard/InteractiveWhiteboard';
 import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStudio';
 import { SummariesStudio } from './components/SummariesStudio';
-import { SpellingChampionsStudio } from './components/SpellingChampionsStudio';
+import { EducationalSongsStudio } from './components/EducationalSongsStudio';
+import { HomeSectionsCards } from './components/HomeSectionsCards';
+import { SectionHeaderNav } from './components/SectionHeaderNav';
+import { SpellingHeroesStudio } from './components/SpellingHeroesStudio';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -183,9 +186,7 @@ export default function App() {
       setActiveTab('units');
     } else if (query.includes('دعم') || query.includes('فاقد') || query.includes('علاج') || query.includes('خطة دعم') || query.includes('خطط')) {
       setActiveTab('support_plans');
-    } else if (query.includes('إملاء') || query.includes('املاء') || query.includes('أبطال') || query.includes('ابطال') || query.includes('منظور') || query.includes('اختباري')) {
-      setActiveTab('spelling_champions');
-    } else if (query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
+    } else if (query.includes('إملاء') || query.includes('قاموس') || query.includes('معجم') || query.includes('مفردات') || query.includes('صورة')) {
       setActiveTab('dictionary');
     } else if (query.includes('حرف') || query.includes('شمسية') || query.includes('قمرية') || query.includes('تأسيس')) {
       setActiveTab('foundation');
@@ -197,6 +198,25 @@ export default function App() {
   };
 
   const currentCurriculum = GRADES_DATA[currentGrade] || GRADES_DATA.foundation;
+
+  const sectionTitleMap: Record<TabType, string> = {
+    home: 'البوابة الرئيسية (لوحة الأقسام التعليمية)',
+    units: 'الوحدات والمناهج الدراسية (الدروس والنصوص التفاعلية)',
+    reading_path: 'مسار القراءة والفهم القرائي (٤ مسارات معتمدة)',
+    foundation: 'معمل التأسيس والهجاء وحروف الهجاء',
+    spelling: 'أبطال الإملاء (معمل وتحديات الإملاء المنظور والمسموع)',
+    kg: 'استوديو رياض الأطفال (المستوى الأول والثاني)',
+    quiz: 'بنك التقييمات والاختبارات التفاعلية',
+    dictionary: 'المعجم البصري والناطق للمفردات المصورة',
+    summaries: 'ملخصات ومطويات مقررات لغتي',
+    worksheets: 'مولد ومطبعة أوراق العمل المدرسية',
+    books: 'مكتبة الكتب والمقررات المدرسية المعتمدة',
+    songs: 'استوديو الأناشيد المدرسية التعليمية بالصوت',
+    support_plans: 'قسم المراجعة والخطط العلاجية (مراجعة منتصف العام الشاملة وأوراق العمل)',
+    achievements: 'لوحة إنجازات الطالب وشهادات التميز',
+    whiteboard: 'السبورة التفاعلية الذكية',
+    ai: 'المعلم الذكي المساعد'
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -233,41 +253,74 @@ export default function App() {
         onCopyPageLink={handleCopyCurrentPageLink}
       />
 
-      {/* Main Grade Selector Ribbon */}
-      <GradeSelector
-        selectedGrade={currentGrade}
-        onSelectGrade={(g) => {
-          setCurrentGrade(g);
-          if (g === 'kg1' || g === 'kg2') {
-            setActiveTab('kg');
-          } else if (g === 'foundation') {
-            setActiveTab('foundation');
-          } else {
-            setActiveTab('units');
-          }
-        }}
-        completedQuizzesCount={completedQuizzes.length}
-        onOpenSupportPlans={() => setActiveTab('support_plans')}
-        onOpenReadingPathway={handleOpenReadingPathway}
-        onOpenSummaries={() => setActiveTab('summaries')}
-        onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
-      />
-
       {/* Main View Router */}
-      <main className="flex-1 pb-16">
-        {activeTab === 'kg' && <KgStudio />}
-
-        {activeTab === 'units' && (
-          <UnitViewer
-            curriculum={currentCurriculum}
-            onOpenQuizForLesson={() => setActiveTab('quiz')}
-            onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
-            onOpenSupportPlans={() => setActiveTab('support_plans')}
-            onOpenReadingPathway={handleOpenReadingPathway}
-            onOpenSummaries={() => setActiveTab('summaries')}
-            onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
+      {activeTab === 'home' ? (
+        /* 1. Clean Home Portal Hub (The requested 4-cards-per-row model with zero clutter) */
+        <HomeSectionsCards
+          activeTab={activeTab}
+          studentName={studentName}
+          stars={stars}
+          completedQuizzesCount={completedQuizzes.length}
+          onSelectTab={(tab) => {
+            setActiveTab(tab);
+            if (tab === 'kg') {
+              if (currentGrade !== 'kg1' && currentGrade !== 'kg2') {
+                setCurrentGrade('kg1');
+              }
+            } else if (tab === 'foundation') {
+              setCurrentGrade('foundation');
+            } else if (tab === 'units') {
+              if (currentGrade === 'kg1' || currentGrade === 'kg2' || currentGrade === 'foundation') {
+                setCurrentGrade('grade1');
+              }
+            }
+          }}
+        />
+      ) : (
+        /* 2. Focused Section Mode - Zero overlap, complete clarity for child and visitor */
+        <>
+          {/* Top Section Header with Instant Home Button & Quick Switcher */}
+          <SectionHeaderNav
+            activeTab={activeTab}
+            onChangeTab={setActiveTab}
+            stars={stars}
           />
-        )}
+
+          {/* Main Grade Selector Ribbon - only shown for lessons/units & school books that need grade filtering */}
+          {(activeTab === 'units' || activeTab === 'books' || activeTab === 'worksheets' || activeTab === 'quiz' || activeTab === 'dictionary') && (
+            <GradeSelector
+              selectedGrade={currentGrade}
+              onSelectGrade={(g) => {
+                setCurrentGrade(g);
+                if (g === 'kg1' || g === 'kg2') {
+                  setActiveTab('kg');
+                } else if (g === 'foundation') {
+                  setActiveTab('foundation');
+                } else {
+                  setActiveTab('units');
+                }
+              }}
+              completedQuizzesCount={completedQuizzes.length}
+              onOpenSupportPlans={() => setActiveTab('support_plans')}
+              onOpenReadingPathway={handleOpenReadingPathway}
+              onOpenSummaries={() => setActiveTab('summaries')}
+            />
+          )}
+
+          {/* Dedicated Section Content */}
+          <main id="main-content-section" className="flex-1 pb-16">
+            {activeTab === 'kg' && <KgStudio />}
+
+            {activeTab === 'units' && (
+              <UnitViewer
+                curriculum={currentCurriculum}
+                onOpenQuizForLesson={() => setActiveTab('quiz')}
+                onOpenWorksheetForLesson={() => setActiveTab('worksheets')}
+                onOpenSupportPlans={() => setActiveTab('support_plans')}
+                onOpenReadingPathway={handleOpenReadingPathway}
+                onOpenSummaries={() => setActiveTab('summaries')}
+              />
+            )}
 
         {activeTab === 'summaries' && (
           <SummariesStudio
@@ -295,6 +348,15 @@ export default function App() {
         )}
 
         {activeTab === 'foundation' && <FoundationStudio />}
+
+        {activeTab === 'spelling' && (
+          <SpellingHeroesStudio
+            studentName={studentName}
+            onAddStar={() => setStars(s => s + 1)}
+          />
+        )}
+
+        {activeTab === 'songs' && <EducationalSongsStudio />}
 
         {activeTab === 'dictionary' && (
           <VisualDictionary
@@ -326,15 +388,6 @@ export default function App() {
 
         {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
 
-        {activeTab === 'spelling_champions' && (
-          <SpellingChampionsStudio
-            studentName={studentName}
-            onAddStars={handleAddStars}
-            onOpenCertificate={() => setIsCertificateOpen(true)}
-            onBackToHome={() => setActiveTab('units')}
-          />
-        )}
-
         {activeTab === 'support_plans' && (
           <Grade1SupportPlans
             onBackToUnits={() => {
@@ -363,8 +416,10 @@ export default function App() {
           />
         )}
       </main>
+    </>
+  )}
 
-      {/* Certificate Modal */}
+  {/* Certificate Modal */}
       <CertificateModal
         isOpen={isCertificateOpen}
         onClose={() => setIsCertificateOpen(false)}
@@ -548,6 +603,14 @@ export default function App() {
                 الأدوات التفاعلية
               </h4>
               <ul className="space-y-1.5 text-xs text-slate-400">
+                <li>
+                  <button 
+                    onClick={() => { setActiveTab('songs'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className="hover:text-emerald-400 transition-colors text-right"
+                  >
+                    • أناشيد تربوية (كراسة الأناشيد الشاملة 🎵)
+                  </button>
+                </li>
                 <li>• معمل الحركات والأصوات الهجائية الـ ٢٨</li>
                 <li>• لعبة التمييز بين اللام الشمسية والقمرية</li>
                 <li>• المُعرب النحوي ومساعد المعلم الذكي</li>

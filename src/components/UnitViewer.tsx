@@ -30,6 +30,7 @@ import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
 import { Grade1Unit1LetterMActivity } from './Grade1Unit1LetterMActivity';
 import { Grade1Unit1Activity2 } from './Grade1Unit1Activity2';
 import { Grade1Unit1ActivitiesHub, Unit1ActivityId } from './Grade1Unit1ActivitiesHub';
+import { Grade1Unit1VisualReviewCard } from './Grade1Unit1VisualReviewCard';
 import { GRADE1_SUPPORT_DRIVE_URL } from '../data/grade1SupportPlansData';
 
 interface UnitViewerProps {
@@ -827,14 +828,20 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                 </div>
               )}
 
-              {/* Lesson Body: Interactive Text / Poem Reader with Word Highlight */}
-              <div className="my-8">
-                <InteractiveTextReader
-                  text={currentLesson.text}
-                  verses={currentLesson.verses}
-                  title={currentLesson.title}
-                />
-              </div>
+              {/* Lesson Body: Interactive Text or Visual Review Card for Review Lesson */}
+              {currentLesson.id === 'g1_u1_review_letters' ? (
+                <div className="my-8">
+                  <Grade1Unit1VisualReviewCard />
+                </div>
+              ) : (
+                <div className="my-8">
+                  <InteractiveTextReader
+                    text={currentLesson.text}
+                    verses={currentLesson.verses}
+                    title={currentLesson.title}
+                  />
+                </div>
+              )}
 
               {/* Vocabulary Chips (المفردات ومعانيها) */}
               {currentLesson.vocabulary && currentLesson.vocabulary.length > 0 && (
@@ -1000,6 +1007,30 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
 
                     <div 
                       onClick={() => {
+                        const targetIdx = currentUnit.lessons.findIndex((l) => l.id === 'g1_u1_review_letters');
+                        if (targetIdx !== -1) setSelectedLessonIdx(targetIdx);
+                        setUnitSection('lessons');
+                        audioManager.play('click');
+                      }}
+                      className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-50 to-blue-50 hover:from-sky-100 hover:to-blue-100 border-2 border-sky-300 cursor-pointer transition-all flex items-center justify-between group shadow-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-xl shadow-xs">
+                          🖼️
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h5 className="font-black text-xs text-sky-950">البِطَاقَةُ المُصَوَّرَةُ (أسرتي)</h5>
+                            <span className="text-[8px] bg-sky-200 text-sky-950 font-bold px-1 rounded">الصورة الأصلية</span>
+                          </div>
+                          <p className="text-[10px] text-sky-800 mt-0.5 line-clamp-1">مراجعة الحروف بالأصوات والمدود ومقاطع الحرفين</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-sky-700 font-bold group-hover:translate-x-1 transition-transform">عرض ◀</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
                         setUnitSection('activities');
                         setSelectedActivityId('hub');
                         audioManager.play('click');
@@ -1018,6 +1049,42 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                       <span className="text-xs text-amber-800 font-bold group-hover:translate-x-1 transition-transform">عرض الكل ◀</span>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Grade 1 Unit 1 End-of-Unit Visual Poster Section */}
+              {isGrade1Unit1 && currentLesson.id !== 'g1_u1_review_letters' && (
+                <div className="mt-10 pt-8 border-t-2 border-dashed border-sky-300">
+                  <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-10 h-10 rounded-2xl bg-sky-600 text-white flex items-center justify-center text-xl shadow-xs">
+                        🖼️
+                      </span>
+                      <div>
+                        <h4 className="font-black text-sm sm:text-base text-sky-950 font-serif">
+                          بِطَاقَةُ مُرَاجَعَةِ حُرُوفِ الوَحْدَةِ الأُولَى (الصُّورَةُ المُعْتَمَدَةُ)
+                        </h4>
+                        <p className="text-xs text-sky-800">
+                          مراجعة ختامية لجميع حروف الوحدة الأولى (أسرتي: م، ب، ل، د، ن، ر) بالأصوات والمدود ومقاطع الحرفين.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const targetIdx = currentUnit.lessons.findIndex((l) => l.id === 'g1_u1_review_letters');
+                        if (targetIdx !== -1) setSelectedLessonIdx(targetIdx);
+                        setUnitSection('lessons');
+                        audioManager.play('click');
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs transition-all shadow-xs cursor-pointer flex items-center gap-1"
+                    >
+                      <span>الانتقال لدرس المراجعة</span>
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <Grade1Unit1VisualReviewCard showToolbar={true} />
                 </div>
               )}
 

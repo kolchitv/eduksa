@@ -16,6 +16,96 @@ export const Grade1Unit1LetterDStudio: React.FC = () => {
   const [activePronoun, setActivePronoun] = useState<'anta' | 'anti'>('anta');
   const [selectedCircles, setSelectedCircles] = useState<Record<string, boolean>>({});
   const [activeVoice, setActiveVoice] = useState<string | null>(null);
+  const [activeBrickWordId, setActiveBrickWordId] = useState<string>('b1');
+
+  // الكلمات المعتمدة في تحدي لبنة الكلمة للصف الأول (الحروف المدروسة: م، ب، ل، د)
+  const WORD_BRICKS = [
+    {
+      id: 'b1',
+      word: 'بَلَدُ',
+      category: 'ثلاثي بالحركات القصيرة',
+      rule: 'بَـ (مفتوحة) + ـلَـ (مفتوحة) + ـدُ (مضمومة)',
+      bricks: [
+        { text: 'بَـ', color: 'text-sky-500', bg: 'bg-sky-50', border: 'border-sky-300' },
+        { text: 'ـلَـ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' },
+        { text: 'ـدُ', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' }
+      ]
+    },
+    {
+      id: 'b2',
+      word: 'دَبَلَ',
+      category: 'ثلاثي بالحركات القصيرة',
+      rule: 'دَ (مفتوحة) + بَـ (مفتوحة) + ـلَ (مفتوحة)',
+      bricks: [
+        { text: 'دَ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' },
+        { text: 'بَـ', color: 'text-sky-500', bg: 'bg-sky-50', border: 'border-sky-300' },
+        { text: 'ـلَ', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' }
+      ]
+    },
+    {
+      id: 'b3',
+      word: 'بَدَلُ',
+      category: 'ثلاثي بالحركات القصيرة',
+      rule: 'بَـ (مفتوحة) + ـدَ (مفتوحة) + ـلُ (مضمومة)',
+      bricks: [
+        { text: 'بَـ', color: 'text-sky-500', bg: 'bg-sky-50', border: 'border-sky-300' },
+        { text: 'ـدَ', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' },
+        { text: 'ـلُ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' }
+      ]
+    },
+    {
+      id: 'b4',
+      word: 'دَامَ',
+      category: 'صوت طويل (مد بالألف)',
+      rule: 'دَا (صوت طويل بالألف) + مَ (حركة قصيرة)',
+      bricks: [
+        { text: 'دَا', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' },
+        { text: 'مَ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' }
+      ]
+    },
+    {
+      id: 'b5',
+      word: 'دِيمُ',
+      category: 'صوت طويل (مد بالياء)',
+      rule: 'دِيـ (صوت طويل بالياء) + ـمُ (حركة قصيرة)',
+      bricks: [
+        { text: 'دِيـ', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' },
+        { text: 'ـمُ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' }
+      ]
+    },
+    {
+      id: 'b6',
+      word: 'دُودُ',
+      category: 'صوت طويل (مد بالواو)',
+      rule: 'دُو (صوت طويل بالواو) + دُ (حركة قصيرة)',
+      bricks: [
+        { text: 'دُو', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' },
+        { text: 'دُ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' }
+      ]
+    },
+    {
+      id: 'b7',
+      word: 'بِلَادِي',
+      category: 'صوتان طويلان (مد ألف + مد ياء)',
+      rule: 'بِـ (كسرة قصيرة) + ـلَا (مد ألف) + دِي (مد ياء)',
+      bricks: [
+        { text: 'بِـ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' },
+        { text: 'ـلَا', color: 'text-sky-500', bg: 'bg-sky-50', border: 'border-sky-300' },
+        { text: 'دِي', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' }
+      ]
+    },
+    {
+      id: 'b8',
+      word: 'دَلْوُ',
+      category: 'مقطع ساكن (دَلْـ)',
+      rule: 'دَ (مفتوحة) + لْـ (ساكنة) + وُ (مضمومة)',
+      bricks: [
+        { text: 'دَ', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-300' },
+        { text: 'لْـ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' },
+        { text: 'وُ', color: 'text-slate-900', bg: 'bg-slate-100', border: 'border-slate-300' }
+      ]
+    }
+  ];
 
   const wordsWithD = [
     { id: 'w1', word: 'دَرَجٌ', charWithDiacritic: 'دَ', position: 'في أول الكلمة (مفتوح)' },
@@ -349,7 +439,104 @@ export const Grade1Unit1LetterDStudio: React.FC = () => {
         </div>
       </div>
 
-      {/* Section 5: النص الإثرائي (الأَصْدِقَاءُ الثَّلَاثَة) */}
+      {/* Section 5: تَحَدِّي لَبِنَةِ الْكَلِمَةِ (بِطَاقَاتُ القِرَاءَةِ المُلَوَّنَةِ لِلصَّفِّ الأَوَّلِ) */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-6">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-black text-xl shadow-xs">
+              🧱
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-slate-900 text-base sm:text-lg font-alexandria">
+                  تَحَدِّي لَبِنَةِ الْكَلِمَةِ (قِرَاءَةُ وَتَرْكِيبُ الحُرُوفِ الْمَدْرُوسَةِ)
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-200">
+                  الصف الأول • الحروف: م، ب، ل، د
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                اقرأ الكلمات لبنةً لبنة بالألوان المعتمدة (الحروف المدروسة: م، ب، ل، د) مع الاستماع الصوتي لكل مقطع ولبنة
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => audioManager.speakArabic('تحدي لبنة الكلمة للصف الأول الابتدائي: بلد، دبل، بدل، دام، ديم، دود، بلادي، دلو.', 0.8)}
+              className="px-3.5 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+            >
+              <Volume2 className="w-4 h-4 text-amber-800" />
+              <span>استمع لكل الكلمات 🔊</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 8 Word Bricks Grid - matching user's PDF exact color blocks */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {WORD_BRICKS.map((item) => {
+            const isSelected = activeBrickWordId === item.id;
+            return (
+              <div
+                key={item.id}
+                onClick={() => {
+                  setActiveBrickWordId(item.id);
+                  audioManager.speakArabic(item.word, 0.75);
+                }}
+                className={`p-5 rounded-2xl border-2 transition-all cursor-pointer text-center space-y-3.5 relative overflow-hidden group ${
+                  isSelected
+                    ? 'border-amber-400 bg-amber-50/40 shadow-md ring-2 ring-amber-300'
+                    : 'border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 shadow-2xs'
+                }`}
+              >
+                {/* Visual Brick Letter Blocks matching user's PDF */}
+                <div className="flex items-center justify-center gap-1.5 py-2">
+                  {item.bricks.map((b, bIdx) => (
+                    <button
+                      key={bIdx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        audioManager.speakArabic(b.text, 0.7);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl border font-black text-2xl sm:text-3xl font-alexandria shadow-xs hover:scale-110 active:scale-95 transition-all ${b.color} ${b.bg} ${b.border}`}
+                      title={`استمع لصوت اللبنة: ${b.text}`}
+                    >
+                      {b.text}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Assembled Word */}
+                <div className="border-t border-slate-200/80 pt-2.5">
+                  <span className="text-3xl font-black font-alexandria text-slate-900 block group-hover:text-amber-700 transition-colors">
+                    {item.word}
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-500 block mt-1">
+                    {item.category}
+                  </span>
+                  <span className="text-[10px] text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-md inline-block mt-1 font-medium">
+                    {item.rule}
+                  </span>
+                </div>
+
+                {/* Audio Action Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    audioManager.speakArabic(item.word, 0.75);
+                  }}
+                  className="w-full py-2 rounded-xl bg-white hover:bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200 shadow-2xs transition-all active:scale-95"
+                >
+                  <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+                  <span>نطق الكلمة كاملة</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Section 6: النص الإثرائي (الأَصْدِقَاءُ الثَّلَاثَة) */}
       <div className="bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl border border-emerald-500/30 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-white/10">
           <div className="flex items-center gap-3">

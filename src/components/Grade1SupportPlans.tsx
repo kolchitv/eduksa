@@ -29,6 +29,7 @@ import {
 } from '../data/grade1SupportPlansData';
 import { audioManager } from '../utils/audio';
 import { MinistryOfEducationLogo } from './MinistryOfEducationLogo';
+import { MidYearReviewStudio } from './MidYearReviewStudio';
 
 interface Grade1SupportPlansProps {
   onBackToUnits?: () => void;
@@ -185,6 +186,9 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
           </div>
         </div>
       </div>
+
+      {/* مراجعة وخطة علاجية منتصف العام الشاملة (أ. سليمان العنزي) */}
+      <MidYearReviewStudio />
 
       {/* Category Filter Tabs & Search */}
       <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">

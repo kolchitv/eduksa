@@ -23,9 +23,10 @@ import { Grade1Unit1Assessment } from './Grade1Unit1Assessment';
 import { Grade1Unit1LetterDStudio } from './Grade1Unit1LetterDStudio';
 import { FamilyHotspotReader } from './FamilyHotspotReader';
 import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
+import { Grade1ReadingSkillsActivitiesStudio } from './Grade1ReadingSkillsActivitiesStudio';
 import { audioManager } from '../utils/audio';
 
-export type Unit1ActivityId = 'hub' | 'activity1' | 'activity2' | 'letters_review' | 'assessment' | 'letter_d' | 'hotspot' | 'phonetics';
+export type Unit1ActivityId = 'hub' | 'activity1' | 'activity2' | 'letters_review' | 'assessment' | 'letter_d' | 'hotspot' | 'phonetics' | 'reading_skills';
 
 interface Grade1Unit1ActivitiesHubProps {
   initialActivity?: Unit1ActivityId;
@@ -44,16 +45,29 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
 
   const activitiesList = [
     {
+      id: 'reading_skills' as const,
+      number: '⭐',
+      title: 'الأَنْشِطَةُ الْقِرَائِيَّةُ لِلْمَهَارَاتِ الأَسَاسِيَّةِ (١١ نشاطاً - ١٦٥ كلمة)',
+      badge: 'أنشطة قرائية شاملة • علوة السهيمي',
+      themeColor: 'from-indigo-600 to-purple-700',
+      badgeBg: 'bg-indigo-100 text-indigo-900 border-indigo-300',
+      icon: Layers,
+      iconEmoji: '📚',
+      description: '١١ نشاطاً قرائياً شاملاً تغطي: حركات الفتح، الفتح والكسر، الحركات الثلاث، المدود، السكون، التنوين، الشدة، والـ الشمسية والقمرية، والتاء المفتوحة والمربوطة والهاء (إعداد: علوة السهيمي).',
+      skills: ['الحركات القصيرة', 'المدود', 'المقطع الساكن', 'التنوين', 'الـ التعريف', 'الشدة والتاءات'],
+      estimatedTime: '٦ دقائق'
+    },
+    {
       id: 'letters_review' as const,
       number: '١',
-      title: 'مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ الأُولَى (الأَصْوَاتُ وَالمُدُودُ)',
-      badge: 'مراجعة معتمدة • الأصوات والمقاطع',
-      themeColor: 'from-teal-600 to-emerald-700',
-      badgeBg: 'bg-teal-100 text-teal-900 border-teal-300',
+      title: 'البِطَاقَةُ المُصَوَّرَةُ: مُرَاجَعَةُ حُرُوفِ الوَحْدَةِ الأُولَى (أُسْرَتِي)',
+      badge: 'النموذج المصور المعتمد • هام',
+      themeColor: 'from-sky-600 to-blue-700',
+      badgeBg: 'bg-sky-100 text-sky-900 border-sky-300',
       icon: BookOpen,
-      iconEmoji: '📑',
-      description: 'جدول الأصوات القصيرة والطويلة لجميع حروف الوحدة (م، ب، ل، د، ن، ر) مع التهجئة السريعة لمقاطع الحرفين (مَنْ، نَبْ، لَدْ، رَدْ، نَمْ...).',
-      skills: ['الأصوات القصيرة', 'المدود بالألف والواو والياء', 'تهجئة مقاطع الحرفين'],
+      iconEmoji: '🖼️',
+      description: 'البطاقة المصورة الرسمية: جدول الأصوات القصيرة والطويلة لجميع حروف الوحدة (م، ب، ل، د، ن، ر) مع التهجئة السريعة لمقاطع الحرفين (مَنْ، نَبْ، لَدْ، رَدْ، نَمْ...).',
+      skills: ['الأصوات القصيرة', 'المدود بالألف والواو والياء', 'تهجئة مقاطع الحرفين', 'حفظ كصورة وطباعة'],
       estimatedTime: '٤ دقائق'
     },
     {

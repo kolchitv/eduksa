@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Volume2, Sparkles, BookOpen, CheckCircle2, RotateCcw, Award } from 'lucide-react';
+import { Volume2, Sparkles, BookOpen, CheckCircle2, RotateCcw, Award, Image as ImageIcon, LayoutGrid } from 'lucide-react';
 import { audioManager } from '../utils/audio';
+import { Grade1Unit1VisualReviewCard } from './Grade1Unit1VisualReviewCard';
 
 export const Grade1Unit1LetterReview: React.FC = () => {
   const [activeCell, setActiveCell] = useState<string | null>(null);
   const [readWords, setReadWords] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'visual' | 'interactive'>('visual');
 
   const lettersData = [
     {
@@ -153,16 +155,49 @@ export const Grade1Unit1LetterReview: React.FC = () => {
             </p>
           </div>
 
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => audioManager.speakArabic('مراجعة حروف الوحدة الأولى أسرتي: الحروف بالأصوات القصيرة والأصوات الطويلة، وقراءة مقاطع الحرفين.')}
+              className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
+            >
+              <Volume2 className="w-4 h-4 text-amber-300" />
+              <span>نطق المقدمة</span>
+            </button>
+          </div>
+        </div>
+
+        {/* View Switcher Tabs inside the banner */}
+        <div className="mt-5 pt-4 border-t border-white/15 flex items-center gap-2">
           <button
-            onClick={() => audioManager.speakArabic('مراجعة حروف الوحدة الأولى أسرتي: الحروف بالأصوات القصيرة والأصوات الطويلة، وقراءة مقاطع الحرفين.')}
-            className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
+            onClick={() => setViewMode('visual')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              viewMode === 'visual'
+                ? 'bg-amber-400 text-slate-950 shadow-md scale-102'
+                : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+            }`}
           >
-            <Volume2 className="w-4 h-4 text-amber-300" />
-            <span>نطق مقدمة المراجعة</span>
+            <ImageIcon className="w-4 h-4" />
+            <span>البطاقة المصورة (ورقة المراجعة الرسمية) 🖼️</span>
+          </button>
+
+          <button
+            onClick={() => setViewMode('interactive')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              viewMode === 'interactive'
+                ? 'bg-amber-400 text-slate-950 shadow-md scale-102'
+                : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span>الجدول التفاعلي المتقدم 📊</span>
           </button>
         </div>
       </div>
 
+      {viewMode === 'visual' ? (
+        <Grade1Unit1VisualReviewCard />
+      ) : (
+        <>
       {/* Part 1: Table of Short & Long Vowels */}
       <div className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
@@ -355,6 +390,8 @@ export const Grade1Unit1LetterReview: React.FC = () => {
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 };
