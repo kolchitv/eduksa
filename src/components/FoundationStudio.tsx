@@ -18,10 +18,11 @@ import { LetterVowel } from '../types/curriculum';
 import { audioManager } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { KgStudio } from './KgStudio';
+import { FathAlRahmanStudio } from './FathAlRahmanStudio';
 
 export const FoundationStudio: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<LetterVowel>(ALPHABET_DATA[0]);
-  const [activeTab, setActiveTab] = useState<'kg' | 'letters' | 'sunMoon' | 'syllables' | 'tracing'>('kg');
+  const [activeTab, setActiveTab] = useState<'fathAlRahman' | 'kg' | 'letters' | 'sunMoon' | 'syllables' | 'tracing'>('fathAlRahman');
   
   // Solar vs Lunar Game State
   const sunMoonWords = [
@@ -94,6 +95,18 @@ export const FoundationStudio: React.FC = () => {
           {/* Sub-Tabs Selector */}
           <div className="flex flex-wrap items-center gap-2 bg-slate-800/80 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md">
             <button
+              id="subtab-fath-btn"
+              onClick={() => setActiveTab('fathAlRahman')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'fathAlRahman'
+                  ? 'bg-amber-400 text-slate-950 font-black shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>منهج فتح الرحمن القرائي 📖</span>
+            </button>
+            <button
               id="subtab-kg-btn"
               onClick={() => setActiveTab('kg')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -143,6 +156,9 @@ export const FoundationStudio: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* TAB: FATH AL-RAHMAN READING STUDIO */}
+      {activeTab === 'fathAlRahman' && <FathAlRahmanStudio />}
 
       {/* TAB 0: KG1 & KG2 STUDIO */}
       {activeTab === 'kg' && <KgStudio />}

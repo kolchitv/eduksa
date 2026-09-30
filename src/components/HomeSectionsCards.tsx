@@ -80,9 +80,9 @@ export const HomeSectionsCards: React.FC<HomeSectionsCardsProps> = ({
     },
     {
       id: 'foundation',
-      title: 'معمل التأسيس',
-      subtitle: 'الحروف والهجاء والأصوات',
-      badge: 'تأسيس',
+      title: 'معمل التأسيس وفتح الرحمن',
+      subtitle: 'الحروف والهجاء وكلمات القرآن للطلاقة والانطلاق',
+      badge: 'فتح الرحمن 📖',
       icon: Sparkles,
       accentBorderColor: 'border-b-emerald-600',
       iconBgColor: 'bg-emerald-50',
