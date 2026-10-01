@@ -9,6 +9,8 @@ import { audioManager } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { DictationChallenge } from './DictationChallenge';
 import { WrittenApplicationsStudio } from './WrittenApplicationsStudio';
+import { Grade4SupportExercisesHub } from './Grade4SupportExercisesHub';
+import { Grade1WrittenWorksheetStudio } from './Grade1WrittenWorksheetStudio';
 import { 
   Award, 
   Volume2, 
@@ -54,7 +56,7 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
 }) => {
   // Tier and Lesson State
   const [selectedTier, setSelectedTier] = useState<SpellingTier>(initialTier);
-  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge' | 'applications'>('passages');
+  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge' | 'applications' | 'grade4_support' | 'grade1_workbook'>('passages');
   const [currentMode, setCurrentMode] = useState<DictationMode>('manthoor');
   const [selectedPassageId, setSelectedPassageId] = useState<string>('');
   
@@ -533,7 +535,7 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
               <button
                 id="btn-studio-mode-applications"
                 onClick={() => setStudioMode('applications')}
-                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   studioMode === 'applications'
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs ring-2 ring-indigo-300'
                     : 'text-slate-600 hover:text-slate-900'
@@ -543,6 +545,38 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
                 <span>دفتر التطبيقات الكتابية</span>
                 <span className="bg-amber-400 text-amber-950 text-[9px] px-2 py-0.5 rounded-full font-black shadow-xs">
                   مرجع مرشدي 📘
+                </span>
+              </button>
+
+              <button
+                id="btn-studio-mode-grade4-support"
+                onClick={() => setStudioMode('grade4_support')}
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  studioMode === 'grade4_support'
+                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-700 text-white shadow-xs ring-2 ring-emerald-300'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📄</span>
+                <span>أنشطة داعمة (المستوى 4)</span>
+                <span className="bg-amber-400 text-amber-950 text-[9px] px-2 py-0.5 rounded-full font-black shadow-xs">
+                  م/م زاكموزن 🎯
+                </span>
+              </button>
+
+              <button
+                id="btn-studio-mode-grade1-workbook"
+                onClick={() => setStudioMode('grade1_workbook')}
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  studioMode === 'grade1_workbook'
+                    ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500 text-white shadow-xs ring-2 ring-amber-300'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>✏️</span>
+                <span>كراسة تمارين (الصف 1)</span>
+                <span className="bg-white text-slate-950 text-[9px] px-2 py-0.5 rounded-full font-black shadow-xs">
+                  عيسى باعوش 🌟
                 </span>
               </button>
             </div>
@@ -565,6 +599,18 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
             studentName={studentName}
             onAddStars={onAddStars}
             onBackToStudio={() => setStudioMode('passages')}
+          />
+        ) : studioMode === 'grade4_support' ? (
+          <Grade4SupportExercisesHub
+            studentName={studentName}
+            onAddStars={onAddStars}
+            onBack={() => setStudioMode('passages')}
+          />
+        ) : studioMode === 'grade1_workbook' ? (
+          <Grade1WrittenWorksheetStudio
+            studentName={studentName}
+            onAddStars={onAddStars}
+            onBack={() => setStudioMode('passages')}
           />
         ) : (
           <>

@@ -22,6 +22,7 @@ interface GradeSelectorProps {
   onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
   onOpenSummaries?: () => void;
   onOpenSpellingChampions?: () => void;
+  onOpenGrade1Workbook?: () => void;
 }
 
 export const GradeSelector: React.FC<GradeSelectorProps> = ({
@@ -31,7 +32,8 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
   onOpenSupportPlans: _onOpenSupportPlans,
   onOpenReadingPathway: _onOpenReadingPathway,
   onOpenSummaries,
-  onOpenSpellingChampions
+  onOpenSpellingChampions,
+  onOpenGrade1Workbook
 }) => {
   const [stageFilter, setStageFilter] = useState<'all' | 'primary' | 'intermediate' | 'early'>('all');
 
@@ -216,6 +218,19 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
               <span>📝</span>
               <span>أبطال الإملاء والتطبيقات</span>
               <span className="bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">جديد 🔥</span>
+            </button>
+          )}
+
+          {onOpenGrade1Workbook && (
+            <button
+              id="grade-selector-grade1-workbook-btn"
+              onClick={onOpenGrade1Workbook}
+              className="px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 bg-gradient-to-r from-orange-400 via-amber-400 to-rose-400 hover:from-orange-500 hover:to-rose-500 text-slate-950 shadow-xs border border-amber-300 active:scale-95"
+              title="كراسة التمارين الكتابية للسنة الأولى من التعليم الابتدائي (28 حرفاً)"
+            >
+              <span>✏️</span>
+              <span>كراسة التمارين (الصف 1)</span>
+              <span className="bg-emerald-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">28 حرفاً 🌟</span>
             </button>
           )}
         </div>

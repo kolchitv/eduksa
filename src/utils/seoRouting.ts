@@ -56,7 +56,7 @@ export function parseRouteFromLocation(): RouteState {
   const queryGrade = searchParams.get('grade') as GradeId | null;
   const queryTrack = searchParams.get('track') as 'all' | 'struggling' | 'short_text' | 'advanced' | null;
 
-  let tab: TabType = 'home';
+  let tab: TabType = 'units';
   let grade: GradeId = 'grade1';
   let readingTrack: 'all' | 'struggling' | 'short_text' | 'advanced' = 'all';
 
@@ -77,11 +77,7 @@ export function parseRouteFromLocation(): RouteState {
     const first = segments[0];
     const second = segments[1];
 
-    if (first === 'home' || first === 'portal') {
-      tab = 'home';
-    } else if (first === 'spelling' || first === 'imlaa' || first === 'dictation') {
-      tab = 'spelling';
-    } else if (first === 'summaries' || first === 'summary') {
+    if (first === 'summaries' || first === 'summary') {
       tab = 'summaries';
       if (second && GRADES_DATA[second as GradeId]) {
         grade = second as GradeId;
@@ -94,8 +90,6 @@ export function parseRouteFromLocation(): RouteState {
     } else if (first === 'books') {
       tab = 'books';
       if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
-    } else if (first === 'songs' || first === 'nasheed' || first === 'chants') {
-      tab = 'songs';
     } else if (first === 'foundation') {
       tab = 'foundation';
       grade = 'foundation';
@@ -108,6 +102,11 @@ export function parseRouteFromLocation(): RouteState {
     } else if (first === 'quiz') {
       tab = 'quiz';
       if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
+    } else if (first === 'spelling-champions' || first === 'spelling_champions' || first === 'spelling' || first === 'dictation' || first === 'imlaa') {
+      tab = 'spelling_champions';
+    } else if (first === 'grade1-workbook' || first === 'grade1_workbook' || first === 'workbook-grade1' || first === 'first-grade-exercises') {
+      tab = 'grade1_workbook';
+      grade = 'grade1';
     } else if (first === 'ai') {
       tab = 'ai';
     } else if (first === 'whiteboard') {
@@ -140,9 +139,7 @@ export function parseRouteFromLocation(): RouteState {
 
 function isValidTab(tab: string): tab is TabType {
   const validTabs: TabType[] = [
-    'home',
     'units',
-    'spelling',
     'summaries',
     'books',
     'foundation',
@@ -155,7 +152,8 @@ function isValidTab(tab: string): tab is TabType {
     'support_plans',
     'whiteboard',
     'reading_path',
-    'songs'
+    'spelling_champions',
+    'grade1_workbook'
   ];
   return validTabs.includes(tab as TabType);
 }
@@ -165,12 +163,8 @@ function isValidTab(tab: string): tab is TabType {
  */
 export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string): string {
   switch (tab) {
-    case 'home':
-      return '/';
-    case 'spelling':
-      return '/spelling';
-    case 'songs':
-      return '/songs';
+    case 'grade1_workbook':
+      return '/grade1-workbook';
     case 'summaries':
       return grade && grade.startsWith('intermediate') ? `/summaries/${grade}` : '/summaries';
     case 'reading_path':
@@ -187,6 +181,8 @@ export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: str
       return grade ? `/dictionary/${grade}` : '/dictionary';
     case 'quiz':
       return grade ? `/quiz/${grade}` : '/quiz';
+    case 'spelling_champions':
+      return '/spelling-champions';
     case 'ai':
       return '/ai';
     case 'whiteboard':
@@ -213,34 +209,14 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
   const gradeData = GRADES_DATA[state.grade] || GRADES_DATA.grade1;
 
   switch (state.tab) {
-    case 'home':
+    case 'spelling_champions':
       return {
-        title: 'البوابة الرئيسية - منصة لغتي التعليمية التفاعلية',
-        description: 'بوابة تعليمية ذكية للأطفال والطلاب: مناهج لغتي، مسارات القراءة، معمل التأسيس، رياض الأطفال، الاختبارات، والمعجم البصري.',
+        title: 'أبطال الإملاء التفاعلي - المنهاج السعودي | منصة لغتي',
+        description: 'تطبيق الإملاء التفاعلي الشامل لجميع المستويات: الفئة الضعيفة (الدعم والتأسيس)، الفئة المتوسطة (المنهاج المعياري)، والفئة المتميزة (فرسان التحدي) مع التصحيح الذكي والمساعد الصوتي.',
         canonicalUrl,
-        ogTitle: 'منصة لغتي التعليمية - البوابة الرئيسية',
-        ogDescription: 'تعلم تفاعلي ممتع بالصوت والصورة، اختبارات ذكية، ومسارات للقراءة والتأسيس لجميع المراحل.',
-        keywords: 'منصة لغتي, التعليم التفاعلي, رياض الأطفال, الصف الأول, مسار القراءة, تأسيس لغة عربية'
-      };
-
-    case 'spelling':
-      return {
-        title: 'أبطال الإملاء - تحديات ومعمل الإملاء المنظور والمسموع | منصة لغتي التعليمية',
-        description: 'معمل الإملاء التفاعلي الشامل لجميع المهارات الإملائية: المدود، التنوين، ال الشمسية والقمرية، والتاء المربوطة والمفتوحة مع تصحيح ذكي وأوسمة بطل الإملاء.',
-        canonicalUrl,
-        ogTitle: 'أبطال الإملاء ✍️ - منصة لغتي التعليمية',
-        ogDescription: 'تحديات الإملاء المسموع والمنظور للأطفال والطلاب مع نطق صوتي فوري وأوسمة بطل الإملاء.',
-        keywords: 'أبطال الإملاء, الإملاء المنظور, الإملاء الاختباري, التاء المربوطة, ال الشمسية, لغتي'
-      };
-
-    case 'songs':
-      return {
-        title: 'أناشيد تربوية - كراسة الأناشيد المدرسية والكشفية | منصة لغتي التعليمية',
-        description: 'أكثر من ٥٠ نشيداً وقصيدة تربوية هادفة مستوحاة من كراسة الأناشيد؛ أناشيد الصباح، المساء، الطفولة، بر الوالدين، المرور، والعمل الجماعي مع الاستماع الصوتي ووضع العرض الصفي.',
-        canonicalUrl,
-        ogTitle: 'كراسة الأناشيد التربوية 🎵 - منصة لغتي',
-        ogDescription: 'أناشيد تربوية وكشفية ومدرسية هادفة مع قارئ صوتي تفاعلي، تحكم بالسرعة وحجم الخط، والطباعة المباشرة.',
-        keywords: 'أناشيد تربوية, كراسة الأناشيد, أناشيد مدرسية, أناشيد كشفية, أناشيد الصباح, بر الوالدين, لغتي'
+        ogTitle: 'أبطال الإملاء التفاعلي — المنهاج السعودي المعتمد',
+        ogDescription: 'إملاء منظور واختباري، مقارنة فورية وتصحيح ذكي للأخطاء الإملائية مع لوحة الحركات المساعدة والمؤقت الزمني وشهادات التميز.',
+        keywords: 'أبطال الإملاء, إملاء تفاعلي, إملاء منظور, إملاء اختباري, علاج ضعف الإملاء, لغتي الجميلة, المنهاج السعودي'
       };
 
     case 'summaries':
@@ -268,6 +244,16 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
         keywords: 'الانطلاق في القراءة, طلاقة القراءة, علاج التعثر القرائي, نصوص لغتي, فهم المقروء'
       };
     }
+
+    case 'grade1_workbook':
+      return {
+        title: 'كراسة التمارين الكتابية للسنة الأولى ابتدائي | منصة لغتي التعليمية',
+        description: 'كراسة التمارين الكتابية التفاعلية للسنة الأولى ابتدائي، تدريبات دمج المقاطع، تقطيع الكلمات، ترتيب الجمل وتلوين الحروف مع النطق الصوتي والطباعة A4.',
+        canonicalUrl,
+        ogTitle: 'كراسة التمارين الكتابية - الصف الأول الابتدائي (عيسى باعوش)',
+        ogDescription: 'أنشطة كتابية تفاعلية شاملة لجميع حروف الهجاء من الدال إلى الياء مع التقييم الفوري والاستماع الصوتي.',
+        keywords: 'كراسة التمارين الكتابية, تمارين الصف الأول, دمج المقاطع, تقطيع الكلمات, ترتيب الجمل, لغتي أول ابتدائي'
+      };
 
     case 'support_plans':
       return {

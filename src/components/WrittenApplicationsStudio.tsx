@@ -181,16 +181,26 @@ export const WrittenApplicationsStudio: React.FC<WrittenApplicationsStudioProps>
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             {WRITTEN_APPLICATIONS_DATA.map((lesson) => {
               const isSelected = selectedLessonId === lesson.id;
+              const isG4 = lesson.id.startsWith('g4_');
               return (
                 <button
                   key={lesson.id}
                   onClick={() => handleLessonChange(lesson.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300 scale-102'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
+                      ? isG4 
+                        ? 'bg-emerald-700 text-white shadow-md ring-2 ring-emerald-300 scale-102'
+                        : 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300 scale-102'
+                      : isG4
+                        ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300'
+                        : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
                   }`}
                 >
+                  {isG4 && (
+                    <span className="bg-amber-400 text-amber-950 text-[9px] px-1.5 py-0.2 rounded-md font-black">
+                      المستوى 4 🎯
+                    </span>
+                  )}
                   <span className="text-[10px] opacity-75">{lesson.week}</span>
                   <span>{lesson.title.split('•')[0]}</span>
                 </button>

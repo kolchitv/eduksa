@@ -34,11 +34,13 @@ import { MidYearReviewStudio } from './MidYearReviewStudio';
 interface Grade1SupportPlansProps {
   onBackToUnits?: () => void;
   onOpenWorksheet?: () => void;
+  onOpenGrade1Workbook?: () => void;
 }
 
 export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
   onBackToUnits,
-  onOpenWorksheet
+  onOpenWorksheet,
+  onOpenGrade1Workbook
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -177,10 +179,21 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
               <button
                 id="hero-open-worksheets-btn"
                 onClick={onOpenWorksheet}
-                className="w-full px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs text-center border border-white/20 transition-all flex items-center justify-center gap-2"
+                className="w-full px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs text-center border border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Printer className="w-4 h-4 text-amber-300" />
                 <span>أوراق العمل التفاعلية المطبوعة</span>
+              </button>
+            )}
+
+            {onOpenGrade1Workbook && (
+              <button
+                id="hero-open-grade1-workbook-btn"
+                onClick={onOpenGrade1Workbook}
+                className="w-full px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-xs text-center shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <span>✏️</span>
+                <span>كراسة التمارين الكتابية التفاعلية</span>
               </button>
             )}
           </div>
