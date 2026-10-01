@@ -464,14 +464,17 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-tab-foundation"
               onClick={() => onChangeTab('foundation')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                 activeTab === 'foundation'
-                  ? 'bg-emerald-700 text-white shadow-2xs'
-                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
+                  ? 'bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-md ring-2 ring-emerald-400'
+                  : 'text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100 hover:text-emerald-950 border border-emerald-200 shadow-2xs'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>معمل التأسيس</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>معمل التأسيس وفتح الرحمن 📖</span>
+              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">
+                جديد 🌟
+              </span>
             </button>
 
             <button
@@ -688,12 +691,15 @@ export const Header: React.FC<HeaderProps> = ({
                 onChangeTab('foundation');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
-                activeTab === 'foundation' ? 'bg-emerald-50 text-emerald-800' : 'text-slate-700'
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
+                activeTab === 'foundation' ? 'bg-emerald-100 text-emerald-950 font-black' : 'text-slate-800 hover:bg-slate-100'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>معمل التأسيس</span>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>معمل التأسيس وفتح الرحمن 📖</span>
+              </div>
+              <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full">جديد 🌟</span>
             </button>
 
             <button
