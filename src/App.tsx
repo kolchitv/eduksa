@@ -21,6 +21,7 @@ import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStu
 import { SummariesStudio } from './components/SummariesStudio';
 import { SpellingChampionsStudio } from './components/SpellingChampionsStudio';
 import { Grade1WrittenWorksheetStudio } from './components/Grade1WrittenWorksheetStudio';
+import { LearningGamesHub } from './components/games/LearningGamesHub';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -303,6 +304,14 @@ export default function App() {
         )}
 
         {activeTab === 'foundation' && <FoundationStudio />}
+
+        {activeTab === 'learning_games' && (
+          <LearningGamesHub
+            studentName={studentName}
+            onAddStars={handleAddStars}
+            onBackToMain={() => setActiveTab('units')}
+          />
+        )}
 
         {activeTab === 'dictionary' && (
           <VisualDictionary

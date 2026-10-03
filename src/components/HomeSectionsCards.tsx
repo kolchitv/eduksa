@@ -17,7 +17,8 @@ import {
   Star,
   Flame,
   ArrowRight,
-  Edit3
+  Edit3,
+  Gamepad2
 } from 'lucide-react';
 import { TabType } from './Header';
 import { audioManager } from '../utils/audio';
@@ -89,6 +90,18 @@ export const HomeSectionsCards: React.FC<HomeSectionsCardsProps> = ({
       iconTextColor: 'text-emerald-600',
       hoverBorderColor: 'hover:border-emerald-400',
       bgGlow: 'hover:bg-emerald-50/20'
+    },
+    {
+      id: 'learning_games',
+      title: 'ألعاب التأسيس',
+      subtitle: 'رحلة تعلم متدرجة وممتعة لمهارات القراءة',
+      badge: 'جديد 🎮',
+      icon: Gamepad2,
+      accentBorderColor: 'border-b-purple-600',
+      iconBgColor: 'bg-purple-50',
+      iconTextColor: 'text-purple-600',
+      hoverBorderColor: 'hover:border-purple-400',
+      bgGlow: 'hover:bg-purple-50/20'
     },
     {
       id: 'spelling',

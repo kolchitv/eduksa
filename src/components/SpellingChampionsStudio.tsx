@@ -11,6 +11,10 @@ import { DictationChallenge } from './DictationChallenge';
 import { WrittenApplicationsStudio } from './WrittenApplicationsStudio';
 import { Grade4SupportExercisesHub } from './Grade4SupportExercisesHub';
 import { Grade1WrittenWorksheetStudio } from './Grade1WrittenWorksheetStudio';
+import { SpellingSkillUnit } from './spelling/SpellingSkillUnit';
+import { SpellingWordBankModal } from './spelling/SpellingWordBankModal';
+import { SpellingSkillId } from '../data/spellingSkillsData';
+import { getSpellingSkillsProfile, getWeakestSpellingSkill, recordSkillAttempt } from '../utils/spellingAdaptiveReview';
 import { 
   Award, 
   Volume2, 
@@ -56,7 +60,8 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
 }) => {
   // Tier and Lesson State
   const [selectedTier, setSelectedTier] = useState<SpellingTier>(initialTier);
-  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge' | 'applications' | 'grade4_support' | 'grade1_workbook'>('passages');
+  const [studioMode, setStudioMode] = useState<'passages' | 'words_challenge' | 'applications' | 'grade4_support' | 'grade1_workbook' | 'skill_unit'>('passages');
+  const [selectedSkillId, setSelectedSkillId] = useState<SpellingSkillId>('taa_types');
   const [currentMode, setCurrentMode] = useState<DictationMode>('manthoor');
   const [selectedPassageId, setSelectedPassageId] = useState<string>('');
   
@@ -83,6 +88,15 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
   const [passedCount, setPassedCount] = useState<number>(0);
   const [completedPassages, setCompletedPassages] = useState<string[]>([]);
   const [isPrintingWorksheet, setIsPrintingWorksheet] = useState<boolean>(false);
+  const [isWordBankOpen, setIsWordBankOpen] = useState<boolean>(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
+  const [reviewPracticeWord, setReviewPracticeWord] = useState<string>('');
+  const [reviewInput, setReviewInput] = useState<string>('');
+  const [reviewFeedback, setReviewFeedback] = useState<string | null>(null);
+
+  // Profile and adaptive weakest skill
+  const spellingProfile = getSpellingSkillsProfile();
+  const weakestSkill = getWeakestSpellingSkill();
 
   // Refs
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -500,9 +514,259 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
             })}
           </div>
 
+          {/* SMART DAILY MISSION CARD FOR SPELLING (مهمتي اليوم في الإملاء) */}
+          <div className="mt-5 relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 p-5 sm:p-6 text-white shadow-lg border-2 border-amber-300">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+              <div className="space-y-1.5 max-w-2xl">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-white text-slate-900 shadow-xs flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                    <span>مهمتي اليوم في الإملاء ⭐</span>
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30">
+                    المهارة الموصى بها: {weakestSkill.title}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                    weakestSkill.mastery < 60
+                      ? 'bg-rose-600 text-white'
+                      : weakestSkill.mastery < 85
+                      ? 'bg-amber-300 text-slate-950'
+                      : 'bg-emerald-400 text-slate-950'
+                  }`}>
+                    نسبة الإتقان: {weakestSkill.mastery}%
+                  </span>
+                </div>
+
+                <h3 className="text-lg sm:text-xl font-black font-alexandria text-white">
+                  تدريب اليوم التكيفي: ركّز على {weakestSkill.title}
+                </h3>
+                <p className="text-xs text-white/90 font-bold leading-relaxed">
+                  يقترح النظام الذكي أنشطة مركزة لتثبيت القاعدة الإملائية والانتقال من الاختيار البصري إلى الكتابة والإملاء الفعلي بدون تكرار حرفي للأسئلة!
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2.5 shrink-0 self-stretch md:self-auto justify-between md:justify-end flex-wrap">
+                <button
+                  onClick={() => setIsWordBankOpen(true)}
+                  className="px-3.5 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-black text-xs border border-white/30 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  title="تصفح بنك الكلمات"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>بنك الكلمات</span>
+                </button>
+
+                <button
+                  onClick={() => setIsReviewModalOpen(true)}
+                  className="px-3.5 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-black text-xs border border-white/30 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  title="المراجعة الذكية للكلمات"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>المراجعة الذكية ({spellingProfile.reviewQueue.length})</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedSkillId(weakestSkill.skillId);
+                    setStudioMode('skill_unit');
+                  }}
+                  className="px-5 py-2.5 rounded-2xl bg-white text-slate-950 font-black text-xs sm:text-sm hover:bg-amber-50 hover:scale-102 transition flex items-center gap-2 shadow-md cursor-pointer active:scale-98"
+                >
+                  <Play className="w-4 h-4 fill-slate-950 text-slate-950" />
+                  <span>ابدأ مهمة اليوم 🚀</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* The 4 Major Spelling Skills Cards Grid */}
+          <div className="mt-5 pt-4 border-t border-slate-200/80">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🎯</span>
+                <span className="text-xs font-black text-slate-900 font-alexandria">
+                  وحدات المهارات الإملائية والنحوية الكبرى (تفاعلي متدرج):
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-bold">
+                اختر مهارة لبدء التحدي والكتابة الفعلية
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {/* Card 1: Taa Types */}
+              <div
+                onClick={() => {
+                  setSelectedSkillId('taa_types');
+                  setStudioMode('skill_unit');
+                }}
+                className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden ${
+                  studioMode === 'skill_unit' && selectedSkillId === 'taa_types'
+                    ? 'bg-amber-50/90 border-amber-500 ring-2 ring-amber-400/30 shadow-sm'
+                    : 'bg-white hover:bg-amber-50/40 border-slate-200 hover:border-amber-300'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl p-2 rounded-xl bg-amber-100 text-amber-900 shrink-0">
+                      ة / ت
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 group-hover:text-amber-800 transition">
+                        التاء المربوطة والمفتوحة
+                      </h4>
+                      <span className="text-[10px] text-slate-500 font-bold block">
+                        تمييز الوقف والوصل
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-black">
+                  <span className="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
+                    🏅 بطل التاء
+                  </span>
+                  <span className="text-slate-700 flex items-center gap-1">
+                    <span>ابدأ المهارة</span>
+                    <ChevronLeft className="w-3 h-3 text-amber-600" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 2: Middle Hamza */}
+              <div
+                onClick={() => {
+                  setSelectedSkillId('middle_hamza');
+                  setStudioMode('skill_unit');
+                }}
+                className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden ${
+                  studioMode === 'skill_unit' && selectedSkillId === 'middle_hamza'
+                    ? 'bg-blue-50/90 border-blue-500 ring-2 ring-blue-400/30 shadow-sm'
+                    : 'bg-white hover:bg-blue-50/40 border-slate-200 hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl p-2 rounded-xl bg-blue-100 text-blue-900 shrink-0">
+                      ⚡
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 group-hover:text-blue-800 transition">
+                        الهمزة المتوسطة
+                      </h4>
+                      <span className="text-[10px] text-slate-500 font-bold block">
+                        أ / ؤ / ئ / ء (أقوى الحركات)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-black">
+                  <span className="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">
+                    ⚡ كراسي الهمزة
+                  </span>
+                  <span className="text-slate-700 flex items-center gap-1">
+                    <span>ابدأ المهارة</span>
+                    <ChevronLeft className="w-3 h-3 text-blue-600" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 3: Final Hamza */}
+              <div
+                onClick={() => {
+                  setSelectedSkillId('final_hamza');
+                  setStudioMode('skill_unit');
+                }}
+                className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden ${
+                  studioMode === 'skill_unit' && selectedSkillId === 'final_hamza'
+                    ? 'bg-teal-50/90 border-teal-500 ring-2 ring-teal-400/30 shadow-sm'
+                    : 'bg-white hover:bg-teal-50/40 border-slate-200 hover:border-teal-300'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl p-2 rounded-xl bg-teal-100 text-teal-900 shrink-0">
+                      🏝️
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 group-hover:text-teal-800 transition">
+                        الهمزة المتطرفة
+                      </h4>
+                      <span className="text-[10px] text-slate-500 font-bold block">
+                        أ / ؤ / ئ / ء (حركة ما قبلها)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-black">
+                  <span className="text-teal-700 bg-teal-100 px-2 py-0.5 rounded-md">
+                    🏝️ صائد المتطرفة
+                  </span>
+                  <span className="text-slate-700 flex items-center gap-1">
+                    <span>ابدأ المهارة</span>
+                    <ChevronLeft className="w-3 h-3 text-teal-600" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 4: Singular, Dual, Plural */}
+              <div
+                onClick={() => {
+                  setSelectedSkillId('singular_dual_plural');
+                  setStudioMode('skill_unit');
+                }}
+                className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden ${
+                  studioMode === 'skill_unit' && selectedSkillId === 'singular_dual_plural'
+                    ? 'bg-purple-50/90 border-purple-500 ring-2 ring-purple-400/30 shadow-sm'
+                    : 'bg-white hover:bg-purple-50/40 border-slate-200 hover:border-purple-300'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl p-2 rounded-xl bg-purple-100 text-purple-900 shrink-0">
+                      👤👥
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 group-hover:text-purple-800 transition">
+                        المفرد والمثنى والجمع
+                      </h4>
+                      <span className="text-[10px] text-slate-500 font-bold block">
+                        تفاحة / تفاحتان / تفاحات
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-black">
+                  <span className="text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md">
+                    👑 حكيم العدد
+                  </span>
+                  <span className="text-slate-700 flex items-center gap-1">
+                    <span>ابدأ المهارة</span>
+                    <ChevronLeft className="w-3 h-3 text-purple-600" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Studio Sub-Mode Switcher: Full Passages vs Instant Audio Words Challenge */}
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center">
-            <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center gap-1.5 w-full sm:w-auto shadow-2xs">
+            <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center gap-1.5 w-full sm:w-auto shadow-2xs flex-wrap">
+              <button
+                id="btn-studio-mode-skill-unit"
+                onClick={() => setStudioMode('skill_unit')}
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  studioMode === 'skill_unit'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs ring-2 ring-amber-300'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🎯</span>
+                <span>وحدات المهارات الأربع</span>
+                <span className="bg-white text-slate-900 text-[9px] px-1.5 py-0.2 rounded-full font-black">
+                  جديد ⭐
+                </span>
+              </button>
+
               <button
                 id="btn-studio-mode-passages"
                 onClick={() => setStudioMode('passages')}
@@ -586,7 +850,15 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
 
       {/* Main Interactive Studio Container */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-6">
-        {studioMode === 'words_challenge' ? (
+        {studioMode === 'skill_unit' ? (
+          <SpellingSkillUnit
+            skillId={selectedSkillId}
+            studentName={studentName}
+            onAddStars={onAddStars}
+            onBackToStudio={() => setStudioMode('passages')}
+            onOpenWordBank={() => setIsWordBankOpen(true)}
+          />
+        ) : studioMode === 'words_challenge' ? (
           <DictationChallenge
             studentName={studentName}
             onAddStars={onAddStars}
@@ -1204,6 +1476,184 @@ export const SpellingChampionsStudio: React.FC<SpellingChampionsStudioProps> = (
                   <div>الدرجة: ( ..... / ١٠ ) ⭐⭐⭐</div>
                   <div>توقيع المعلم/ـة أو ولي الأمر: ......................</div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* SPELLING WORD BANK MODAL */}
+        <SpellingWordBankModal
+          isOpen={isWordBankOpen}
+          onClose={() => setIsWordBankOpen(false)}
+          initialSkill={selectedSkillId}
+        />
+
+        {/* SMART SPACED REPETITION REVIEW MODAL */}
+        {isReviewModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto font-cairo">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+              {/* Header */}
+              <div className="p-5 bg-gradient-to-r from-purple-700 to-indigo-700 text-white flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl">
+                    🧠
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black font-alexandria">
+                      نظام المراجعة الذكية والتكرار المتباعد
+                    </h3>
+                    <p className="text-xs text-white/80">
+                      إعادة تقديم الكلمات التي أخطأت فيها بتدرج ذكي: (إكمال ← تمييز ← إملاء كامل)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsReviewModalOpen(false);
+                    setReviewPracticeWord('');
+                    setReviewFeedback(null);
+                  }}
+                  className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/25 flex items-center justify-center cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-5 overflow-y-auto space-y-4 flex-1">
+                {spellingProfile.reviewQueue.length === 0 ? (
+                  <div className="text-center py-10 space-y-3">
+                    <span className="text-5xl block animate-bounce">🎉</span>
+                    <h4 className="text-lg font-black text-slate-800 dark:text-white">
+                      قائمة المراجعة فارغة تماماً!
+                    </h4>
+                    <p className="text-xs text-slate-500 font-bold max-w-md mx-auto">
+                      أنت متقن لجميع الكلمات التي تدربت عليها حتى الآن. واصل التدريب في المسار لكسب المزيد من النجوم!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-500">
+                      <span>لديك {spellingProfile.reviewQueue.length} كلمات في قائمة التكرار المتباعد:</span>
+                      <span className="text-indigo-600 dark:text-indigo-400">انقر للتمرين المباشر</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {spellingProfile.reviewQueue.map((item, idx) => {
+                        const isPracticing = reviewPracticeWord === item.word;
+                        return (
+                          <div
+                            key={idx}
+                            className={`p-4 rounded-2xl border-2 transition-all ${
+                              isPracticing
+                                ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-400 shadow-md'
+                                : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h5 className="text-base font-black text-slate-900 dark:text-white font-alexandria">
+                                    {item.tashkeel}
+                                  </h5>
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">
+                                    {item.errorType}
+                                  </span>
+                                </div>
+                                <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
+                                  <span>مرحلة التكرار:</span>
+                                  <span className="px-2 py-0.2 rounded-md bg-indigo-100 text-indigo-900 font-bold">
+                                    {item.stage === 1 ? 'المرحلة 1: إكمال الكلمة' : item.stage === 2 ? 'المرحلة 2: تمييز واختيار' : 'المرحلة 3: استماع وإملاء كامل'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => audioManager.speakArabic(item.word, 0.85)}
+                                  className="p-2 rounded-xl bg-white dark:bg-slate-700 text-indigo-600 hover:bg-slate-100 cursor-pointer shadow-2xs"
+                                  title="استمع"
+                                >
+                                  <Volume2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setReviewPracticeWord(item.word);
+                                    setReviewInput('');
+                                    setReviewFeedback(null);
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition cursor-pointer shadow-xs"
+                                >
+                                  تمرن الآن ✍️
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Practice Drawer */}
+                            {isPracticing && (
+                              <div className="mt-3 pt-3 border-t border-indigo-200 dark:border-indigo-800 space-y-3 animate-in fade-in">
+                                <p className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                                  {item.stage === 1 && `أكمل الكلمة: (${item.word.slice(0, -1)}ـ؟)`}
+                                  {item.stage === 2 && `اختر الكلمة الصحيحة المطابقة للنطق:`}
+                                  {item.stage === 3 && `استمع للكلمة واكتبها كاملة في المربع:`}
+                                </p>
+
+                                <div className="flex items-center gap-2 max-w-sm">
+                                  <input
+                                    type="text"
+                                    value={reviewInput}
+                                    onChange={(e) => setReviewInput(e.target.value)}
+                                    placeholder="اكتب الإجابة..."
+                                    className="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-xs"
+                                    autoFocus
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      const cleanInput = reviewInput.trim().replace(/[ًٌٍَُِّْ]/g, '');
+                                      const cleanTarget = item.word.trim().replace(/[ًٌٍَُِّْ]/g, '');
+                                      if (cleanInput === cleanTarget || (item.stage === 1 && reviewInput.trim() === item.word.slice(-1))) {
+                                        audioManager.play('correct');
+                                        onAddStars(2);
+                                        recordSkillAttempt(item.subSkill, true, item.word);
+                                        setReviewFeedback('أحسنت! إجابة صحيحة وتمت ترقية مرحلة المراجعة 🌟');
+                                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+                                        setTimeout(() => {
+                                          setReviewPracticeWord('');
+                                          setReviewFeedback(null);
+                                        }, 1500);
+                                      } else {
+                                        audioManager.play('wrong');
+                                        setReviewFeedback('حاول ثانية! استمع للنطق بهدوء 🔊');
+                                      }
+                                    }}
+                                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer shadow-xs"
+                                  >
+                                    تحقق
+                                  </button>
+                                </div>
+
+                                {reviewFeedback && (
+                                  <p className="text-xs font-bold text-indigo-800 dark:text-indigo-200">
+                                    {reviewFeedback}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                <button
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="px-5 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-black text-xs cursor-pointer"
+                >
+                  إغلاق
+                </button>
               </div>
             </div>
           </div>

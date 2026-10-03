@@ -104,6 +104,8 @@ export function parseRouteFromLocation(): RouteState {
       if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
     } else if (first === 'spelling-champions' || first === 'spelling_champions' || first === 'spelling' || first === 'dictation' || first === 'imlaa') {
       tab = 'spelling_champions';
+    } else if (first === 'games' || first === 'learning-games' || first === 'learning_games' || first === 'educational-games') {
+      tab = 'learning_games';
     } else if (first === 'grade1-workbook' || first === 'grade1_workbook' || first === 'workbook-grade1' || first === 'first-grade-exercises') {
       tab = 'grade1_workbook';
       grade = 'grade1';
@@ -153,7 +155,8 @@ function isValidTab(tab: string): tab is TabType {
     'whiteboard',
     'reading_path',
     'spelling_champions',
-    'grade1_workbook'
+    'grade1_workbook',
+    'learning_games'
   ];
   return validTabs.includes(tab as TabType);
 }
@@ -163,6 +166,8 @@ function isValidTab(tab: string): tab is TabType {
  */
 export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string): string {
   switch (tab) {
+    case 'learning_games':
+      return '/games';
     case 'grade1_workbook':
       return '/grade1-workbook';
     case 'summaries':
@@ -244,6 +249,16 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
         keywords: 'الانطلاق في القراءة, طلاقة القراءة, علاج التعثر القرائي, نصوص لغتي, فهم المقروء'
       };
     }
+
+    case 'learning_games':
+      return {
+        title: 'ألعاب التأسيس القرائي 🎮 | رحلة تعلم تفاعلية للأطفال',
+        description: 'ألعاب تعليمية متدرجة لتأسيس اللغة العربية للأطفال: عالم الحروف، عالم الحركات، عالم المدود والمقاطع، عالم الكلمات والإملاء، وعالم القراءة والطلاقة مع نظام مهمتي اليوم والتعلم التكيفي.',
+        canonicalUrl,
+        ogTitle: 'ألعاب التأسيس - رحلة تعلم تفاعلية ومتدرجة للأطفال 🎮',
+        ogDescription: 'رحلة ألعاب تعليمية ممتعة في ٥ مسارات متدرجة بدون تشتيت، مع مهمتي اليوم والتغذية الراجعة المشجعة بدون إحباط.',
+        keywords: 'ألعاب تعليمية للأطفال, تأسيس لغتي, عالم الحروف, عالم الحركات, عالم المدود, إملاء للأطفال, طلاقة القراءة'
+      };
 
     case 'grade1_workbook':
       return {

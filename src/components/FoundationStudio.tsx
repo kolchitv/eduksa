@@ -19,10 +19,11 @@ import { audioManager } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { KgStudio } from './KgStudio';
 import { FathAlRahmanStudio } from './FathAlRahmanStudio';
+import { LearningGamesHub } from './games/LearningGamesHub';
 
 export const FoundationStudio: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<LetterVowel>(ALPHABET_DATA[0]);
-  const [activeTab, setActiveTab] = useState<'fathAlRahman' | 'kg' | 'letters' | 'sunMoon' | 'syllables' | 'tracing'>('fathAlRahman');
+  const [activeTab, setActiveTab] = useState<'fathAlRahman' | 'games' | 'kg' | 'letters' | 'sunMoon' | 'syllables' | 'tracing'>('fathAlRahman');
   
   // Solar vs Lunar Game State
   const sunMoonWords = [
@@ -107,6 +108,18 @@ export const FoundationStudio: React.FC = () => {
               <span>منهج فتح الرحمن القرائي 📖</span>
             </button>
             <button
+              id="subtab-games-btn"
+              onClick={() => setActiveTab('games')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'games'
+                  ? 'bg-purple-500 text-white font-black shadow-md'
+                  : 'text-purple-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span>🎮</span>
+              <span>ألعاب التأسيس (الرحلة المتدرجة)</span>
+            </button>
+            <button
               id="subtab-kg-btn"
               onClick={() => setActiveTab('kg')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -159,6 +172,9 @@ export const FoundationStudio: React.FC = () => {
 
       {/* TAB: FATH AL-RAHMAN READING STUDIO */}
       {activeTab === 'fathAlRahman' && <FathAlRahmanStudio />}
+
+      {/* TAB: LEARNING GAMES JOURNEY */}
+      {activeTab === 'games' && <LearningGamesHub />}
 
       {/* TAB 0: KG1 & KG2 STUDIO */}
       {activeTab === 'kg' && <KgStudio />}

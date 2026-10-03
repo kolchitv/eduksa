@@ -29,7 +29,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions' | 'grade1_workbook';
+export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions' | 'grade1_workbook' | 'learning_games' | 'spelling' | 'songs' | 'home';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -478,6 +478,22 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              id="nav-tab-learning-games"
+              onClick={() => onChangeTab('learning_games')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                activeTab === 'learning_games'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md ring-2 ring-purple-300'
+                  : 'text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 shadow-2xs'
+              }`}
+            >
+              <span className="text-sm">🎮</span>
+              <span>ألعاب التأسيس</span>
+              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">
+                جديد ⭐
+              </span>
+            </button>
+
+            <button
               id="nav-tab-dictionary"
               onClick={() => onChangeTab('dictionary')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -700,6 +716,24 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>معمل التأسيس وفتح الرحمن 📖</span>
               </div>
               <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full">جديد 🌟</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onChangeTab('learning_games');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
+                activeTab === 'learning_games'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'text-purple-950 bg-purple-50 border border-purple-200'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-base">🎮</span>
+                <span>ألعاب التأسيس (الرحلة والمسارات الـ ٥)</span>
+              </div>
+              <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full">جديد ⭐</span>
             </button>
 
             <button
