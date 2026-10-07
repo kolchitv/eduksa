@@ -24,9 +24,10 @@ import { Grade1Unit1LetterDStudio } from './Grade1Unit1LetterDStudio';
 import { FamilyHotspotReader } from './FamilyHotspotReader';
 import { LetterPhoneticsActivity } from './LetterPhoneticsActivity';
 import { Grade1ReadingSkillsActivitiesStudio } from './Grade1ReadingSkillsActivitiesStudio';
+import { Grade1WrittenWorksheetStudio } from './Grade1WrittenWorksheetStudio';
 import { audioManager } from '../utils/audio';
 
-export type Unit1ActivityId = 'hub' | 'activity1' | 'activity2' | 'letters_review' | 'assessment' | 'letter_d' | 'hotspot' | 'phonetics' | 'reading_skills';
+export type Unit1ActivityId = 'hub' | 'workbook' | 'activity1' | 'activity2' | 'letters_review' | 'assessment' | 'letter_d' | 'hotspot' | 'phonetics' | 'reading_skills';
 
 interface Grade1Unit1ActivitiesHubProps {
   initialActivity?: Unit1ActivityId;
@@ -44,6 +45,19 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
   }, [initialActivity]);
 
   const activitiesList = [
+    {
+      id: 'workbook' as const,
+      number: '🌟',
+      title: 'كُرَّاسَةُ التَّمَارِينِ الْكِتَابِيَّةِ (٢٨ حَرْفاً شَامِلاً 🌟)',
+      badge: 'كراسة التمارين • ٢٨ حرفاً كاملاً 🌟',
+      themeColor: 'from-amber-500 via-orange-500 to-rose-600',
+      badgeBg: 'bg-amber-100 text-amber-950 border-amber-400',
+      icon: Sparkles,
+      iconEmoji: '✏️',
+      description: 'كراسة التمارين الكتابية التفاعلية لجميع حروف الهجاء الـ 28 (د، م، ر، ب، س، ف، ل، ص، ذ، ز، ط، ض، ن، ع، ت، ظ، ح، هـ، ء، ج، خ، غ، ك، ث، ق، ش، و، ي). تشمل دمج المقاطع، تحليل وتقطيع الكلمات، ترتيب الجمل، وتمييز الحروف، مع النطق والطباعة A4.',
+      skills: ['دمج المقاطع الصوتية', 'تقطيع الكلمات وحساب المقاطع', 'ترتيب الكلمات لتكوين جمل', 'تمييز الـ 28 حرفاً 🌟', 'طباعة ورقة الحرف A4'],
+      estimatedTime: '٢٨ حرفاً 🌟'
+    },
     {
       id: 'reading_skills' as const,
       number: '⭐',
@@ -209,7 +223,24 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>جَمِيعُ الأَنْشِطَةِ (نَظْرَةٌ عَامَّةٌ)</span>
+            <span>جَمِيعُ الأَنْشِطَةِ</span>
+          </button>
+
+          <button
+            id="tab-btn-workbook-28"
+            onClick={() => {
+              setSelectedActivity('workbook');
+              audioManager.play('click');
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer ${
+              selectedActivity === 'workbook'
+                ? 'bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 text-slate-950 font-black ring-2 ring-amber-300 scale-105'
+                : 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-300/40'
+            }`}
+          >
+            <span>✏️</span>
+            <span>كُرَّاسَةُ التَّمَارِينِ (٢٨ حَرْفاً 🌟)</span>
+            <span className="bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">شامل</span>
           </button>
 
           <button
@@ -368,6 +399,29 @@ export const Grade1Unit1ActivitiesHub: React.FC<Grade1Unit1ActivitiesHubProps> =
               <span>الاستماع للأهداف</span>
             </button>
           </div>
+        </div>
+      ) : selectedActivity === 'workbook' ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <button
+              onClick={() => setSelectedActivity('hub')}
+              className="text-xs font-bold text-slate-700 hover:text-emerald-800 flex items-center gap-1 transition-colors cursor-pointer bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl border border-slate-200"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+              <span>العودة لجميع أنشطة الصف الأول</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-black bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 text-slate-950 px-3 py-1 rounded-full shadow-xs border border-amber-300">
+                ✏️ كراسة التمارين (الصف 1) • 28 حرفاً 🌟
+              </span>
+            </div>
+          </div>
+
+          <Grade1WrittenWorksheetStudio
+            studentName="بطل الصف الأول"
+            onBack={() => setSelectedActivity('hub')}
+          />
         </div>
       ) : selectedActivity === 'letters_review' ? (
         <div>

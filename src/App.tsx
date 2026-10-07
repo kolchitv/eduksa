@@ -21,7 +21,7 @@ import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStu
 import { SummariesStudio } from './components/SummariesStudio';
 import { SpellingChampionsStudio } from './components/SpellingChampionsStudio';
 import { Grade1WrittenWorksheetStudio } from './components/Grade1WrittenWorksheetStudio';
-import { LearningGamesHub } from './components/games/LearningGamesHub';
+import { EducationalSongsStudio } from './components/EducationalSongsStudio';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -204,7 +204,7 @@ export default function App() {
   const currentCurriculum = GRADES_DATA[currentGrade] || GRADES_DATA.foundation;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans overflow-x-hidden max-w-full w-full">
       {/* Toast Notification for Copied SEO Page Link */}
       {copiedLinkToast && (
         <div className="fixed top-18 left-1/2 -translate-x-1/2 z-50 bg-slate-950 text-white px-5 py-2.5 rounded-2xl shadow-2xl border-2 border-emerald-400 flex items-center gap-2.5 text-xs sm:text-sm font-black animate-in fade-in zoom-in-95 duration-200">
@@ -305,14 +305,6 @@ export default function App() {
 
         {activeTab === 'foundation' && <FoundationStudio />}
 
-        {activeTab === 'learning_games' && (
-          <LearningGamesHub
-            studentName={studentName}
-            onAddStars={handleAddStars}
-            onBackToMain={() => setActiveTab('units')}
-          />
-        )}
-
         {activeTab === 'dictionary' && (
           <VisualDictionary
             currentGrade={currentGrade}
@@ -343,7 +335,7 @@ export default function App() {
 
         {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
 
-        {activeTab === 'spelling_champions' && (
+        {(activeTab === 'spelling_champions' || activeTab === 'spelling') && (
           <SpellingChampionsStudio
             studentName={studentName}
             onAddStars={handleAddStars}
@@ -351,6 +343,8 @@ export default function App() {
             onBackToHome={() => setActiveTab('units')}
           />
         )}
+
+        {activeTab === 'songs' && <EducationalSongsStudio />}
 
         {activeTab === 'grade1_workbook' && (
           <Grade1WrittenWorksheetStudio

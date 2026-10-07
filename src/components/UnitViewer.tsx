@@ -226,13 +226,30 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                 audioManager.play('click');
               }}
               className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
-                unitSection === 'activities'
+                unitSection === 'activities' && selectedActivityId !== 'workbook'
                   ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-300'
                   : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300'
               }`}
             >
               <Layers className="w-4 h-4 text-amber-700" />
-              <span>🎯 قِسْمُ الأَنْشِطَةِ وَالتَّقْيِيمَاتِ (الوحدة الأولى - ٧ أنشطة)</span>
+              <span>🎯 قِسْمُ الأَنْشِطَةِ وَالتَّقْيِيمَاتِ</span>
+            </button>
+
+            <button
+              id="top-mode-btn-grade1-workbook"
+              onClick={() => {
+                setUnitSection('activities');
+                setSelectedActivityId('workbook');
+                audioManager.play('click');
+              }}
+              className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                unitSection === 'activities' && selectedActivityId === 'workbook'
+                  ? 'bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 text-slate-950 shadow-md ring-2 ring-amber-300 scale-102'
+                  : 'bg-gradient-to-r from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 text-amber-950 border border-amber-300'
+              }`}
+            >
+              <span>✏️</span>
+              <span>كراسة التمارين (الصف 1) • 28 حرفاً 🌟</span>
             </button>
           </div>
 
@@ -264,7 +281,7 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                 </div>
 
                 <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 font-black text-[10px]">
-                  ٧ أنشطة
+                  ٨ أنشطة 🌟
                 </span>
               </div>
 
@@ -287,6 +304,31 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
                     <span>جَمِيعُ الأَنْشِطَةِ (مَرْكَزُ التَّدْرِيبِ)</span>
                   </div>
                   <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  id="btn-sidebar-grade1-workbook-28"
+                  onClick={() => {
+                    setUnitSection('activities');
+                    setSelectedActivityId('workbook');
+                    audioManager.play('click');
+                  }}
+                  className={`w-full text-right p-3 rounded-2xl border text-xs font-black transition-all flex items-center justify-between cursor-pointer ${
+                    unitSection === 'activities' && selectedActivityId === 'workbook'
+                      ? 'bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 text-slate-950 border-amber-300 shadow-md ring-2 ring-amber-300 scale-[1.02]'
+                      : 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-slate-950 border-amber-300 shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✏️</span>
+                    <div>
+                      <div className="line-clamp-1 font-black text-xs text-slate-950">كراسة التمارين (الصف 1)</div>
+                      <div className="text-[10px] text-amber-900 font-extrabold">28 حرفاً 🌟 شاملة بالصوت</div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-black shadow-xs">
+                    28 حرفاً 🌟
+                  </span>
                 </button>
 
                 <button

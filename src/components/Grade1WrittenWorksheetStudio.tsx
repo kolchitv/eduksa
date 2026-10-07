@@ -48,6 +48,7 @@ export const Grade1WrittenWorksheetStudio: React.FC<Grade1WrittenWorksheetStudio
   const [isEvaluated, setIsEvaluated] = useState<boolean>(false);
   const [showSolutionModal, setShowSolutionModal] = useState<boolean>(false);
   const [isPrinting, setIsPrinting] = useState<boolean>(false);
+  const [showLetterGrid, setShowLetterGrid] = useState<boolean>(false);
 
   const cleanStr = (s: string) =>
     (s || '')
@@ -181,35 +182,123 @@ export const Grade1WrittenWorksheetStudio: React.FC<Grade1WrittenWorksheetStudio
           </div>
         </div>
 
-        {/* Letters Carousel Bar */}
-        <div className="mt-5 pt-4 border-t border-slate-100">
-          <div className="flex items-center justify-between text-xs font-black text-slate-500 mb-2">
-            <span>اختر الحرف للتطبيق من الكراسة (28 حرفاً):</span>
-            <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-              الصفحة {currentExercise.pageNumber} من الكراسة
-            </span>
+        {/* 28 Letters Selector Header & Controls */}
+        <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-black">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-800 flex items-center gap-1.5">
+                <span>اختر الحرف (28 حرفاً 🌟):</span>
+                <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[11px] font-extrabold border border-amber-300">
+                  الحرف {GRADE1_WRITTEN_EXERCISES_DATA.findIndex((x) => x.id === selectedLetterId) + 1} من 28
+                </span>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Prev / Next Letter Nav */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => {
+                    const idx = GRADE1_WRITTEN_EXERCISES_DATA.findIndex((x) => x.id === selectedLetterId);
+                    if (idx > 0) handleSelectLetter(GRADE1_WRITTEN_EXERCISES_DATA[idx - 1].id);
+                  }}
+                  disabled={GRADE1_WRITTEN_EXERCISES_DATA.findIndex((x) => x.id === selectedLetterId) === 0}
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent flex items-center gap-1 cursor-pointer"
+                  title="الحرف السابق"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">السابق</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const idx = GRADE1_WRITTEN_EXERCISES_DATA.findIndex((x) => x.id === selectedLetterId);
+                    if (idx < GRADE1_WRITTEN_EXERCISES_DATA.length - 1) handleSelectLetter(GRADE1_WRITTEN_EXERCISES_DATA[idx + 1].id);
+                  }}
+                  disabled={GRADE1_WRITTEN_EXERCISES_DATA.findIndex((x) => x.id === selectedLetterId) === GRADE1_WRITTEN_EXERCISES_DATA.length - 1}
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent flex items-center gap-1 cursor-pointer"
+                  title="الحرف التالي"
+                >
+                  <span className="hidden sm:inline">التالي</span>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Grid Toggle Button */}
+              <button
+                onClick={() => setShowLetterGrid(!showLetterGrid)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs ${
+                  showLetterGrid
+                    ? 'bg-amber-500 text-slate-950 font-black ring-2 ring-amber-300'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200'
+                }`}
+              >
+                <span>🔤</span>
+                <span>{showLetterGrid ? 'إخفاء الشبكة' : 'شبكة الـ 28 حرفاً 🌟'}</span>
+              </button>
+
+              <span className="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 text-[11px] font-black">
+                الصفحة {currentExercise.pageNumber} من الكراسة
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            {GRADE1_WRITTEN_EXERCISES_DATA.map((item) => {
-              const isSelected = selectedLetterId === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleSelectLetter(item.id)}
-                  className={`px-3.5 py-2 rounded-2xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md ring-2 ring-amber-300 scale-105'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
-                  }`}
-                >
-                  <span className="text-sm">{item.drawingEmoji}</span>
-                  <span className="text-base font-alexandria font-black">{item.letter}</span>
-                  <span className="text-[10px] opacity-75 hidden sm:inline">({item.featuredDrawing})</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Collapsible 28-Letter Grid */}
+          {showLetterGrid ? (
+            <div className="p-4 bg-gradient-to-br from-slate-50 to-amber-50/50 rounded-2xl border-2 border-amber-300/80 shadow-inner animate-in fade-in duration-150">
+              <div className="flex items-center justify-between mb-3 text-xs font-extrabold text-amber-950">
+                <span className="flex items-center gap-1.5">
+                  <span>🌟 شبكة الحروف الهجائية الـ 28 كاملة لكراسة الصف الأول:</span>
+                </span>
+                <span className="text-[11px] text-slate-500 font-normal">انقر على أي حرف للانتقال المباشر</span>
+              </div>
+              <div className="grid grid-cols-4 sm:grid-cols-7 md:grid-cols-14 gap-2">
+                {GRADE1_WRITTEN_EXERCISES_DATA.map((item, idx) => {
+                  const isSelected = selectedLetterId === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        handleSelectLetter(item.id);
+                        audioManager.play('click');
+                      }}
+                      className={`p-2 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 border ${
+                        isSelected
+                          ? 'bg-gradient-to-tr from-amber-500 to-rose-500 text-white font-black border-amber-300 shadow-md ring-2 ring-amber-300 scale-105'
+                          : 'bg-white hover:bg-amber-100/70 text-slate-800 border-slate-200 hover:border-amber-300 shadow-2xs'
+                      }`}
+                    >
+                      <span className="text-xs">{item.drawingEmoji}</span>
+                      <span className="text-lg font-alexandria font-black leading-none">{item.letter}</span>
+                      <span className="text-[9px] opacity-75 font-mono">#{idx + 1}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* Horizontal Carousel Bar */
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              {GRADE1_WRITTEN_EXERCISES_DATA.map((item, idx) => {
+                const isSelected = selectedLetterId === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleSelectLetter(item.id)}
+                    className={`px-3 py-1.5 rounded-2xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md ring-2 ring-amber-300 scale-105'
+                        : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
+                    }`}
+                  >
+                    <span className="text-xs">{item.drawingEmoji}</span>
+                    <span className="text-base font-alexandria font-black">{item.letter}</span>
+                    <span className="text-[10px] opacity-75 hidden sm:inline">({item.featuredDrawing})</span>
+                    <span className="text-[9px] opacity-60 font-mono">#{idx + 1}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import {
   Star,
   CheckCircle2, 
   ChevronDown,
+  ChevronLeft,
   MessageCircle,
   BookMarked,
   Palette,
@@ -29,7 +30,7 @@ import { audioManager } from '../utils/audio';
 import { WhatsAppContact } from './WhatsAppContact';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
-export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions' | 'grade1_workbook' | 'learning_games' | 'spelling' | 'songs' | 'home';
+export type TabType = 'units' | 'summaries' | 'books' | 'foundation' | 'kg' | 'quiz' | 'ai' | 'worksheets' | 'achievements' | 'dictionary' | 'support_plans' | 'whiteboard' | 'reading_path' | 'spelling_champions' | 'grade1_workbook' | 'spelling' | 'songs';
 
 interface HeaderProps {
   currentGrade: GradeId;
@@ -93,27 +94,28 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       {/* Top Ministry & Saudi Identity Strip */}
-      <div className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white text-xs px-4 py-1.5 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 font-medium">
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span>منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
-          <span className="hidden lg:inline-flex items-center gap-1 font-mono text-[10px] bg-white/15 px-2 py-0.5 rounded-full text-emerald-100 border border-white/20">
+      <div className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white text-xs px-3 sm:px-4 py-1.5 flex items-center justify-between flex-wrap gap-2 overflow-hidden w-full max-w-full">
+        <div className="flex items-center gap-2 font-medium truncate max-w-full">
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+          <span className="truncate">منصة لغتي التعليمية الشاملة • المنهاج السعودي المعتمد (١٤٤٧-١٤٤٨هـ)</span>
+          <span className="hidden lg:inline-flex items-center gap-1 font-mono text-[10px] bg-white/15 px-2 py-0.5 rounded-full text-emerald-100 border border-white/20 shrink-0">
             🌐 arabicksa.com
           </span>
         </div>
-        <div className="flex items-center gap-2 text-emerald-100 text-[11px] sm:text-xs">
+        <div className="flex items-center gap-2 text-emerald-100 text-[11px] sm:text-xs flex-wrap">
           {/* Direct Google Drive Grade 1 Support Link in Top Strip */}
           <a
             id="top-strip-grade1-support-drive-link"
             href="https://drive.google.com/drive/folders/1Ux9UU0BD8aFFzaNzw66i4_tzAm2zm6jY"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black border border-amber-200 transition-all text-[11px] shadow-xs"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black border border-amber-200 transition-all text-[11px] shadow-xs"
             title="فتح مجلد خطط دعم الصف الأول على Google Drive"
           >
-            <FolderOpen className="w-3.5 h-3.5 text-slate-950" />
-            <span>📁 خطط دعم الصف الأول (Google Drive)</span>
-            <ExternalLink className="w-2.5 h-2.5" />
+            <FolderOpen className="w-3.5 h-3.5 text-slate-950 shrink-0" />
+            <span className="hidden xs:inline">📁 خطط دعم الصف الأول (Google Drive)</span>
+            <span className="xs:hidden">📁 خطط الدعم</span>
+            <ExternalLink className="w-2.5 h-2.5 shrink-0" />
           </a>
 
           {/* TikTok Live link in top strip */}
@@ -125,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/30 hover:bg-rose-600 text-white font-bold border border-rose-300/40 transition-all text-[11px]"
             title="بث مباشر تيك توك: @arabiaeasy"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping shrink-0"></span>
             <span>بث مباشر تيك توك: arabiaeasy</span>
           </a>
 
@@ -148,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="top-strip-copy-link-btn"
               onClick={onCopyPageLink}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/50 hover:bg-emerald-500 text-white font-bold border border-emerald-300/40 transition-all text-[11px] cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/50 hover:bg-emerald-500 text-white font-bold border border-emerald-300/40 transition-all text-[11px] cursor-pointer shrink-0"
               title="نسخ الرابط المباشر المخصص لهذه الصفحة"
             >
               <span>🔗</span>
@@ -162,37 +164,37 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
+        <div className="flex items-center justify-between h-16 gap-1.5 sm:gap-3 w-full">
           {/* Brand & Logo */}
           <div 
             id="brand-logo-btn"
             onClick={() => onChangeTab('units')}
-            className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
+            className="flex items-center gap-2 cursor-pointer group select-none shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
-              <BookOpen className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-1.5 pb-0.5">
-                <span className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight font-alexandria leading-none">
+              <div className="flex items-center gap-1 pb-0.5">
+                <span className="font-extrabold text-lg sm:text-2xl text-slate-900 tracking-tight font-alexandria leading-none">
                   لُغَتِي
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
                   السعودية
                 </span>
               </div>
-              <span className="block text-[10px] sm:text-[11px] font-extrabold text-emerald-700 tracking-wider dir-ltr leading-none mt-2 sm:mt-2.5 group-hover:text-emerald-800 transition-colors">
+              <span className="block text-[9px] sm:text-[11px] font-extrabold text-emerald-700 tracking-wider dir-ltr leading-none mt-1 sm:mt-2.5 group-hover:text-emerald-800 transition-colors">
                 arabicksa.com
               </span>
             </div>
           </div>
 
-          {/* Direct prominent Reading Pathway Launch Button */}
+          {/* Direct prominent Reading Pathway Launch Button - hidden on mobile to prevent navbar overflow */}
           <button
             id="header-direct-reading-pathway-btn"
             onClick={() => onChangeTab('reading_path')}
-            className="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-md hover:shadow-lg border border-emerald-400/40 active:scale-95 transition-all cursor-pointer group shrink-0"
+            className="hidden md:flex items-center gap-2 px-3 lg:px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-md hover:shadow-lg border border-emerald-400/40 active:scale-95 transition-all cursor-pointer group shrink-0"
             title="الانتقال إلى مسار الانطلاق في القراءة المتدرج (للمتعثرين والمتقدمين)"
           >
             <span className="text-base sm:text-lg">🚀</span>
@@ -203,7 +205,7 @@ export const Header: React.FC<HeaderProps> = ({
                   مسار القراءة 📖
                 </span>
               </div>
-              <p className="text-[10px] text-emerald-100 hidden sm:block leading-none">
+              <p className="text-[10px] text-emerald-100 hidden xl:block leading-none">
                 جمل للمتعثرين • نصوص قصيرة • نصوص متقدمة
               </p>
             </div>
@@ -345,7 +347,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Right Action Icons & Student Stats */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Small Non-Floating WhatsApp Button inside navbar */}
             <WhatsAppContact phoneNumber="33773659697" displayNumber="+33 7 73 65 96 97" variant="compact" />
 
@@ -353,14 +355,14 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="search-toggle-btn"
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-colors"
               title="بحث في الدروس والقواعد"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Audio Voice Controls & Settings */}
-            <div className="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200">
+            <div className="flex items-center gap-0.5 sm:gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200">
               <button
                 id="audio-mute-toggle-btn"
                 onClick={handleToggleMute}
@@ -371,7 +373,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
                 title={isMuted ? 'تفعيل الصوت' : 'كتم الصوت'}
               >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                {isMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
               <button
                 id="audio-settings-modal-btn"
@@ -379,7 +381,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-white transition-colors"
                 title="إعدادات واختبار النطق العربي (حل مشاكل الصوت)"
               >
-                <Sliders className="w-4 h-4" />
+                <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
@@ -400,11 +402,11 @@ export const Header: React.FC<HeaderProps> = ({
             <button 
               id="student-stars-badge"
               onClick={() => onChangeTab('achievements')}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-300 rounded-xl cursor-pointer transition-all shadow-2xs active:scale-95 select-none"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-300 rounded-xl cursor-pointer transition-all shadow-2xs active:scale-95 select-none"
               title="لوحة الإنجازات والشهادات - انقر للاطلاع"
             >
-              <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
-              <span className="text-sm font-extrabold text-amber-900">{stars}</span>
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 fill-amber-400" />
+              <span className="text-xs sm:text-sm font-extrabold text-amber-900">{stars}</span>
               <span className="text-xs font-bold text-amber-800 hidden sm:inline">نجمة</span>
             </button>
 
@@ -412,9 +414,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="mobile-menu-toggle-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+              className="md:hidden p-1.5 sm:p-2 rounded-xl text-slate-600 hover:bg-slate-100"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>
@@ -464,33 +466,14 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-tab-foundation"
               onClick={() => onChangeTab('foundation')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'foundation'
-                  ? 'bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-md ring-2 ring-emerald-400'
-                  : 'text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100 hover:text-emerald-950 border border-emerald-200 shadow-2xs'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>معمل التأسيس وفتح الرحمن 📖</span>
-              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">
-                جديد 🌟
-              </span>
-            </button>
-
-            <button
-              id="nav-tab-learning-games"
-              onClick={() => onChangeTab('learning_games')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                activeTab === 'learning_games'
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md ring-2 ring-purple-300'
-                  : 'text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 shadow-2xs'
-              }`}
-            >
-              <span className="text-sm">🎮</span>
-              <span>ألعاب التأسيس</span>
-              <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">
-                جديد ⭐
-              </span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>معمل التأسيس</span>
             </button>
 
             <button
@@ -533,6 +516,20 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BrainCircuit className="w-3.5 h-3.5 text-emerald-400" />
               <span>المُعرب الذكي</span>
+            </button>
+
+            <button
+              id="nav-tab-reading-path"
+              onClick={() => onChangeTab('reading_path')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                activeTab === 'reading_path'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-md ring-2 ring-emerald-300'
+                  : 'text-emerald-900 hover:text-emerald-950 hover:bg-emerald-100/90 bg-emerald-50/90 border border-emerald-300/80 shadow-2xs'
+              }`}
+            >
+              <span className="text-sm">🚀</span>
+              <span>الانطلاق في القراءة</span>
+              <span className="text-[9px] bg-amber-400 text-amber-950 px-1 rounded font-bold">مسار القراءة</span>
             </button>
 
             <button
@@ -640,6 +637,36 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-3">
+          {/* Featured Mobile Reading Pathway Button */}
+          <button
+            id="mobile-drawer-reading-pathway-btn"
+            onClick={() => {
+              onChangeTab('reading_path');
+              setMobileMenuOpen(false);
+            }}
+            className={`w-full flex items-center justify-between p-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              activeTab === 'reading_path'
+                ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-md ring-2 ring-emerald-300'
+                : 'bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 hover:from-emerald-100 hover:to-teal-100 text-slate-900 border-2 border-emerald-300/80 shadow-xs'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🚀</span>
+              <div className="text-right">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-alexandria font-black text-sm text-emerald-950">الانطلاق في القراءة</span>
+                  <span className="bg-amber-400 text-amber-950 text-[10px] px-1.5 py-0.2 rounded font-black shadow-xs">
+                    مسار القراءة 📖
+                  </span>
+                </div>
+                <p className="text-[10px] text-emerald-800 font-bold mt-0.5">
+                  جمل للمتعثرين • نصوص قصيرة • نصوص متقدمة
+                </p>
+              </div>
+            </div>
+            <ChevronLeft className="w-4 h-4 text-emerald-700 shrink-0" />
+          </button>
+
           <div>
             <p className="text-xs font-bold text-slate-400 mb-2">اختر الصف الدراسي:</p>
             <div className="grid grid-cols-3 gap-1.5">
@@ -707,33 +734,12 @@ export const Header: React.FC<HeaderProps> = ({
                 onChangeTab('foundation');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
-                activeTab === 'foundation' ? 'bg-emerald-100 text-emerald-950 font-black' : 'text-slate-800 hover:bg-slate-100'
+              className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm font-bold ${
+                activeTab === 'foundation' ? 'bg-emerald-50 text-emerald-800' : 'text-slate-700'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>معمل التأسيس وفتح الرحمن 📖</span>
-              </div>
-              <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full">جديد 🌟</span>
-            </button>
-
-            <button
-              onClick={() => {
-                onChangeTab('learning_games');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center justify-between p-2.5 rounded-xl text-sm font-black ${
-                activeTab === 'learning_games'
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'text-purple-950 bg-purple-50 border border-purple-200'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">🎮</span>
-                <span>ألعاب التأسيس (الرحلة والمسارات الـ ٥)</span>
-              </div>
-              <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full">جديد ⭐</span>
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>معمل التأسيس</span>
             </button>
 
             <button

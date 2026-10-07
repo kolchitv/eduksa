@@ -30,6 +30,7 @@ import {
 import { audioManager } from '../utils/audio';
 import { MinistryOfEducationLogo } from './MinistryOfEducationLogo';
 import { MidYearReviewStudio } from './MidYearReviewStudio';
+import { Grade1WrittenWorksheetStudio } from './Grade1WrittenWorksheetStudio';
 
 interface Grade1SupportPlansProps {
   onBackToUnits?: () => void;
@@ -42,6 +43,7 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
   onOpenWorksheet,
   onOpenGrade1Workbook
 }) => {
+  const [supportViewMode, setSupportViewMode] = useState<'files' | 'workbook'>('files');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -125,8 +127,70 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
         </div>
       </div>
 
-      {/* Hero Google Drive Integration Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 border border-emerald-500/30 shadow-2xl">
+      {/* View Switcher: Files & Plans vs 28 Letters Workbook */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-3xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              setSupportViewMode('files');
+              audioManager.play('click');
+            }}
+            className={`px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              supportViewMode === 'files'
+                ? 'bg-rose-600 text-white shadow-sm'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
+          >
+            <FolderOpen className="w-4 h-4" />
+            <span>📁 خطط الدعم ومستودع الملفات العلاجية</span>
+          </button>
+
+          <button
+            id="btn-switch-support-to-workbook-28"
+            onClick={() => {
+              setSupportViewMode('workbook');
+              audioManager.play('click');
+            }}
+            className={`px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              supportViewMode === 'workbook'
+                ? 'bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 text-slate-950 shadow-md ring-2 ring-amber-300'
+                : 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 text-amber-950 border border-amber-300'
+            }`}
+          >
+            <span>✏️</span>
+            <span>كراسة التمارين (الصف 1) • 28 حرفاً 🌟</span>
+            <span className="bg-emerald-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">شامل</span>
+          </button>
+        </div>
+
+        <span className="text-[11px] text-slate-500 font-bold px-3">
+          أنشطة الصف الأول المعتمدة لعام 1447هـ
+        </span>
+      </div>
+
+      {supportViewMode === 'workbook' ? (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <button
+              onClick={() => setSupportViewMode('files')}
+              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <ArrowRight className="w-4 h-4" />
+              <span>العودة لملفات وخطط الدعم</span>
+            </button>
+            <span className="text-xs font-black text-amber-900 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+              كراسة التمارين (الصف 1) • 28 حرفاً 🌟 داخل أنشطة الصف الأول
+            </span>
+          </div>
+          <Grade1WrittenWorksheetStudio
+            studentName="بطل الصف الأول"
+            onBack={() => setSupportViewMode('files')}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Hero Google Drive Integration Card */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 border border-emerald-500/30 shadow-2xl">
         {/* Background glow effects */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
@@ -591,8 +655,8 @@ export const Grade1SupportPlans: React.FC<Grade1SupportPlansProps> = ({
           ))}
         </div>
       </div>
-
-      {/* Sample Exercise Preview Modal */}
+        </>
+      )}
       {selectedFileForPreview && selectedFileForPreview.sampleExercise && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">

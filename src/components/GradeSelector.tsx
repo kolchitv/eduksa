@@ -208,6 +208,19 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
             روضة لغتي والتأسيس (KG)
           </button>
 
+          {_onOpenReadingPathway && (
+            <button
+              id="grade-selector-reading-pathway-btn"
+              onClick={() => _onOpenReadingPathway('all')}
+              className="px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-xs border border-emerald-400/40 active:scale-95"
+              title="الانتقال إلى مسار الانطلاق في القراءة المتدرج (للمتعثرين والمتقدمين)"
+            >
+              <span>🚀</span>
+              <span>الانطلاق في القراءة</span>
+              <span className="bg-amber-400 text-amber-950 text-[9px] px-1.5 py-0.2 rounded-full font-black">مسار القراءة 📖</span>
+            </button>
+          )}
+
           {onOpenSpellingChampions && (
             <button
               id="grade-selector-spelling-champions-btn"
