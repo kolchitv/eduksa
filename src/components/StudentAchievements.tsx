@@ -20,6 +20,7 @@ interface StudentAchievementsProps {
   completedQuizzes: string[];
   currentGrade: GradeId;
   onOpenCertificate: () => void;
+  onOpenDailyReminder?: () => void;
 }
 
 export const StudentAchievements: React.FC<StudentAchievementsProps> = ({
@@ -28,7 +29,8 @@ export const StudentAchievements: React.FC<StudentAchievementsProps> = ({
   stars,
   completedQuizzes,
   currentGrade,
-  onOpenCertificate
+  onOpenCertificate,
+  onOpenDailyReminder
 }) => {
   const currentGradeData = GRADES_DATA[currentGrade] || GRADES_DATA.foundation;
 
@@ -97,6 +99,17 @@ export const StudentAchievements: React.FC<StudentAchievementsProps> = ({
               <span className="text-xs text-emerald-200 block">رصيد النجوم</span>
               <span className="text-2xl font-extrabold text-amber-300">{stars} ★</span>
             </div>
+
+            {onOpenDailyReminder && (
+              <button
+                onClick={onOpenDailyReminder}
+                className="px-4 py-3 bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs rounded-2xl border border-white/20 shadow-md transition-transform active:scale-95 flex items-center gap-2 cursor-pointer"
+                title="تذكير وتشجيع الدراسة اليومي"
+              >
+                <span>⏰</span>
+                <span>تذكير الدراسة اليومي</span>
+              </button>
+            )}
 
             <button
               onClick={onOpenCertificate}

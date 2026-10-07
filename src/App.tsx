@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GradeId, Lesson } from './types/curriculum';
 import { GRADES_DATA } from './data/curriculumData';
 import { Header } from './components/Header';
-import { GradeDashboard, SECTION_LABELS } from './components/GradeDashboard';
+import { GradeSelector } from './components/GradeSelector';
 import { FoundationStudio } from './components/FoundationStudio';
 import { KgStudio } from './components/KgStudio';
 import { UnitViewer } from './components/UnitViewer';
@@ -21,7 +21,9 @@ import { ReadingPathwayStudio } from './components/readingPath/ReadingPathwayStu
 import { SummariesStudio } from './components/SummariesStudio';
 import { SpellingChampionsStudio } from './components/SpellingChampionsStudio';
 import { Grade1WrittenWorksheetStudio } from './components/Grade1WrittenWorksheetStudio';
-import { EducationalSongsStudio } from './components/EducationalSongsStudio';
+import { LearningGamesHub } from './components/games/LearningGamesHub';
+import { ExamsHub } from './components/ExamsHub';
+import { DailyStudyReminderModal } from './components/DailyStudyReminderModal';
 import { TabType } from './components/Header';
 import { GRADE1_SUPPORT_DRIVE_URL } from './data/grade1SupportPlansData';
 import { 
@@ -59,6 +61,8 @@ export default function App() {
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>(['quiz_found_1']);
   const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
+  const [isDailyReminderOpen, setIsDailyReminderOpen] = useState<boolean>(false);
+  const [hoursSinceLastVisit, setHoursSinceLastVisit] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedReadingTrack, setSelectedReadingTrack] = useState<'all' | 'struggling' | 'short_text' | 'advanced'>(initialRoute.readingTrack || 'all');
   const [copiedLinkToast, setCopiedLinkToast] = useState<boolean>(false);
@@ -101,6 +105,69 @@ export default function App() {
       if (savedQuizzes) setCompletedQuizzes(JSON.parse(savedQuizzes));
     } catch (e) {}
   }, []);
+
+  // Auto-open install and telegram modal on first visit after 2.5s
+  useEffect(() => {
+    try {
+      const alreadyDismissed = sessionStorage.getItem('lughati_install_popup_dismissed');
+      if (!alreadyDismissed) {
+        const timer = setTimeout(() => {
+          setIsInstallModalOpen(true);
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Daily study reminder: trigger if user hasn't opened app for >= 24 hours
+  useEffect(() => {
+    try {
+      const LAST_ACTIVE_KEY = 'lughati_last_active_timestamp';
+      const DISMISSED_SESSION_KEY = 'lughati_daily_reminder_dismissed_session';
+
+      const lastActiveStr = localStorage.getItem(LAST_ACTIVE_KEY);
+      const now = Date.now();
+      const alreadyDismissedThisSession = sessionStorage.getItem(DISMISSED_SESSION_KEY);
+
+      if (lastActiveStr) {
+        const lastActive = parseInt(lastActiveStr, 10);
+        const elapsedHours = (now - lastActive) / (1000 * 60 * 60);
+        setHoursSinceLastVisit(elapsedHours);
+
+        // If >= 24 hours have passed and not already shown/dismissed in this session
+        if (elapsedHours >= 24 && !alreadyDismissedThisSession) {
+          const reminderTimer = setTimeout(() => {
+            setIsDailyReminderOpen(true);
+          }, 1500);
+          return () => clearTimeout(reminderTimer);
+        }
+      } else {
+        // Initial first visit: record timestamp
+        localStorage.setItem(LAST_ACTIVE_KEY, now.toString());
+        setHoursSinceLastVisit(0);
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleCloseDailyReminder = () => {
+    setIsDailyReminderOpen(false);
+    try {
+      sessionStorage.setItem('lughati_daily_reminder_dismissed_session', 'true');
+      localStorage.setItem('lughati_last_active_timestamp', Date.now().toString());
+      setHoursSinceLastVisit(0);
+    } catch (e) {}
+  };
+
+  const handleSimulate24Hours = () => {
+    try {
+      // Simulate 25 hours in the past
+      const past25Hours = Date.now() - (25 * 60 * 60 * 1000);
+      localStorage.setItem('lughati_last_active_timestamp', past25Hours.toString());
+      sessionStorage.removeItem('lughati_daily_reminder_dismissed_session');
+      setHoursSinceLastVisit(25);
+      setIsDailyReminderOpen(true);
+    } catch (e) {}
+  };
 
   const handleUpdateStudentName = (name: string) => {
     setStudentName(name);
@@ -191,7 +258,7 @@ export default function App() {
   const currentCurriculum = GRADES_DATA[currentGrade] || GRADES_DATA.foundation;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans overflow-x-hidden max-w-full w-full">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* Toast Notification for Copied SEO Page Link */}
       {copiedLinkToast && (
         <div className="fixed top-18 left-1/2 -translate-x-1/2 z-50 bg-slate-950 text-white px-5 py-2.5 rounded-2xl shadow-2xl border-2 border-emerald-400 flex items-center gap-2.5 text-xs sm:text-sm font-black animate-in fade-in zoom-in-95 duration-200">
@@ -208,11 +275,11 @@ export default function App() {
         onSelectGrade={(g) => {
           setCurrentGrade(g);
           if (g === 'kg1' || g === 'kg2') {
-            setActiveTab('home');
+            setActiveTab('kg');
           } else if (g === 'foundation') {
-            setActiveTab('home');
+            setActiveTab('foundation');
           } else {
-            setActiveTab('home');
+            setActiveTab('units');
           }
         }}
         activeTab={activeTab}
@@ -223,13 +290,37 @@ export default function App() {
         onSearchQuery={handleSearchQuery}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
         onCopyPageLink={handleCopyCurrentPageLink}
+        onOpenDailyReminder={() => setIsDailyReminderOpen(true)}
+        isReminderOverdue={hoursSinceLastVisit >= 24}
+      />
+
+      {/* Main Grade Selector Ribbon */}
+      <GradeSelector
+        selectedGrade={currentGrade}
+        onSelectGrade={(g) => {
+          setCurrentGrade(g);
+          if (g === 'kg1' || g === 'kg2') {
+            setActiveTab('kg');
+          } else if (g === 'foundation') {
+            setActiveTab('foundation');
+          } else {
+            setActiveTab('units');
+          }
+        }}
+        completedQuizzesCount={completedQuizzes.length}
+        onOpenSupportPlans={() => setActiveTab('support_plans')}
+        onOpenReadingPathway={handleOpenReadingPathway}
+        onOpenSummaries={() => setActiveTab('summaries')}
+        onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
+        onOpenGrade1Workbook={() => {
+          setCurrentGrade('grade1');
+          setActiveTab('grade1_workbook');
+        }}
+        onOpenExams={() => setActiveTab('exams')}
       />
 
       {/* Main View Router */}
-      <main className="flex-1 pb-16" dir="rtl">
-        {activeTab === 'home' ? <GradeDashboard grade={currentGrade} onGrade={setCurrentGrade} onOpen={setActiveTab} /> : <nav aria-label="مسار الصفحة" className="max-w-7xl mx-auto p-4 flex flex-wrap items-center gap-3 text-base">
-          <button onClick={() => setActiveTab('home')} className="min-h-12 text-emerald-800 underline font-bold">الصفوف والمواد</button><span aria-hidden="true">/</span><button onClick={() => setActiveTab('home')} className="min-h-12 text-emerald-800 underline">{currentCurriculum.name}</button><span aria-hidden="true">/</span><span>اللغة العربية</span><span aria-hidden="true">/</span><span aria-current="page">{SECTION_LABELS[activeTab]}</span>
-        </nav>}
+      <main className="flex-1 pb-16">
         {activeTab === 'kg' && <KgStudio />}
 
         {activeTab === 'units' && (
@@ -241,6 +332,7 @@ export default function App() {
             onOpenReadingPathway={handleOpenReadingPathway}
             onOpenSummaries={() => setActiveTab('summaries')}
             onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
+            onOpenExams={() => setActiveTab('exams')}
           />
         )}
 
@@ -261,7 +353,6 @@ export default function App() {
 
         {activeTab === 'books' && (
           <TextbooksLibrary
-            initialGrade={currentGrade}
             onSelectGradeAndUnit={(grade, _unitNumber) => {
               setCurrentGrade(grade);
               setActiveTab('units');
@@ -271,6 +362,14 @@ export default function App() {
         )}
 
         {activeTab === 'foundation' && <FoundationStudio />}
+
+        {activeTab === 'learning_games' && (
+          <LearningGamesHub
+            studentName={studentName}
+            onAddStars={handleAddStars}
+            onBackToMain={() => setActiveTab('units')}
+          />
+        )}
 
         {activeTab === 'dictionary' && (
           <VisualDictionary
@@ -289,6 +388,16 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'exams' && (
+          <ExamsHub
+            currentGrade={currentGrade}
+            studentName={studentName}
+            onAddStars={handleAddStars}
+            onQuizCompleted={handleQuizCompleted}
+            onBackToHome={() => setActiveTab('units')}
+          />
+        )}
+
         {activeTab === 'ai' && <AiTutor currentGrade={currentGrade} />}
 
         {activeTab === 'reading_path' && (
@@ -302,7 +411,7 @@ export default function App() {
 
         {activeTab === 'whiteboard' && <InteractiveWhiteboard />}
 
-        {(activeTab === 'spelling_champions' || activeTab === 'spelling') && (
+        {activeTab === 'spelling_champions' && (
           <SpellingChampionsStudio
             studentName={studentName}
             onAddStars={handleAddStars}
@@ -310,8 +419,6 @@ export default function App() {
             onBackToHome={() => setActiveTab('units')}
           />
         )}
-
-        {activeTab === 'songs' && <EducationalSongsStudio />}
 
         {activeTab === 'grade1_workbook' && (
           <Grade1WrittenWorksheetStudio
@@ -350,6 +457,7 @@ export default function App() {
             completedQuizzes={completedQuizzes}
             currentGrade={currentGrade}
             onOpenCertificate={() => setIsCertificateOpen(true)}
+            onOpenDailyReminder={() => setIsDailyReminderOpen(true)}
           />
         )}
       </main>
@@ -373,6 +481,20 @@ export default function App() {
             sessionStorage.setItem('lughati_install_popup_dismissed', 'true');
           } catch (e) {}
         }}
+      />
+
+      {/* Daily Study Reminder Modal (24h Inactive Check) */}
+      <DailyStudyReminderModal
+        isOpen={isDailyReminderOpen}
+        onClose={handleCloseDailyReminder}
+        studentName={studentName}
+        stars={stars}
+        hoursSinceLastVisit={hoursSinceLastVisit}
+        onNavigateToTab={(tab) => {
+          setActiveTab(tab);
+          handleCloseDailyReminder();
+        }}
+        onSimulate24Hours={handleSimulate24Hours}
       />
 
       {/* Saudi Platform Footer */}

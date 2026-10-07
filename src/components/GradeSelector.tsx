@@ -23,6 +23,7 @@ interface GradeSelectorProps {
   onOpenSummaries?: () => void;
   onOpenSpellingChampions?: () => void;
   onOpenGrade1Workbook?: () => void;
+  onOpenExams?: () => void;
 }
 
 export const GradeSelector: React.FC<GradeSelectorProps> = ({
@@ -33,7 +34,8 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
   onOpenReadingPathway: _onOpenReadingPathway,
   onOpenSummaries,
   onOpenSpellingChampions,
-  onOpenGrade1Workbook
+  onOpenGrade1Workbook,
+  onOpenExams
 }) => {
   const [stageFilter, setStageFilter] = useState<'all' | 'primary' | 'intermediate' | 'early'>('all');
 
@@ -244,6 +246,19 @@ export const GradeSelector: React.FC<GradeSelectorProps> = ({
               <span>✏️</span>
               <span>كراسة التمارين (الصف 1)</span>
               <span className="bg-emerald-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">28 حرفاً 🌟</span>
+            </button>
+          )}
+
+          {onOpenExams && (
+            <button
+              id="grade-selector-exams-btn"
+              onClick={onOpenExams}
+              className="px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 hover:from-emerald-800 hover:to-indigo-900 text-white shadow-xs border border-emerald-500 active:scale-95"
+              title="قسم الاختبارات والتقييمات المعتمدة لجميع الصفوف والمواد"
+            >
+              <span>📋</span>
+              <span>بنك الاختبارات المعتمدة</span>
+              <span className="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.2 rounded-full font-black">جميع المواد 🇸🇦</span>
             </button>
           )}
         </div>

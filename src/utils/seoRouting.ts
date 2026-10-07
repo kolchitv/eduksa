@@ -102,6 +102,9 @@ export function parseRouteFromLocation(): RouteState {
     } else if (first === 'quiz') {
       tab = 'quiz';
       if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
+    } else if (first === 'exams' || first === 'exam' || first === 'official-exams' || first === 'tests') {
+      tab = 'exams';
+      if (second && GRADES_DATA[second as GradeId]) grade = second as GradeId;
     } else if (first === 'spelling-champions' || first === 'spelling_champions' || first === 'spelling' || first === 'dictation' || first === 'imlaa') {
       tab = 'spelling_champions';
     } else if (first === 'games' || first === 'learning-games' || first === 'learning_games' || first === 'educational-games') {
@@ -148,6 +151,7 @@ function isValidTab(tab: string): tab is TabType {
     'foundation',
     'kg',
     'quiz',
+    'exams',
     'ai',
     'worksheets',
     'achievements',
@@ -189,6 +193,8 @@ function getBaseUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string
       return grade ? `/dictionary/${grade}` : '/dictionary';
     case 'quiz':
       return grade ? `/quiz/${grade}` : '/quiz';
+    case 'exams':
+      return grade ? `/exams/${grade}` : '/exams';
     case 'spelling_champions':
       return '/spelling-champions';
     case 'ai':
@@ -337,6 +343,16 @@ export function getSeoMetadata(state: RouteState): SeoMetadata {
         ogTitle: `بنك الاختبارات التفاعلية لمقرر لغتي - ${gradeData.name}`,
         ogDescription: `أسئلة فهم مقروء، إعراب، ظواهر إملائية، وتدريبات ذكية مع التغذية الراجعة الفورية.`,
         keywords: `اختبارات لغتي, بنك أسئلة لغتي, تمارين تفاعلية, اختبار مركزي لغتي`
+      };
+
+    case 'exams':
+      return {
+        title: `بنك الاختبارات والتقييمات المعتمدة - جميع المراحل والمواد | منصة لغتي`,
+        description: `نماذج اختبارات فترية، نصفية، نهائية، وتشخيصية معتمدة لجميع المواد (لغتي، الدراسات الإسلامية، الرياضيات، العلوم) متوافقة مع معايير وزارة التعليم ١٤٤٨هـ مع الحل التفاعلي والطباعة.`,
+        canonicalUrl,
+        ogTitle: `بنك الاختبارات والتقييمات الرسمية المعتمدة ١٤٤٨هـ 🇸🇦`,
+        ogDescription: `اختبارات رسمية مطابقة لمواصفات وزارة التعليم بالمملكة العربية السعودية لجميع الصفوف والفصول والمواد.`,
+        keywords: `اختبارات الوزارة, نماذج اختبارات, اختبار منتصف الفصل, اختبار نهائي, اختبار لغتي, دراسات اسلامية, رياضيات, علوم`
       };
 
     case 'ai':

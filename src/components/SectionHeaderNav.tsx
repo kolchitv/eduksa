@@ -52,6 +52,7 @@ export const SectionHeaderNav: React.FC<SectionHeaderNavProps> = ({
     { id: 'foundation', title: 'معمل التأسيس', icon: Sparkles, color: 'text-emerald-600' },
     { id: 'spelling', title: 'أبطال الإملاء', icon: Edit3, color: 'text-amber-600' },
     { id: 'kg', title: 'رياض الأطفال', icon: GraduationCap, color: 'text-amber-600' },
+    { id: 'exams', title: 'بنك الاختبارات المعتمدة', icon: FileText, color: 'text-emerald-700' },
     { id: 'quiz', title: 'بنك التقييمات', icon: Zap, color: 'text-rose-600' },
     { id: 'dictionary', title: 'المعجم البصري', icon: ImageIcon, color: 'text-teal-600' },
     { id: 'summaries', title: 'ملخصات ومطويات', icon: FileText, color: 'text-indigo-600' },

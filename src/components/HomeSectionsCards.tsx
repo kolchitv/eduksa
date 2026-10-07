@@ -128,16 +128,16 @@ export const HomeSectionsCards: React.FC<HomeSectionsCardsProps> = ({
       bgGlow: 'hover:bg-amber-50/20'
     },
     {
-      id: 'quiz',
-      title: 'بنك التقييمات',
-      subtitle: 'ألعاب التحدي ونجوم التميز',
-      badge: 'اختبارات',
-      icon: Zap,
-      accentBorderColor: 'border-b-rose-500',
-      iconBgColor: 'bg-rose-50',
-      iconTextColor: 'text-rose-600',
-      hoverBorderColor: 'hover:border-rose-400',
-      bgGlow: 'hover:bg-rose-50/20'
+      id: 'exams',
+      title: 'بنك الاختبارات والتقييمات المعتمدة',
+      subtitle: 'اختبارات فترية ونصفية ونهائية لجميع الفصول والصفوف والمواد',
+      badge: 'اختبارات ١٤٤٨هـ 📝',
+      icon: FileText,
+      accentBorderColor: 'border-b-emerald-600',
+      iconBgColor: 'bg-emerald-50',
+      iconTextColor: 'text-emerald-700',
+      hoverBorderColor: 'hover:border-emerald-400',
+      bgGlow: 'hover:bg-emerald-50/20'
     },
     {
       id: 'dictionary',

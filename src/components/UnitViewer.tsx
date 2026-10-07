@@ -41,6 +41,7 @@ interface UnitViewerProps {
   onOpenReadingPathway?: (track?: 'all' | 'struggling' | 'short_text' | 'advanced') => void;
   onOpenSummaries?: () => void;
   onOpenSpellingChampions?: () => void;
+  onOpenExams?: () => void;
 }
 
 export const UnitViewer: React.FC<UnitViewerProps> = ({
@@ -50,7 +51,8 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
   onOpenSupportPlans,
   onOpenReadingPathway: _onOpenReadingPathway,
   onOpenSummaries,
-  onOpenSpellingChampions
+  onOpenSpellingChampions,
+  onOpenExams
 }) => {
   const [selectedUnitIdx, setSelectedUnitIdx] = useState(0);
   const [selectedLessonIdx, setSelectedLessonIdx] = useState(0);
@@ -197,6 +199,18 @@ export const UnitViewer: React.FC<UnitViewerProps> = ({
               <span>{unit.title}</span>
             </button>
           ))}
+
+          {onOpenExams && (
+            <button
+              onClick={onOpenExams}
+              className="px-3.5 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-xs hover:from-emerald-800 hover:to-teal-900 border border-emerald-600 active:scale-95 cursor-pointer mr-auto"
+              title="الانتقال إلى بنك الاختبارات والتقييمات المعتمدة لجميع الصفوف والمواد"
+            >
+              <span>📋</span>
+              <span>بنك الاختبارات المعتمدة</span>
+              <span className="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.2 rounded-full font-black">جميع المواد</span>
+            </button>
+          )}
         </div>
       </div>
 
