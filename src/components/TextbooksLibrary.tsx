@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, 
   FileText, 
@@ -16,20 +16,32 @@ import {
 import { TEXTBOOKS_DATA, Textbook } from '../data/textbooksData';
 import { GradeId } from '../types/curriculum';
 import { audioManager } from '../utils/audio';
+import { Grade1AssessmentDocuments } from './Grade1AssessmentDocuments';
+import { UploadedTextbooks } from './UploadedTextbooks';
 
 interface TextbooksLibraryProps {
+  initialGrade?: GradeId;
   onSelectGradeAndUnit?: (grade: GradeId, unitNumber: number) => void;
   onNavigateToUnits?: () => void;
 }
 
 export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
+  initialGrade,
   onSelectGradeAndUnit,
   onNavigateToUnits
 }) => {
   const [selectedBook, setSelectedBook] = useState<Textbook>(TEXTBOOKS_DATA[0]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6' | 'm2'>('all');
   const [selectedUnitIndex, setSelectedUnitIndex] = useState<number>(0);
+
+  useEffect(() => {
+    const filter = initialGrade?.startsWith('grade') ? `g${initialGrade.slice(5)}` : initialGrade === 'intermediate2' ? 'm2' : 'all';
+    setActiveTab(filter as typeof activeTab);
+    const book = TEXTBOOKS_DATA.find(book => book.id.includes(filter));
+    if (book) setSelectedBook(book);
+    setSelectedUnitIndex(0);
+  }, [initialGrade]);
 
   const filteredBooks = TEXTBOOKS_DATA.filter(book => {
     const matchesFilter = 
@@ -39,7 +51,7 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
       activeTab === 'g3' ? book.id.includes('g3') :
       activeTab === 'g4' ? book.id.includes('g4') :
       activeTab === 'g5' ? book.id.includes('g5') :
-      book.id.includes('g6');
+      activeTab === 'g6' ? book.id.includes('g6') : false;
 
     const matchesSearch = 
       searchQuery === '' ||
@@ -89,6 +101,10 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
           
           {/* Quick Filter Buttons for All Grades */}
           <div className="flex flex-wrap items-center gap-1.5 pt-2">
+            <button
+              onClick={() => setActiveTab('m2')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold ${activeTab === 'm2' ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-100'}`}
+            >الصف الثاني المتوسط</button>
             <button
               id="tb-filter-all"
               onClick={() => setActiveTab('all')}
@@ -189,7 +205,9 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
       </div>
 
       {/* Main Grid: Book Cards and Detail View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <UploadedTextbooks grade={activeTab} query={searchQuery} />
+      {(activeTab === 'all' || activeTab === 'g1') && <Grade1AssessmentDocuments />}
+      {activeTab !== 'm2' && <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left/Main Column: Books List Cards (4 cols on lg) */}
         <div className="lg:col-span-4 space-y-4">
           <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
@@ -359,7 +377,7 @@ export const TextbooksLibrary: React.FC<TextbooksLibraryProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

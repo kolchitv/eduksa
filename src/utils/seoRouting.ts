@@ -22,7 +22,7 @@ export interface SeoMetadata {
  */
 export function parseRouteFromLocation(): RouteState {
   if (typeof window === 'undefined') {
-    return { tab: 'units', grade: 'grade1' };
+    return { tab: 'home', grade: 'grade1' };
   }
 
   // Check for SPA fallback redirect from 404.html or ?p= query param
@@ -56,7 +56,7 @@ export function parseRouteFromLocation(): RouteState {
   const queryGrade = searchParams.get('grade') as GradeId | null;
   const queryTrack = searchParams.get('track') as 'all' | 'struggling' | 'short_text' | 'advanced' | null;
 
-  let tab: TabType = 'units';
+  let tab: TabType = 'home';
   let grade: GradeId = 'grade1';
   let readingTrack: 'all' | 'struggling' | 'short_text' | 'advanced' = 'all';
 
@@ -141,6 +141,7 @@ export function parseRouteFromLocation(): RouteState {
 
 function isValidTab(tab: string): tab is TabType {
   const validTabs: TabType[] = [
+    'home',
     'units',
     'summaries',
     'books',
@@ -164,8 +165,10 @@ function isValidTab(tab: string): tab is TabType {
 /**
  * Constructs the canonical dedicated URL path for a given tab and grade
  */
-export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string): string {
+function getBaseUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string): string {
   switch (tab) {
+    case 'home':
+      return grade ? `/?tab=home&grade=${grade}` : '/';
     case 'learning_games':
       return '/games';
     case 'grade1_workbook':
@@ -198,8 +201,14 @@ export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: str
       return '/achievements';
     case 'units':
     default:
-      return grade && grade !== 'grade1' ? `/units/${grade}` : '/';
+      return `/units/${grade || 'grade1'}`;
   }
+}
+
+export function getUrlForRoute(tab: TabType, grade?: GradeId, readingTrack?: string): string {
+  const path = getBaseUrlForRoute(tab, grade, readingTrack);
+  if (!grade || path.includes('grade=')) return path;
+  return `${path}${path.includes('?') ? '&' : '?'}grade=${grade}`;
 }
 
 /**

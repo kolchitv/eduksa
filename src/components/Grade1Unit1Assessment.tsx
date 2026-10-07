@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
 import { shuffleQuestionOptions } from '../utils/shuffle';
+import { Grade1AssessmentDocuments } from './Grade1AssessmentDocuments';
 
 export const Grade1Unit1Assessment: React.FC = () => {
   // Exercise 1: Match word to letter shape (ميم وأشكاله)
@@ -75,6 +76,7 @@ export const Grade1Unit1Assessment: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
+      <Grade1AssessmentDocuments />
       {/* Header Banner matching the official test paper */}
       <div className="p-6 rounded-3xl bg-gradient-to-r from-rose-900 via-pink-900 to-indigo-950 text-white shadow-xl border border-rose-500/30 relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">

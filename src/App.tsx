@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GradeId, Lesson } from './types/curriculum';
 import { GRADES_DATA } from './data/curriculumData';
 import { Header } from './components/Header';
-import { GradeSelector } from './components/GradeSelector';
+import { GradeDashboard, SECTION_LABELS } from './components/GradeDashboard';
 import { FoundationStudio } from './components/FoundationStudio';
 import { KgStudio } from './components/KgStudio';
 import { UnitViewer } from './components/UnitViewer';
@@ -99,19 +99,6 @@ export default function App() {
       if (savedName) setStudentName(savedName);
       if (savedStars) setStars(parseInt(savedStars, 10));
       if (savedQuizzes) setCompletedQuizzes(JSON.parse(savedQuizzes));
-    } catch (e) {}
-  }, []);
-
-  // Auto-open install and telegram modal on first visit after 2.5s
-  useEffect(() => {
-    try {
-      const alreadyDismissed = sessionStorage.getItem('lughati_install_popup_dismissed');
-      if (!alreadyDismissed) {
-        const timer = setTimeout(() => {
-          setIsInstallModalOpen(true);
-        }, 2500);
-        return () => clearTimeout(timer);
-      }
     } catch (e) {}
   }, []);
 
@@ -221,11 +208,11 @@ export default function App() {
         onSelectGrade={(g) => {
           setCurrentGrade(g);
           if (g === 'kg1' || g === 'kg2') {
-            setActiveTab('kg');
+            setActiveTab('home');
           } else if (g === 'foundation') {
-            setActiveTab('foundation');
+            setActiveTab('home');
           } else {
-            setActiveTab('units');
+            setActiveTab('home');
           }
         }}
         activeTab={activeTab}
@@ -238,32 +225,11 @@ export default function App() {
         onCopyPageLink={handleCopyCurrentPageLink}
       />
 
-      {/* Main Grade Selector Ribbon */}
-      <GradeSelector
-        selectedGrade={currentGrade}
-        onSelectGrade={(g) => {
-          setCurrentGrade(g);
-          if (g === 'kg1' || g === 'kg2') {
-            setActiveTab('kg');
-          } else if (g === 'foundation') {
-            setActiveTab('foundation');
-          } else {
-            setActiveTab('units');
-          }
-        }}
-        completedQuizzesCount={completedQuizzes.length}
-        onOpenSupportPlans={() => setActiveTab('support_plans')}
-        onOpenReadingPathway={handleOpenReadingPathway}
-        onOpenSummaries={() => setActiveTab('summaries')}
-        onOpenSpellingChampions={() => setActiveTab('spelling_champions')}
-        onOpenGrade1Workbook={() => {
-          setCurrentGrade('grade1');
-          setActiveTab('grade1_workbook');
-        }}
-      />
-
       {/* Main View Router */}
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-16" dir="rtl">
+        {activeTab === 'home' ? <GradeDashboard grade={currentGrade} onGrade={setCurrentGrade} onOpen={setActiveTab} /> : <nav aria-label="مسار الصفحة" className="max-w-7xl mx-auto p-4 flex flex-wrap items-center gap-3 text-base">
+          <button onClick={() => setActiveTab('home')} className="min-h-12 text-emerald-800 underline font-bold">الصفوف والمواد</button><span aria-hidden="true">/</span><button onClick={() => setActiveTab('home')} className="min-h-12 text-emerald-800 underline">{currentCurriculum.name}</button><span aria-hidden="true">/</span><span>اللغة العربية</span><span aria-hidden="true">/</span><span aria-current="page">{SECTION_LABELS[activeTab]}</span>
+        </nav>}
         {activeTab === 'kg' && <KgStudio />}
 
         {activeTab === 'units' && (
@@ -295,6 +261,7 @@ export default function App() {
 
         {activeTab === 'books' && (
           <TextbooksLibrary
+            initialGrade={currentGrade}
             onSelectGradeAndUnit={(grade, _unitNumber) => {
               setCurrentGrade(grade);
               setActiveTab('units');
